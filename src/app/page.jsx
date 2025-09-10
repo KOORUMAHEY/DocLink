@@ -4,13 +4,12 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Calendar, Clock, Heart, Sparkles, UserCheck, ArrowRight, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { IconBookAppointment } from '@/components/icons/icon-book-appointment';
 import { IconManageBooking } from '@/components/icons/icon-manage-booking';
-import { IconDoctorAccess } from '@/components/icons/icon-doctor-access';
 import { useI18n } from '@/context/i18n';
+
 
 
 export default function Home() {
@@ -22,14 +21,14 @@ export default function Home() {
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="container relative mx-auto max-w-6xl">
           <div className="mx-auto max-w-4xl text-center">
-            <Badge variant="secondary" className="mb-4 px-3 py-1 text-xs sm:px-4 sm:py-2 sm:text-sm">
-              <Sparkles className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" />
+            <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm font-medium tracking-wide uppercase">
+              <Sparkles className="mr-2 h-4 w-4" />
               DocLink Healthcare
             </Badge>
-            <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl lg:text-7xl leading-tight px-2">
+            <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-6xl md:text-7xl lg:text-8xl leading-[1.1] px-2">
               {t('home.hero.title')}
             </h1>
-            <p className="mx-auto mb-6 max-w-2xl text-base text-gray-600 sm:text-lg md:text-xl leading-relaxed px-2">
+            <p className="mx-auto mb-8 max-w-3xl text-lg text-gray-700 sm:text-xl md:text-2xl leading-relaxed font-light px-2">
               {t('home.hero.subtitle')}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4 px-4">
@@ -49,7 +48,7 @@ export default function Home() {
 
           {/* Feature Highlights */}
           <div className="mt-12 grid grid-cols-1 gap-4 sm:mt-16 sm:grid-cols-3 sm:gap-6">
-            <Card className="border-0 bg-white/70 backdrop-blur-sm shadow-lg transition-all hover:shadow-xl hover:scale-105">
+            <Card className="border border-gray-100/50 bg-white/70 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 sm:h-12 sm:w-12">
@@ -62,7 +61,7 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-0 bg-white/70 backdrop-blur-sm shadow-lg transition-all hover:shadow-xl hover:scale-105">
+            <Card className="border border-gray-100/50 bg-white/70 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 sm:h-12 sm:w-12">
@@ -75,7 +74,7 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-0 bg-white/70 backdrop-blur-sm shadow-lg transition-all hover:shadow-xl hover:scale-105">
+            <Card className="border border-gray-100/50 bg-white/70 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-pink-100 sm:h-12 sm:w-12">
@@ -104,7 +103,7 @@ export default function Home() {
             </p>
           </div>
           <div className="mt-8 grid grid-cols-1 gap-6 sm:mt-16 sm:grid-cols-3 sm:gap-8">
-            <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg transition-all hover:shadow-2xl hover:-translate-y-2">
+            <Card className="group relative overflow-hidden border border-gray-200/60 bg-gradient-to-br from-blue-50 to-blue-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:scale-[1.02] flex flex-col">
               <CardHeader className="pb-3 sm:pb-4">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-blue-500/10 group-hover:bg-blue-500/20 transition-colors sm:h-20 sm:w-20">
                   <IconBookAppointment className="h-8 w-8 text-blue-600 sm:h-10 sm:w-10" />
@@ -113,20 +112,22 @@ export default function Home() {
                   {t('home.actions.book.title')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-center px-4 sm:px-6">
-                <CardDescription className="mb-4 text-gray-600 text-sm sm:mb-6 sm:text-base">
+              <CardContent className="text-center px-4 sm:px-6 flex-grow">
+                <CardDescription className="text-gray-600 text-sm sm:text-base">
                   {t('home.actions.book.description')}
                 </CardDescription>
-                <Button asChild className="w-full py-3 text-sm sm:py-2 sm:text-base min-h-[44px] touch-manipulation">
-                  <Link href="/appointments/book">
-                    {t('home.actions.book.button')}
-                    <ArrowRight className="ml-2 h-3 w-3 sm:h-4 sm:w-4" />
+              </CardContent>
+              <div className="p-4 sm:p-6 pt-0">
+                <Button asChild className="w-full py-3 px-6 text-sm sm:py-3 sm:text-base min-h-[48px] touch-manipulation bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0">
+                  <Link href="/appointments/book" className="flex items-center justify-center space-x-2">
+                    <span>{t('home.actions.book.button')}</span>
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>
-              </CardContent>
+              </div>
             </Card>
 
-            <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-green-50 to-green-100 shadow-lg transition-all hover:shadow-2xl hover:-translate-y-2">
+            <Card className="group relative overflow-hidden border border-gray-200/60 bg-gradient-to-br from-green-50 to-green-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:scale-[1.02] flex flex-col">
               <CardHeader className="pb-3 sm:pb-4">
                 <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10 group-hover:bg-green-500/20 transition-colors sm:h-20 sm:w-20">
                   <IconManageBooking className="h-8 w-8 text-green-600 sm:h-10 sm:w-10" />
@@ -135,102 +136,41 @@ export default function Home() {
                   {t('home.actions.manage.title')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-center px-4 sm:px-6">
-                <CardDescription className="mb-4 text-gray-600 text-sm sm:mb-6 sm:text-base">
+              <CardContent className="text-center px-4 sm:px-6 flex-grow">
+                <CardDescription className="text-gray-600 text-sm sm:text-base">
                   {t('home.actions.manage.description')}
                 </CardDescription>
-                <Button asChild variant="outline" className="w-full py-3 text-sm sm:py-2 sm:text-base min-h-[44px] touch-manipulation">
-                  <Link href="/appointments">
-                    {t('home.actions.manage.button')}
+              </CardContent>
+              <div className="p-4 sm:p-6 pt-0">
+                <Button asChild variant="outline" className="w-full py-3 px-6 text-sm sm:py-3 sm:text-base min-h-[48px] touch-manipulation border-2 border-emerald-500 text-emerald-700 hover:bg-emerald-500 hover:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 bg-white hover:border-emerald-500">
+                  <Link href="/appointments" className="flex items-center justify-center">
+                    <span>{t('home.actions.manage.button')}</span>
                   </Link>
                 </Button>
-              </CardContent>
+              </div>
             </Card>
 
-            <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-purple-50 to-purple-100 shadow-lg transition-all hover:shadow-2xl hover:-translate-y-2">
+            <Card className="group relative overflow-hidden border border-gray-200/60 bg-gradient-to-br from-purple-50 to-purple-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 hover:scale-[1.02] flex flex-col">
               <CardHeader className="pb-3 sm:pb-4">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors sm:h-20 sm:w-20">
-                  <IconDoctorAccess className="h-8 w-8 text-purple-600 sm:h-10 sm:w-10" />
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-500/10 group-hover:bg-slate-500/20 transition-colors sm:h-20 sm:w-20">
+                  <UserCheck className="h-8 w-8 text-slate-600 sm:h-10 sm:w-10" />
                 </div>
                 <CardTitle className="text-center text-lg text-gray-900 sm:text-xl">
                   {t('home.actions.doctor.title')}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-center px-4 sm:px-6">
-                <CardDescription className="mb-4 text-gray-600 text-sm sm:mb-6 sm:text-base">
+              <CardContent className="text-center px-4 sm:px-6 flex-grow">
+                <CardDescription className="text-gray-600 text-sm sm:text-base">
                   {t('home.actions.doctor.description')}
                 </CardDescription>
-                <Button asChild variant="outline" className="w-full py-3 text-sm sm:py-2 sm:text-base min-h-[44px] touch-manipulation">
-                  <Link href="/login">
-                    {t('home.actions.doctor.button')}
+              </CardContent>
+              <div className="p-4 sm:p-6 pt-0">
+                <Button asChild variant="outline" className="w-full py-3 px-6 text-sm sm:py-3 sm:text-base min-h-[48px] touch-manipulation border-2 border-slate-600 text-slate-700 hover:bg-slate-600 hover:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 bg-white hover:border-slate-600">
+                  <Link href="/login" className="flex items-center justify-center">
+                    <span>{t('home.actions.doctor.button')}</span>
                   </Link>
                 </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      <Separator />
-
-      {/* Important Information Section */}
-      <section className="bg-gray-50 py-12 px-4 sm:py-20 md:py-32">
-        <div className="container mx-auto max-w-6xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="mb-3 text-2xl font-bold tracking-tight text-gray-900 sm:mb-4 sm:text-3xl md:text-4xl">
-              {t('home.info.title')}
-            </h2>
-            <p className="text-base text-gray-600 sm:text-lg">
-              Everything you need to know about our appointment system
-            </p>
-          </div>
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:mt-16 sm:grid-cols-3 sm:gap-8">
-            <Card className="border-0 bg-white shadow-lg transition-all hover:shadow-xl">
-              <CardContent className="p-6 text-center sm:p-8">
-                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 sm:mb-4 sm:h-16 sm:w-16">
-                  <Calendar className="h-6 w-6 text-blue-600 sm:h-8 sm:w-8" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-gray-900 sm:text-xl">
-                  {t('home.info.fridays.title')}
-                </h3>
-                <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{t('home.info.fridays.description')}</p>
-                <div className="mt-3 flex items-center justify-center space-x-2 sm:mt-4">
-                  <CheckCircle className="h-4 w-4 text-green-500 sm:h-5 sm:w-5" />
-                  <span className="text-xs font-medium text-green-600 sm:text-sm">Available</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 bg-white shadow-lg transition-all hover:shadow-xl">
-              <CardContent className="p-6 text-center sm:p-8">
-                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 sm:mb-4 sm:h-16 sm:w-16">
-                  <Clock className="h-6 w-6 text-green-600 sm:h-8 sm:w-8" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-gray-900 sm:text-xl">
-                  {t('home.info.timing.title')}
-                </h3>
-                <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{t('home.info.timing.description')}</p>
-                <div className="mt-3 flex items-center justify-center space-x-2 sm:mt-4">
-                  <CheckCircle className="h-4 w-4 text-green-500 sm:h-5 sm:w-5" />
-                  <span className="text-xs font-medium text-green-600 sm:text-sm">On Time</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 bg-white shadow-lg transition-all hover:shadow-xl">
-              <CardContent className="p-6 text-center sm:p-8">
-                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 sm:mb-4 sm:h-16 sm:w-16">
-                  <UserCheck className="h-6 w-6 text-purple-600 sm:h-8 sm:w-8" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-gray-900 sm:text-xl">
-                  {t('home.info.priority.title')}
-                </h3>
-                <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{t('home.info.priority.description')}</p>
-                <div className="mt-3 flex items-center justify-center space-x-2 sm:mt-4">
-                  <CheckCircle className="h-4 w-4 text-green-500 sm:h-5 sm:w-5" />
-                  <span className="text-xs font-medium text-green-600 sm:text-sm">Priority Care</span>
-                </div>
-              </CardContent>
+              </div>
             </Card>
           </div>
         </div>

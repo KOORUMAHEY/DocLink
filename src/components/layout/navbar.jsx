@@ -2,10 +2,10 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Menu, User, Languages, Calendar, Phone, X } from 'lucide-react';
+import { Menu, User, Languages, Calendar, X } from 'lucide-react';
 import { HiHeart } from 'react-icons/hi';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/context/i18n';
@@ -21,7 +21,7 @@ export function Navbar() {
   const { t, setLocale, locale } = useI18n();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo and Brand */}
@@ -84,14 +84,8 @@ export function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Contact Info */}
-            <div className="hidden lg:flex items-center space-x-2 text-sm text-gray-600">
-              <Phone className="h-4 w-4" />
-              <span>{t('navbar.emergency')}</span>
-            </div>
-
             {/* Primary CTA */}
-            <Button asChild size="sm" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all">
+            <Button asChild size="sm" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-blue-600">
               <Link href="/appointments/book" className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4" />
                 <span>{t('navbar.book_appointment')}</span>
@@ -134,6 +128,7 @@ export function Navbar() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-80 bg-gradient-to-b from-white to-blue-50">
+                <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="flex flex-col h-full">
                   {/* Mobile Header */}
                   <div className="flex items-center justify-between py-4 border-b">
@@ -171,7 +166,7 @@ export function Navbar() {
 
                     {/* Mobile Quick Actions */}
                     <div className="mt-8 space-y-3">
-                      <Button asChild className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                      <Button asChild className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 border border-blue-600">
                         <Link href="/appointments/book" className="flex items-center justify-center space-x-2">
                           <Calendar className="h-4 w-4" />
                           <span>{t('navbar.book_appointment')}</span>
@@ -189,11 +184,7 @@ export function Navbar() {
 
                   {/* Mobile Footer */}
                   <div className="border-t pt-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Phone className="h-4 w-4" />
-                        <span>{t('navbar.emergency')}</span>
-                      </div>
+                    <div className="flex items-center justify-end">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm">

@@ -8,8 +8,15 @@ export default async function BookAppointmentPage() {
     const doctors = await getDoctors();
     
     return (
-        <div className="w-full bg-gradient-to-br from-purple-100 to-pink-100 via-white">
-            <div className="container max-w-4xl py-12">
+        <div className="p-6">
+            {/* Page Header */}
+            <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">Book New Appointment</h2>
+                <p className="text-gray-600">Schedule your next medical appointment</p>
+            </div>
+
+            {/* Form Content */}
+            <div className="max-w-2xl">
                 <Suspense fallback={<div className="text-center">Loading form...</div>}>
                     <BookAppointmentClient>
                         <AppointmentForm doctors={doctors} />

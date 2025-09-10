@@ -150,18 +150,28 @@ export function AppointmentForm({ doctors, preselectedDoctorId }) {
     };
 
     return (
-        <Card className="w-full">
-            <CardContent className="p-4 sm:p-8">
-                 <div className="flex items-center gap-3 mb-6">
-                    <Calendar className="text-primary w-6 h-6" />
-                    <h2 className="text-2xl font-bold">{t('forms.appointment.title')}</h2>
-                 </div>
-                <Form {...form}>
+        <Card className="w-full border-0 shadow-xl bg-gradient-to-br from-white to-blue-50/30">
+            <CardHeader className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white relative overflow-hidden">
+                <div className="absolute inset-0 bg-black/10"></div>
+                <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-2">
+                        <Calendar className="w-6 h-6 lg:w-7 lg:h-7" />
+                        <CardTitle className="text-2xl lg:text-3xl font-bold">{t('forms.appointment.title')}</CardTitle>
+                    </div>
+                    <CardDescription className="text-blue-100 text-sm lg:text-base">
+                        {t('forms.appointment.description')}
+                    </CardDescription>
+                </div>
+                <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
+                <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
+            </CardHeader>
+            <CardContent className="p-6 lg:p-8">
+                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                         <div className="space-y-6">
-                            <div className="flex items-center gap-3">
-                               <User className="text-primary w-6 h-6" />
-                               <h3 className="text-xl font-semibold">{t('forms.appointment.patient_info_title')}</h3>
+                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
+                               <User className="text-blue-600 w-5 h-5 lg:w-6 lg:h-6" />
+                               <h3 className="text-lg lg:text-xl font-semibold text-gray-800">{t('forms.appointment.patient_info_title')}</h3>
                             </div>
                             
                              <FormField
@@ -222,9 +232,14 @@ export function AppointmentForm({ doctors, preselectedDoctorId }) {
                                                 <Input placeholder={t('forms.appointment.hospital_id_placeholder')} {...field} />
                                             </FormControl>
                                             {patientType === 'returning' && (
-                                                <Button type="button" onClick={handleFetchDetails} disabled={isFetching}>
-                                                    {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-                                                    <span className="ml-2 hidden sm:inline">{t('forms.buttons.fetch_details')}</span>
+                                                <Button 
+                                                    type="button" 
+                                                    onClick={handleFetchDetails} 
+                                                    disabled={isFetching}
+                                                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-4 lg:px-6 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
+                                                >
+                                                    {isFetching ? <Loader2 className="h-4 w-4 lg:h-5 lg:w-5 animate-spin" /> : <Search className="h-4 w-4 lg:h-5 lg:w-5" />}
+                                                    <span className="ml-2 hidden sm:inline text-sm lg:text-base">{t('forms.buttons.fetch_details')}</span>
                                                 </Button>
                                             )}
                                         </div>
@@ -368,12 +383,22 @@ export function AppointmentForm({ doctors, preselectedDoctorId }) {
                         </div>
 
                         <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-4">
-                            <Button type="button" variant="outline" onClick={() => router.back()} disabled={form.formState.isSubmitting}>
+                            <Button 
+                                type="button" 
+                                variant="outline" 
+                                onClick={() => router.back()} 
+                                disabled={form.formState.isSubmitting}
+                                className="border-gray-300 hover:bg-gray-50 transition-all duration-200 px-6 lg:px-8 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
+                            >
                                 {t('forms.buttons.cancel')}
                             </Button>
-                            <Button type="submit" disabled={form.formState.isSubmitting} className="mb-4 sm:mb-0">
-                                {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {t('forms.buttons.book_appointment')}
+                            <Button 
+                                type="submit" 
+                                disabled={form.formState.isSubmitting} 
+                                className="mb-4 sm:mb-0 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-6 lg:px-8 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
+                            >
+                                {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 lg:h-5 lg:w-5 animate-spin" />}
+                                <span className="text-sm lg:text-base">{t('forms.buttons.book_appointment')}</span>
                             </Button>
                         </div>
                     </form>

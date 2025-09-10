@@ -1,96 +1,90 @@
 
 import { getAppointments } from '@/services/appointmentService';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { AppointmentSearch } from '@/components/appointment-search';
-import { Suspense } from 'react';
+import { IconBookAppointment } from '@/components/icons/icon-book-appointment';
+import { IconDoctorAccess } from '@/components/icons/icon-doctor-access';
+import { Calendar, Clock } from 'lucide-react';
+import AppointmentsDisplay from './appointments-display';
 
-async function AppointmentsList({ searchQuery }) {
-  const appointments = await getAppointments({ searchQuery });
+export default async function AppointmentsPage({ searchParams }) {
+  const params = await searchParams;
+  const searchQuery = params?.query;
 
-  if (appointments.length === 0) {
-    return (
-      <div className="text-center py-10">
-        <p className="text-muted-foreground">No appointments found for the provided details.</p>
-      </div>
-    )
+  let appointments = [];
+  let hasSearchQuery = false;
+
+  if (searchQuery) {
+    hasSearchQuery = true;
+    appointments = await getAppointments({ searchQuery });
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Your Appointments</CardTitle>
-        <CardDescription>Here is a list of your upcoming and past appointments.</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="relative w-full overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Patient</TableHead>
-                <TableHead className="hidden sm:table-cell">Doctor</TableHead>
-                <TableHead>Date & Time</TableHead>
-                <TableHead className="hidden md:table-cell">Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {appointments.map((appt) => (
-                <TableRow key={appt.id}>
-                  <TableCell className="font-medium">{appt.patientName}</TableCell>
-                  <TableCell className="hidden sm:table-cell">{appt.doctorName}</TableCell>
-                  <TableCell>{format(new Date(appt.appointmentDate), 'PPp')}</TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <Badge variant={appt.status === 'scheduled' ? 'default' : appt.status === 'completed' ? 'secondary' : 'destructive'}>
-                      {appt.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/appointments/${appt.id}`}>View Details</Link>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+    <div className="space-y-6 lg:space-y-8">
+      {/* Page Header */}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 lg:p-8">
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+          <div className="space-y-4 w-full xl:w-auto">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Calendar className="h-6 w-6 text-slate-600" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Appointments</h1>
+                <p className="text-gray-600 mt-1">Manage and track your healthcare appointments</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+              <div className="flex items-center space-x-2">
+                <Clock className="h-4 w-4" />
+                <span>Real-time updates</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <IconDoctorAccess className="h-4 w-4" />
+                <span>Expert care</span>
+              </div>
+            </div>
+          </div>
+          <div className="w-full xl:w-auto flex justify-center xl:justify-end">
+            <Button asChild className="w-full xl:w-auto bg-slate-900 hover:bg-slate-800 text-white shadow-sm px-6 py-3">
+              <Link href="/appointments/book" className="flex items-center justify-center font-medium">
+                <IconBookAppointment className="mr-2 h-4 w-4" />
+                <span>Book New Appointment</span>
+              </Link>
+            </Button>
+          </div>
         </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-export default function AppointmentsPage({ searchParams }) {
-  const searchQuery = searchParams?.query;
-
-  return (
-    <div className="container py-6 md:py-12">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-        <h1 className="text-3xl md:text-4xl font-bold font-headline">My Appointments</h1>
-        <Button asChild>
-          <Link href="/appointments/book">New Appointment</Link>
-        </Button>
       </div>
 
-      <AppointmentSearch />
+      {/* Search Section */}
+      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+        <AppointmentSearch />
+      </div>
 
-      {searchQuery && (
-        <Suspense fallback={<div className="text-center py-10">Loading appointments...</div>}>
-            <div className="mt-8">
-                <AppointmentsList searchQuery={searchQuery} />
+      {/* Results Section */}
+      {hasSearchQuery ? (
+        <AppointmentsDisplay appointments={appointments} />
+      ) : (
+        <Card className="border border-gray-200 shadow-sm bg-white">
+          <CardContent className="text-center py-16">
+            <div className="relative mb-6">
+              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <IconBookAppointment className="h-10 w-10 text-slate-400" />
+              </div>
             </div>
-        </Suspense>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">Search Your Appointments</h3>
+            <p className="text-gray-600 mb-1">Find your appointments by patient name, doctor, or date</p>
+            <p className="text-gray-500 text-sm mb-6">Use the search bar above to get started</p>
+            <Button asChild variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50">
+              <Link href="/appointments/book" className="flex items-center font-medium">
+                <IconBookAppointment className="mr-2 h-4 w-4" />
+                Book Your First Appointment
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

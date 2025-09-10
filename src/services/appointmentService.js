@@ -127,6 +127,7 @@ export const createAppointment = async (data) => {
         doctorName,
         appointmentDate: data.appointmentDate,
         status: 'scheduled',
+        customFields: data.customFields || {},
     };
 
     const docRef = await addDoc(collection(db, 'appointments'), newAppointment);

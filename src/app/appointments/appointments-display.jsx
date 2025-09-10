@@ -41,13 +41,10 @@ function AppointmentsDisplay({ appointments }) {
 
     if (isModalOpen) {
       document.addEventListener('keydown', handleKeyDown);
-      // Prevent body scroll when modal is open
-      document.body.style.overflow = 'hidden';
     }
 
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = 'unset';
     };
   }, [isModalOpen]);
 
@@ -192,30 +189,30 @@ function AppointmentsDisplay({ appointments }) {
       {/* Modal */}
       {isModalOpen && selectedAppointment && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={handleCloseModal}
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
         >
           <div
-            className="relative max-w-2xl w-full max-h-[90vh] overflow-hidden rounded-xl shadow-2xl"
+            className="relative max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white rounded-xl border-0 shadow-xl overflow-hidden">
-              <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100/50">
-                <h2 id="modal-title" className="text-lg sm:text-xl font-bold text-gray-900">Appointment Details</h2>
+            <div className="bg-white rounded-lg shadow-xl border border-gray-200">
+              <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                <h2 id="modal-title" className="text-lg font-semibold text-gray-900">Appointment Details</h2>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleCloseModal}
-                  className="h-8 w-8 p-0 hover:bg-gray-100 rounded-lg"
+                  className="h-8 w-8 p-0 hover:bg-gray-100"
                   aria-label="Close modal"
                 >
                   <X className="h-4 w-4 text-gray-500" />
                 </Button>
               </div>
-              <div className="p-4 sm:p-6 overflow-y-auto max-h-[70vh]">
+              <div className="p-6 overflow-y-auto max-h-[70vh]">
                 <AppointmentDetailsClient appointment={selectedAppointment} role="user" />
               </div>
             </div>

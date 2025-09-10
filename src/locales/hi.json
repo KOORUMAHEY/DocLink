@@ -1,0 +1,148 @@
+
+{
+    "navbar": {
+        "home": "होम",
+        "appointments": "अपॉइंटमेंट्स",
+        "book_appointment": "अपॉइंटमेंट बुक करें"
+    },
+    "home": {
+        "hero": {
+            "title": "डॉक्टर अपॉइंटमेंट सिस्टम",
+            "subtitle": "अपना अपॉइंटमेंट जल्दी और आसानी से बुक करें",
+            "appointments": {
+                "title": "अपॉइंटमेंट्स",
+                "description": "केवल शुक्रवार"
+            },
+            "timing": {
+                "title": "समय",
+                "description": "सुबह 9:00 बजे - दोपहर 2:00 बजे"
+            },
+            "care": {
+                "title": "कोमल देखभाल",
+                "description": "अनुकंपापूर्ण महिला स्वास्थ्य"
+            }
+        },
+        "actions": {
+            "book": {
+                "title": "नया अपॉइंटमेंट बुक करें",
+                "description": "हमारी मेडिकल टीम के साथ अपना परामर्श शेड्यूल करें। केवल शुक्रवार को सुबह 9:00 बजे से दोपहर 2:00 बजे तक उपलब्ध है।",
+                "button": "अपॉइंटमेंट बुक करें"
+            },
+            "manage": {
+                "title": "बुकिंग प्रबंधित करें",
+                "description": "अपने फोन नंबर और बुकिंग आईडी का उपयोग करके अपनी अपॉइंटमेंट स्थिति जांचें, पुनर्निर्धारित करें या रद्द करें।",
+                "button": "बुकिंग प्रबंधित करें"
+            },
+            "doctor": {
+                "title": "डॉक्टर एक्सेस",
+                "description": "अपॉइंटमेंट और रोगी देखभाल का प्रबंधन करने के लिए अपने अभ्यास डैशबोर्ड तक पहुंचें।",
+                "button": "डॉक्टर लॉगिन"
+            }
+        },
+        "info": {
+            "title": "महत्वपूर्ण जानकारी",
+            "fridays": {
+                "title": "केवल शुक्रवार",
+                "description": "प्रत्येक शुक्रवार को अपॉइंटमेंट उपलब्ध हैं"
+            },
+            "timing": {
+                "title": "सुबह 9:00 - दोपहर 2:00",
+                "description": "10 मिनट के अपॉइंटमेंट स्लॉट"
+            },
+            "priority": {
+                "title": "प्राथमिकता आधारित",
+                "description": "स्वास्थ्य स्थिति प्राथमिकता निर्धारण"
+            }
+        }
+    },
+    "login": {
+        "title": "लॉग इन करें",
+        "description": "अपॉइंटमेंट प्रबंधित करने के लिए अपने डैशबोर्ड तक पहुंचें।",
+        "email_label": "ईमेल",
+        "password_label": "पासवर्ड",
+        "button": "लॉग इन करें"
+    },
+    "forms": {
+        "buttons": {
+            "fetch_details": "विवरण प्राप्त करें",
+            "search": "खोजें",
+            "add_doctor": "डॉक्टर जोड़ें",
+            "book_appointment": "अपॉइंटमेंट बुक करें",
+            "cancel": "रद्द करें"
+        },
+        "toast": {
+            "error": "त्रुटि",
+            "success": "सफलता"
+        },
+        "appointment": {
+            "title": "अपॉइंटमेंट विवरण",
+            "patient_info_title": "रोगी की जानकारी",
+            "patient_type_label": "रोगी का प्रकार",
+            "patient_type_new": "नया रोगी",
+            "patient_type_returning": "लौटने वाला रोगी",
+            "hospital_id_label": "अस्पताल आईडी",
+            "hospital_id_placeholder": "अपनी अस्पताल आईडी दर्ज करें",
+            "hospital_id_required_title": "अस्पताल आईडी आवश्यक",
+            "hospital_id_required_desc": "विवरण प्राप्त करने के लिए कृपया एक अस्पताल आईडी दर्ज करें।",
+            "details_prefilled": "रोगी का विवरण पहले से भर दिया गया है।",
+            "no_patient_found_title": "कोई रोगी नहीं मिला",
+            "no_patient_found_desc": "इस अस्पताल आईडी के लिए कोई विवरण नहीं मिला। कृपया एक नए रोगी के रूप में फ़ॉर्म भरें।",
+            "name_label": "पूरा नाम",
+            "name_placeholder": "अपना पूरा नाम दर्ज करें",
+            "phone_label": "फ़ोन नंबर",
+            "phone_placeholder": "+91 XXXXX XXXXX",
+            "email_label": "ईमेल (वैकल्पिक)",
+            "email_placeholder": "your@email.com",
+            "age_label": "आयु",
+            "age_placeholder": "आयु दर्ज करें",
+            "gender_label": "लिंग",
+            "gender_placeholder": "लिंग चुनें",
+            "gender_male": "पुरुष",
+            "gender_female": "महिला",
+            "gender_other": "अन्य",
+            "doctor_label": "डॉक्टर",
+            "doctor_placeholder": "एक डॉक्टर चुनें",
+            "priority_label": "स्वास्थ्य स्थिति प्राथमिकता",
+            "priority_critical": "गंभीर",
+            "priority_urgent": "अत्यावश्यक",
+            "priority_normal": "सामान्य",
+            "priority_routine": "नियमित",
+            "description_label": "विवरण (वैकल्पिक)",
+            "description_placeholder": "कृपया कोई भी प्रासंगिक जानकारी प्रदान करें, जैसे यात्रा का कारण, लक्षण, या ज्ञात एलर्जी।",
+            "note_title": "कृपया ध्यान दें",
+            "note_desc": "चयनित अपॉइंटमेंट का समय एक अनुमान है। देरी हो सकती है, और हम आपके धैर्य की सराहना करते हैं। कृपया कुछ मिनट पहले आने की योजना बनाएं।",
+            "date_label": "उपलब्ध शुक्रवार",
+            "date_placeholder": "एक शुक्रवार चुनें",
+            "time_label": "समय स्लॉट",
+            "time_placeholder": "समय चुनें",
+            "booked_title": "अपॉइंटमेंट बुक हो गया!",
+            "booked_desc": "आपका अपॉइंटमेंट सफलतापूर्वक निर्धारित हो गया है।",
+            "booked_error": "अपॉइंटमेंट बुक नहीं हो सका। कृपया पुनः प्रयास करें।"
+        },
+        "doctor": {
+            "name_label": "पूरा नाम",
+            "name_placeholder": "डॉ. जॉन डो",
+            "specialization_label": "विशेषज्ञता",
+            "specialization_placeholder": "जैसे, कार्डियोलॉजी",
+            "email_label": "ईमेल",
+            "email_placeholder": "doctor@example.com",
+            "password_label": "पासवर्ड",
+            "bio_label": "जीवनी",
+            "bio_placeholder": "हमें डॉक्टर के बारे में बताएं...",
+            "image_url_label": "छवि URL (वैकल्पिक)",
+            "image_url_placeholder": "https://example.com/image.jpg",
+            "image_url_desc": "यदि खाली छोड़ दिया जाता है, तो एक यादृच्छिक प्लेसहोल्डर छवि का उपयोग किया जाएगा।",
+            "added_title": "डॉक्टर जोड़ा गया!",
+            "added_desc": "नया डॉक्टर सिस्टम में सफलतापूर्वक जोड़ दिया गया है।",
+            "added_error": "डॉक्टर नहीं जोड़ा जा सका। कृपया पुनः प्रयास करें।"
+        },
+        "search": {
+            "title": "अपने अपॉइंटमेंट खोजें",
+            "description": "अपने निर्धारित अपॉइंटमेंट खोजने के लिए अपना फ़ोन नंबर या अस्पताल आईडी दर्ज करें।",
+            "label": "फ़ोन नंबर या अस्पताल आईडी",
+            "placeholder": "अपना विवरण दर्ज करें..."
+        }
+    }
+}
+
+    

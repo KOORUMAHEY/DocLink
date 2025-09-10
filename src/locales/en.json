@@ -1,0 +1,148 @@
+
+{
+    "navbar": {
+        "home": "Home",
+        "appointments": "Appointments",
+        "book_appointment": "Book Appointment"
+    },
+    "home": {
+        "hero": {
+            "title": "Doctor Appointment System",
+            "subtitle": "Book your appointment quickly and easily",
+            "appointments": {
+                "title": "Appointments",
+                "description": "Only Fridays"
+            },
+            "timing": {
+                "title": "Timing",
+                "description": "9:00 AM - 2:00 PM"
+            },
+            "care": {
+                "title": "Gentle Care",
+                "description": "Compassionate women's health"
+            }
+        },
+        "actions": {
+            "book": {
+                "title": "Book New Appointment",
+                "description": "Schedule your consultation with our medical team. Available only on Fridays from 9:00 AM to 2:00 PM.",
+                "button": "Book Appointment"
+            },
+            "manage": {
+                "title": "Manage Booking",
+                "description": "Check your appointment status, reschedule, or cancel using your phone number and booking ID.",
+                "button": "Manage Booking"
+            },
+            "doctor": {
+                "title": "Doctor Access",
+                "description": "Access your practice dashboard to manage appointments and patient care.",
+                "button": "Doctor Login"
+            }
+        },
+        "info": {
+            "title": "Important Information",
+            "fridays": {
+                "title": "Only Fridays",
+                "description": "Appointments available every Friday"
+            },
+            "timing": {
+                "title": "9:00 AM - 2:00 PM",
+                "description": "10-minute appointment slots"
+            },
+            "priority": {
+                "title": "Priority Based",
+                "description": "Health condition priority scheduling"
+            }
+        }
+    },
+    "login": {
+        "title": "Login",
+        "description": "Access your dashboard to manage appointments.",
+        "email_label": "Email",
+        "password_label": "Password",
+        "button": "Login"
+    },
+    "forms": {
+        "buttons": {
+            "fetch_details": "Fetch Details",
+            "search": "Search",
+            "add_doctor": "Add Doctor",
+            "book_appointment": "Book Appointment",
+            "cancel": "Cancel"
+        },
+        "toast": {
+            "error": "Error",
+            "success": "Success"
+        },
+        "appointment": {
+            "title": "Appointment Details",
+            "patient_info_title": "Patient Information",
+            "patient_type_label": "Patient Type",
+            "patient_type_new": "New Patient",
+            "patient_type_returning": "Returning Patient",
+            "hospital_id_label": "Hospital ID",
+            "hospital_id_placeholder": "Enter your hospital ID",
+            "hospital_id_required_title": "Hospital ID required",
+            "hospital_id_required_desc": "Please enter a Hospital ID to fetch details.",
+            "details_prefilled": "Patient details have been pre-filled.",
+            "no_patient_found_title": "No Patient Found",
+            "no_patient_found_desc": "No details found for this Hospital ID. Please fill the form as a new patient.",
+            "name_label": "Full Name",
+            "name_placeholder": "Enter your full name",
+            "phone_label": "Phone Number",
+            "phone_placeholder": "+91 XXXXX XXXXX",
+            "email_label": "Email (Optional)",
+            "email_placeholder": "your@email.com",
+            "age_label": "Age",
+            "age_placeholder": "Enter age",
+            "gender_label": "Gender",
+            "gender_placeholder": "Select gender",
+            "gender_male": "Male",
+            "gender_female": "Female",
+            "gender_other": "Other",
+            "doctor_label": "Doctor",
+            "doctor_placeholder": "Select a doctor",
+            "priority_label": "Health Condition Priority",
+            "priority_critical": "Critical",
+            "priority_urgent": "Urgent",
+            "priority_normal": "Normal",
+            "priority_routine": "Routine",
+            "description_label": "Description (Optional)",
+            "description_placeholder": "Please provide any relevant information, such as reason for visit, symptoms, or known allergies.",
+            "note_title": "Please Note",
+            "note_desc": "The selected appointment time is an estimate. Delays can occur, and we appreciate your patience. Please plan to arrive a few minutes early.",
+            "date_label": "Available Fridays",
+            "date_placeholder": "Select a Friday",
+            "time_label": "Time Slot",
+            "time_placeholder": "Select time",
+            "booked_title": "Appointment Booked!",
+            "booked_desc": "Your appointment has been successfully scheduled.",
+            "booked_error": "Could not book appointment. Please try again."
+        },
+        "doctor": {
+            "name_label": "Full Name",
+            "name_placeholder": "Dr. John Doe",
+            "specialization_label": "Specialization",
+            "specialization_placeholder": "e.g., Cardiology",
+            "email_label": "Email",
+            "email_placeholder": "doctor@example.com",
+            "password_label": "Password",
+            "bio_label": "Biography",
+            "bio_placeholder": "Tell us about the doctor...",
+            "image_url_label": "Image URL (Optional)",
+            "image_url_placeholder": "https://example.com/image.jpg",
+            "image_url_desc": "If left blank, a random placeholder image will be used.",
+            "added_title": "Doctor Added!",
+            "added_desc": "The new doctor has been successfully added to the system.",
+            "added_error": "Could not add doctor. Please try again."
+        },
+        "search": {
+            "title": "Find Your Appointments",
+            "description": "Enter your phone number or Hospital ID to find your scheduled appointments.",
+            "label": "Phone Number or Hospital ID",
+            "placeholder": "Enter your details..."
+        }
+    }
+}
+
+    

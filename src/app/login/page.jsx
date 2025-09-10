@@ -49,8 +49,8 @@ export default function LoginPage() {
                     title: "Login Successful",
                     description: "Redirecting to your dashboard...",
                 });
-                // Redirect to the appointments page with the doctor's ID
-                router.push(`/doctor/appointments?id=${doctor.id}`);
+                // Redirect to the doctor dashboard with the doctor's ID
+                router.push(`/doctor?id=${doctor.id}`);
             } else {
                  toast({
                     title: "Login Failed",
@@ -69,26 +69,39 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex min-h-[calc(100vh-112px)] items-center justify-center bg-background px-4">
-            <Card className="w-full max-w-sm border-0 shadow-lg">
-                <CardHeader className="text-center">
+        <div className="flex min-h-[calc(100vh-112px)] items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 px-4 sm:px-6 lg:px-8">
+            <Card className="w-full max-w-sm border-0 shadow-2xl bg-white/95 backdrop-blur-sm">
+                <CardHeader className="text-center pb-6">
                      <div className="flex justify-center items-center gap-2 mb-4">
-                        <Stethoscope className="w-8 h-8 text-primary" />
+                        <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                            <Stethoscope className="w-6 h-6 text-white" />
+                        </div>
                     </div>
-                    <CardTitle className="text-2xl">{t('login.title')}</CardTitle>
-                    <CardDescription>{t('login.description')}</CardDescription>
+                    <CardTitle className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 bg-clip-text text-transparent">
+                        {t('login.title')}
+                    </CardTitle>
+                    <CardDescription className="text-sm lg:text-base text-gray-600 mt-2">
+                        {t('login.description')}
+                    </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pb-6">
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                             <FormField
                                 control={form.control}
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('login.email_label')}</FormLabel>
+                                        <FormLabel className="text-sm font-medium text-gray-700">
+                                            {t('login.email_label')}
+                                        </FormLabel>
                                         <FormControl>
-                                            <Input type="email" placeholder="your@email.com" {...field} />
+                                            <Input 
+                                                type="email" 
+                                                placeholder="your@email.com" 
+                                                className="h-11 text-base"
+                                                {...field} 
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -99,15 +112,26 @@ export default function LoginPage() {
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('login.password_label')}</FormLabel>
+                                        <FormLabel className="text-sm font-medium text-gray-700">
+                                            {t('login.password_label')}
+                                        </FormLabel>
                                         <FormControl>
-                                            <Input type="password" placeholder="••••••••" {...field} />
+                                            <Input 
+                                                type="password" 
+                                                placeholder="••••••••" 
+                                                className="h-11 text-base"
+                                                {...field} 
+                                            />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                            <Button 
+                                type="submit" 
+                                className="w-full h-11 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200" 
+                                disabled={form.formState.isSubmitting}
+                            >
                                 {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                 {t('login.button')}
                             </Button>

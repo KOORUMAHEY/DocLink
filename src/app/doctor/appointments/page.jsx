@@ -24,14 +24,14 @@ export default async function DoctorAppointmentsPage({ searchParams }) {
 
   if (!doctorId) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50/30">
-        <div className="p-6 lg:p-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50/30">
+        <div className="p-4 sm:p-6 lg:p-8">
           <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-            <div className="p-4 bg-gradient-to-br from-red-100 to-red-200 rounded-full mb-6">
-              <Calendar className="h-12 w-12 text-red-600" />
+            <div className="p-3 sm:p-4 bg-gradient-to-br from-red-100 to-red-200 rounded-full mb-4 sm:mb-6">
+              <Calendar className="h-10 w-10 sm:h-12 sm:w-12 text-red-600" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Doctor Not Specified</h2>
-            <p className="text-muted-foreground max-w-md">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Doctor Not Specified</h2>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-md">
               Please log in again to access your appointments. The doctor ID is required to load your appointments.
             </p>
           </div>
@@ -42,23 +42,23 @@ export default async function DoctorAppointmentsPage({ searchParams }) {
 
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50/30 p-6 lg:p-8">
-        <div className="space-y-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50/30 p-4 sm:p-6 lg:p-8">
+        <div className="space-y-6 sm:space-y-8">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
-              <Calendar className="h-8 w-8 text-white animate-pulse" />
+            <div className="p-2 sm:p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
+              <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-white animate-pulse" />
             </div>
             <div>
-              <div className="h-8 bg-gray-300 rounded w-48 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-64 animate-pulse mt-2"></div>
+              <div className="h-6 sm:h-8 bg-gray-300 rounded w-32 sm:w-48 animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded w-48 sm:w-64 animate-pulse mt-2"></div>
             </div>
           </div>
-          <div className="grid gap-6 md:grid-cols-4">
+          <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 bg-white rounded-xl shadow-lg animate-pulse"></div>
+              <div key={i} className="h-24 sm:h-32 bg-white rounded-xl shadow-lg animate-pulse"></div>
             ))}
           </div>
-          <div className="h-96 bg-white rounded-xl shadow-lg animate-pulse"></div>
+          <div className="h-80 sm:h-96 bg-white rounded-xl shadow-lg animate-pulse"></div>
         </div>
       </div>
     }>

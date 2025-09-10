@@ -99,40 +99,42 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
-      <div className="space-y-8 p-6 lg:p-8">
+      <div className="space-y-6 md:space-y-8 p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-start sm:space-y-0">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-                <Activity className="h-8 w-8 text-white" />
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                <Activity className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                   Dashboard
                 </h1>
-                <p className="text-lg text-muted-foreground mt-1">Welcome back! Here's what's happening with your clinic.</p>
+                <p className="text-base sm:text-lg text-muted-foreground mt-1">Welcome back! Here's what's happening with your clinic.</p>
               </div>
             </div>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline" className="border-2 hover:bg-gray-50 transition-all duration-200 shadow-sm" asChild>
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Button variant="outline" className="border-2 hover:bg-gray-50 transition-all duration-200 shadow-sm w-full sm:w-auto" asChild>
               <Link href="/admin/appointments">
                 <Calendar className="mr-2 h-4 w-4" />
-                View Appointments
+                <span className="hidden sm:inline">View Appointments</span>
+                <span className="sm:hidden">Appointments</span>
               </Link>
             </Button>
-            <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200" asChild>
+            <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto" asChild>
               <Link href="/admin/doctors/new">
                 <Stethoscope className="mr-2 h-4 w-4" />
-                Add Doctor
+                <span className="hidden sm:inline">Add Doctor</span>
+                <span className="sm:hidden">Add Doctor</span>
               </Link>
             </Button>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {enhancedStats.map(stat => {
             const Icon = stat.icon;
             const TrendIcon = stat.trend === 'up' ? TrendingUp : stat.trend === 'down' ? TrendingDown : Clock;
@@ -145,21 +147,21 @@ export default async function AdminDashboardPage() {
                   stat.color === 'purple' ? 'from-purple-500 to-purple-600' :
                   'from-orange-500 to-orange-600'
                 }`} />
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-4 sm:p-6">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
                     {stat.title}
                   </CardTitle>
-                  <div className={`p-3 rounded-xl shadow-lg ${
+                  <div className={`p-2 sm:p-3 rounded-xl shadow-lg ${
                     stat.color === 'blue' ? 'bg-gradient-to-br from-blue-500 to-blue-600 text-white' :
                     stat.color === 'green' ? 'bg-gradient-to-br from-green-500 to-green-600 text-white' :
                     stat.color === 'purple' ? 'bg-gradient-to-br from-purple-500 to-purple-600 text-white' :
                     'bg-gradient-to-br from-orange-500 to-orange-600 text-white'
                   }`}>
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
+                <CardContent className="pt-0 p-4 sm:p-6">
+                  <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">{stat.value}</div>
                   <div className="flex items-center gap-2 text-xs mb-3">
                     <Badge variant={stat.trend === 'up' ? 'default' : stat.trend === 'down' ? 'destructive' : 'secondary'} className="text-xs px-2 py-1">
                       <TrendIcon className="w-3 h-3 mr-1" />
@@ -178,37 +180,37 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Quick Actions & Recent Activity */}
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
           {/* Quick Actions */}
           <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-green-50 to-green-100/50 border-b border-gray-200">
+            <CardHeader className="bg-gradient-to-r from-green-50 to-green-100/50 border-b border-gray-200 p-4 sm:p-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg">
-                  <CheckCircle className="h-5 w-5 text-white" />
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl font-bold text-gray-900">Quick Actions</CardTitle>
-                  <CardDescription className="text-base text-muted-foreground mt-1">Common administrative tasks</CardDescription>
+                  <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">Quick Actions</CardTitle>
+                  <CardDescription className="text-sm sm:text-base text-muted-foreground mt-1">Common administrative tasks</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <Button variant="outline" className="w-full justify-start h-12 border-2 hover:bg-green-50 hover:border-green-300 transition-all duration-200" asChild>
+            <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+              <Button variant="outline" className="w-full justify-start h-10 sm:h-12 border-2 hover:bg-green-50 hover:border-green-300 transition-all duration-200" asChild>
                 <Link href="/admin/doctors/new">
-                  <Stethoscope className="mr-3 h-5 w-5" />
-                  Add New Doctor
+                  <Stethoscope className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-sm sm:text-base">Add New Doctor</span>
                 </Link>
               </Button>
-              <Button variant="outline" className="w-full justify-start h-12 border-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200" asChild>
+              <Button variant="outline" className="w-full justify-start h-10 sm:h-12 border-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200" asChild>
                 <Link href="/admin/appointments">
-                  <Calendar className="mr-3 h-5 w-5" />
-                  Manage Appointments
+                  <Calendar className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-sm sm:text-base">Manage Appointments</span>
                 </Link>
               </Button>
-              <Button variant="outline" className="w-full justify-start h-12 border-2 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200" asChild>
+              <Button variant="outline" className="w-full justify-start h-10 sm:h-12 border-2 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200" asChild>
                 <Link href="/admin/patients">
-                  <Users className="mr-3 h-5 w-5" />
-                  View Patient Records
+                  <Users className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="text-sm sm:text-base">View Patient Records</span>
                 </Link>
               </Button>
             </CardContent>
@@ -216,25 +218,25 @@ export default async function AdminDashboardPage() {
 
           {/* System Status */}
           <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-b border-gray-200">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-b border-gray-200 p-4 sm:p-6">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg">
-                  <Activity className="h-5 w-5 text-white" />
+                  <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-xl font-bold text-gray-900">System Status</CardTitle>
-                  <CardDescription className="text-base text-muted-foreground mt-1">Current system health and metrics</CardDescription>
+                  <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">System Status</CardTitle>
+                  <CardDescription className="text-sm sm:text-base text-muted-foreground mt-1">Current system health and metrics</CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6 space-y-4">
+            <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
                 <span className="text-sm font-medium text-gray-900">Server Status</span>
-                <Badge className="bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300 px-3 py-1">Online</Badge>
+                <Badge className="bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300 px-2 sm:px-3 py-1">Online</Badge>
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
                 <span className="text-sm font-medium text-gray-900">Database</span>
-                <Badge className="bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300 px-3 py-1">Connected</Badge>
+                <Badge className="bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300 px-2 sm:px-3 py-1">Connected</Badge>
               </div>
               <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
                 <span className="text-sm font-medium text-gray-900">Last Backup</span>

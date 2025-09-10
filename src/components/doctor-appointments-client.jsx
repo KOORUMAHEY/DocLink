@@ -59,9 +59,9 @@ export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50/30">
-      <div className="space-y-8 p-6 lg:p-8">
+      <div className="space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
@@ -78,24 +78,24 @@ export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-6 md:grid-cols-4">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100/50">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Total</p>
-                  <p className="text-3xl font-bold text-blue-900">{appointments.length}</p>
-                  <div className="flex items-center gap-2 text-sm text-blue-600">
-                    <TrendingUp className="h-4 w-4" />
+                <div className="space-y-1 sm:space-y-2">
+                  <p className="text-xs sm:text-sm font-semibold text-blue-700 uppercase tracking-wide">Total</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-blue-900">{appointments.length}</p>
+                  <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-blue-600">
+                    <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>All appointments</span>
                   </div>
                 </div>
-                <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Calendar className="h-6 w-6 text-white" />
+                <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                 </div>
               </div>
             </CardContent>
-            <div className="absolute top-0 right-0 w-16 h-16 bg-blue-200/20 rounded-full -mr-8 -mt-8"></div>
+            <div className="absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 bg-blue-200/20 rounded-full -mr-6 sm:-mr-8 -mt-6 sm:-mt-8"></div>
           </Card>
 
           <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-indigo-50 to-indigo-100/50">

@@ -44,38 +44,39 @@ export default async function AdminDoctorsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
-      <div className="space-y-8 p-6 lg:p-8">
+      <div className="space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg">
-                <Users className="h-8 w-8 text-white" />
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg">
+                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                   Doctors
                 </h1>
-                <p className="text-lg text-muted-foreground mt-1">Manage your team of healthcare professionals</p>
+                <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mt-1">Manage your team of healthcare professionals</p>
               </div>
             </div>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline" className="border-2 hover:bg-gray-50 transition-all duration-200 shadow-sm">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Button variant="outline" className="border-2 hover:bg-gray-50 transition-all duration-200 shadow-sm w-full sm:w-auto">
               <Search className="mr-2 h-4 w-4" />
-              Search
+              <span className="hidden sm:inline">Search</span>
             </Button>
-            <Button asChild className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg hover:shadow-xl transition-all duration-200">
+            <Button asChild className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto">
               <Link href="/admin/doctors/new">
                 <Plus className="mr-2 h-4 w-4" />
-                Add Doctor
+                <span className="hidden sm:inline">Add Doctor</span>
+                <span className="sm:hidden">Add</span>
               </Link>
             </Button>
           </div>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-50 to-purple-100/50">
             <CardContent className="p-8">
               <div className="flex items-center justify-between">
@@ -144,12 +145,12 @@ export default async function AdminDoctorsPage() {
 
         {/* Search */}
         <Card className="border-0 shadow-lg bg-white/80 backdrop-blur-sm">
-          <CardContent className="p-8">
-            <div className="relative max-w-md">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+          <CardContent className="p-4 sm:p-6 lg:p-8">
+            <div className="relative max-w-full sm:max-w-md">
+              <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 sm:h-5 sm:w-5" />
               <Input
                 placeholder="Search doctors by name, specialization, or email..."
-                className="pl-12 h-12 text-lg border-2 border-gray-200 focus:border-purple-500 transition-colors rounded-xl"
+                className="pl-10 sm:pl-12 h-10 sm:h-12 text-sm sm:text-lg border-2 border-gray-200 focus:border-purple-500 transition-colors rounded-xl"
               />
             </div>
           </CardContent>
@@ -157,16 +158,16 @@ export default async function AdminDoctorsPage() {
 
       {/* Doctors Table */}
       <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-200">
-          <div className="flex items-center justify-between">
+        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-200 p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <CardTitle className="text-2xl font-bold text-gray-900">All Doctors</CardTitle>
-              <CardDescription className="text-lg text-muted-foreground mt-2">
+              <CardTitle className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">All Doctors</CardTitle>
+              <CardDescription className="text-sm sm:text-base lg:text-lg text-muted-foreground mt-1 sm:mt-2">
                 Complete list of registered healthcare professionals
               </CardDescription>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Users className="h-5 w-5" />
+              <Users className="h-4 w-4 sm:h-5 sm:w-5" />
               <span className="font-semibold">{doctors.length} total</span>
             </div>
           </div>
@@ -177,11 +178,11 @@ export default async function AdminDoctorsPage() {
               <Table>
                 <TableHeader className="bg-gradient-to-r from-gray-50 to-gray-100/50">
                   <TableRow className="hover:bg-gray-100/50 border-b border-gray-200">
-                    <TableHead className="font-bold text-gray-900 py-6 px-8">Doctor</TableHead>
-                    <TableHead className="hidden sm:table-cell font-bold text-gray-900 py-6 px-8 text-center">Contact</TableHead>
-                    <TableHead className="hidden md:table-cell font-bold text-gray-900 py-6 px-8 text-center">Specialization</TableHead>
-                    <TableHead className="hidden lg:table-cell font-bold text-gray-900 py-6 px-8 text-center">Status</TableHead>
-                    <TableHead className="text-right font-bold text-gray-900 py-6 px-8">Actions</TableHead>
+                    <TableHead className="font-bold text-gray-900 py-3 sm:py-4 lg:py-6 px-4 sm:px-6 lg:px-8">Doctor</TableHead>
+                    <TableHead className="hidden sm:table-cell font-bold text-gray-900 py-3 sm:py-4 lg:py-6 px-4 sm:px-6 lg:px-8 text-center">Contact</TableHead>
+                    <TableHead className="hidden md:table-cell font-bold text-gray-900 py-3 sm:py-4 lg:py-6 px-4 sm:px-6 lg:px-8 text-center">Specialization</TableHead>
+                    <TableHead className="hidden lg:table-cell font-bold text-gray-900 py-3 sm:py-4 lg:py-6 px-4 sm:px-6 lg:px-8 text-center">Status</TableHead>
+                    <TableHead className="text-right font-bold text-gray-900 py-3 sm:py-4 lg:py-6 px-4 sm:px-6 lg:px-8">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

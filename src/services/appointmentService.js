@@ -3,6 +3,7 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs, doc, getDoc, addDoc, query, orderBy, where } from 'firebase/firestore';
 import { getDoctorById } from './doctorService';
 import { createOrUpdatePatient } from './patientService';
+import { appointments as mockAppointments } from '@/lib/mock-data';
 
 export const getAppointments = async (filters = {}) => {
   try {
@@ -38,6 +39,19 @@ export const getAppointments = async (filters = {}) => {
     
     // Sort all results by date
     appointmentList.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+    
+    // If no appointments found in Firestore, use mock data for testing
+    if (appointmentList.length === 0) {
+      console.log('No appointments found in Firestore, using mock data');
+      if (filters.searchQuery) {
+        appointmentList = mockAppointments.filter(appointment => 
+          appointment.patientPhone === filters.searchQuery || 
+          appointment.hospitalId === filters.searchQuery
+        );
+      } else {
+        appointmentList = mockAppointments;
+      }
+    }
     
     return appointmentList;
   } catch (error) {

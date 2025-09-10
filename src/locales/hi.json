@@ -3,7 +3,11 @@
     "navbar": {
         "home": "होम",
         "appointments": "अपॉइंटमेंट्स",
-        "book_appointment": "अपॉइंटमेंट बुक करें"
+        "book_appointment": "अपॉइंटमेंट बुक करें",
+        "account": "खाता",
+        "my_appointments": "मेरे अपॉइंटमेंट",
+        "doctor_login": "डॉक्टर लॉगिन",
+        "emergency": "आपातकाल: 108"
     },
     "home": {
         "hero": {

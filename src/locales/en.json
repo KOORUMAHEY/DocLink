@@ -3,7 +3,11 @@
     "navbar": {
         "home": "Home",
         "appointments": "Appointments",
-        "book_appointment": "Book Appointment"
+        "book_appointment": "Book Appointment",
+        "account": "Account",
+        "my_appointments": "My Appointments",
+        "doctor_login": "Doctor Login",
+        "emergency": "Emergency: 108"
     },
     "home": {
         "hero": {

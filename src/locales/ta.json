@@ -3,7 +3,11 @@
     "navbar": {
         "home": "முகப்பு",
         "appointments": "சந்திப்புகள்",
-        "book_appointment": "சந்திப்பை பதிவு செய்யவும்"
+        "book_appointment": "சந்திப்பை பதிவு செய்யவும்",
+        "account": "கணக்கு",
+        "my_appointments": "எனது சந்திப்புகள்",
+        "doctor_login": "மருத்துவர் உள்நுழைவு",
+        "emergency": "அவசரம்: 108"
     },
     "home": {
         "hero": {

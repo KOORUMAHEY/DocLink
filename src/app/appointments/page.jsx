@@ -1,4 +1,3 @@
-
 import { getAppointments } from '@/services/appointmentService';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { AppointmentSearch } from '@/components/appointment-search';
 import { IconBookAppointment } from '@/components/icons/icon-book-appointment';
 import { IconDoctorAccess } from '@/components/icons/icon-doctor-access';
-import { Calendar, Clock } from 'lucide-react';
+import { Calendar, Clock, Plus } from 'lucide-react';
 import AppointmentsDisplay from './appointments-display';
 
 export default async function AppointmentsPage({ searchParams }) {
@@ -58,34 +57,38 @@ export default async function AppointmentsPage({ searchParams }) {
         </div>
       </div>
 
-      {/* Search Section */}
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-        <AppointmentSearch />
-      </div>
+        {/* Search Section */}
+        <div className="rounded-xl border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
+          <div className="p-4 sm:p-6">
+            <AppointmentSearch />
+          </div>
+        </div>
 
-      {/* Results Section */}
-      {hasSearchQuery ? (
-        <AppointmentsDisplay appointments={appointments} />
-      ) : (
-        <Card className="border border-gray-200 shadow-sm bg-white">
-          <CardContent className="text-center py-16">
-            <div className="relative mb-6">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <IconBookAppointment className="h-10 w-10 text-slate-400" />
+        {/* Results Section */}
+        {hasSearchQuery ? (
+          <AppointmentsDisplay appointments={appointments} />
+        ) : (
+          <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
+            <CardContent className="text-center py-12 sm:py-16 px-4 sm:px-6">
+              <div className="relative mb-4 sm:mb-6">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <IconBookAppointment className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600" />
+                </div>
               </div>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Search Your Appointments</h3>
-            <p className="text-gray-600 mb-1">Find your appointments by patient name, doctor, or date</p>
-            <p className="text-gray-500 text-sm mb-6">Use the search bar above to get started</p>
-            <Button asChild variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-50">
-              <Link href="/appointments/book" className="flex items-center font-medium">
-                <IconBookAppointment className="mr-2 h-4 w-4" />
-                Book Your First Appointment
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">Search Your Appointments</h3>
+              <p className="text-sm sm:text-base text-muted-foreground mb-1">Find your appointments by patient name, doctor, or date</p>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">Use the search bar above to get started</p>
+              <Button asChild variant="outline" className="border-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 px-4 sm:px-6 py-2 sm:py-3">
+                <Link href="/appointments/book" className="flex items-center font-medium">
+                  <Plus className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">Book Your First Appointment</span>
+                  <span className="sm:hidden">Book Appointment</span>
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

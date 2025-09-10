@@ -48,7 +48,7 @@ export default async function AppointmentsPage({ searchParams }) {
             </div>
           </div>
           <div className="w-full xl:w-auto flex justify-center xl:justify-end">
-            <Button asChild className="w-full xl:w-auto bg-slate-900 hover:bg-slate-800 text-white shadow-sm px-6 py-3">
+            <Button asChild className="w-full xl:w-auto bg-slate-900 hover:bg-slate-800 text-white shadow-sm px-6 py-3 block xl:hidden">
               <Link href="/appointments/book" className="flex items-center justify-center font-medium">
                 <IconBookAppointment className="mr-2 h-4 w-4" />
                 <span>Book New Appointment</span>

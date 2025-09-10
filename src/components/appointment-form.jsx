@@ -25,11 +25,12 @@ import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card"
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group"
 import { Checkbox as UICheckbox } from "./ui/checkbox"
-import { getFridays } from "@/lib/utils"
+import { getDoctorSchedule, generateTimeSlots, getAvailableDates } from "@/services/scheduleService"
 import { Label } from "@/components/ui/label"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useI18n } from "@/context/i18n"
+import { getDynamicFormConfig } from "@/services/templateService"
 
 // Generate dynamic schema based on form configuration
 const generateFormSchema = (formConfig) => {
@@ -41,72 +42,169 @@ const generateFormSchema = (formConfig) => {
     timeSlot: z.string({ required_error: "Please select a time slot." }),
   };
 
-  // Add standard fields based on configuration
-  const standardFields = [
-    { name: 'patientName', validation: z.string().min(2, "Name must be at least 2 characters.") },
-    { name: 'patientPhone', validation: z.string().min(10, "Please enter a valid phone number.") },
-    { name: 'patientEmail', validation: z.string().email("Please enter a valid email address.").optional().or(z.literal('')) },
-    { name: 'age', validation: z.string().min(1, "Age is required.").max(3) },
-    { name: 'gender', validation: z.enum(["male", "female", "other"], { required_error: "Please select a gender."}) },
-    { name: 'healthPriority', validation: z.enum(["critical", "urgent", "normal", "routine"], { required_error: "Please select a health priority."}) },
-    { name: 'description', validation: z.string().optional() },
-  ];
+  // Process template-based sections
+  if (formConfig?.customSections) {
+    formConfig.customSections.forEach(section => {
+      section.fields.forEach(field => {
+        let validation;
+        
+        switch (field.type) {
+          case 'text':
+          case 'tel':
+          case 'textarea':
+            validation = z.string().min(field.required ? 1 : 0, field.required ? `${field.label} is required.` : undefined);
+            break;
+          case 'number':
+            validation = z.coerce.number().min(field.required ? 1 : 0, field.required ? `${field.label} is required.` : undefined);
+            break;
+          case 'email':
+            validation = z.string().email("Please enter a valid email address.");
+            if (!field.required) validation = validation.optional().or(z.literal(''));
+            break;
+          case 'date':
+            validation = z.string().min(field.required ? 1 : 0, field.required ? `${field.label} is required.` : undefined);
+            break;
+          case 'select':
+          case 'radio':
+            validation = z.string().min(field.required ? 1 : 0, field.required ? `Please select ${field.label.toLowerCase()}.` : undefined);
+            break;
+          case 'checkbox':
+            validation = z.boolean();
+            break;
+          case 'checkbox-group':
+            validation = z.array(z.string()).min(field.required ? 1 : 0, field.required ? `Please select at least one option.` : undefined);
+            break;
+          default:
+            validation = z.string();
+        }
 
-  standardFields.forEach(field => {
-    if (formConfig?.requiredFields?.includes(field.name) || formConfig?.optionalFields?.includes(field.name)) {
-      schemaFields[field.name] = formConfig?.requiredFields?.includes(field.name)
-        ? field.validation
-        : field.validation.optional();
-    }
-  });
+        schemaFields[field.id] = field.required ? validation : validation.optional();
+      });
+    });
+  }
 
-  // Add custom fields
-  formConfig?.customFields?.forEach(field => {
-    let validation;
-    switch (field.type) {
-      case 'text':
-      case 'textarea':
-        validation = z.string();
-        break;
-      case 'number':
-        validation = z.number();
-        break;
-      case 'email':
-        validation = z.string().email("Please enter a valid email address.");
-        break;
-      case 'date':
-        validation = z.string();
-        break;
-      case 'select':
-      case 'radio':
-        validation = z.string();
-        break;
-      case 'checkbox':
-        validation = z.boolean();
-        break;
-      default:
-        validation = z.string();
-    }
+  // Fallback to old configuration format for backward compatibility
+  if (formConfig?.requiredFields || formConfig?.optionalFields || formConfig?.customFields) {
+    const standardFields = [
+      { name: 'patientName', validation: z.string().min(2, "Name must be at least 2 characters.") },
+      { name: 'patientPhone', validation: z.string().min(10, "Please enter a valid phone number.") },
+      { name: 'patientEmail', validation: z.string().email("Please enter a valid email address.").optional().or(z.literal('')) },
+      { name: 'age', validation: z.string().min(1, "Age is required.").max(3) },
+      { name: 'gender', validation: z.enum(["male", "female", "other"], { required_error: "Please select a gender."}) },
+      { name: 'healthPriority', validation: z.enum(["critical", "urgent", "normal", "routine"], { required_error: "Please select a health priority."}) },
+      { name: 'description', validation: z.string().optional() },
+    ];
 
-    schemaFields[field.id] = field.required ? validation : validation.optional();
-  });
+    standardFields.forEach(field => {
+      if (formConfig?.requiredFields?.includes(field.name) || formConfig?.optionalFields?.includes(field.name)) {
+        schemaFields[field.name] = formConfig?.requiredFields?.includes(field.name)
+          ? field.validation
+          : field.validation.optional();
+      }
+    });
+
+    // Add legacy custom fields
+    formConfig?.customFields?.forEach(field => {
+      let validation;
+      switch (field.type) {
+        case 'text':
+        case 'textarea':
+          validation = z.string();
+          break;
+        case 'number':
+          validation = z.number();
+          break;
+        case 'email':
+          validation = z.string().email("Please enter a valid email address.");
+          break;
+        case 'date':
+          validation = z.string();
+          break;
+        case 'select':
+        case 'radio':
+          validation = z.string();
+          break;
+        case 'checkbox':
+          validation = z.boolean();
+          break;
+        default:
+          validation = z.string();
+      }
+
+      schemaFields[field.id] = field.required ? validation : validation.optional();
+    });
+  }
 
   return z.object(schemaFields);
 };
 
-const fridays = getFridays();
-
-const timeSlots = [
-    "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
-    "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"
-];
-
-export function AppointmentForm({ doctors, preselectedDoctorId, formConfig, doctor }) {
+export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: initialFormConfig, doctor, previewMode = false }) {
     const router = useRouter();
     const { toast } = useToast();
     const { t } = useI18n();
     const [isFetching, setIsFetching] = useState(false);
     const [isDoctorPrefilled, setIsDoctorPrefilled] = useState(false);
+    const [dynamicFormConfig, setDynamicFormConfig] = useState(initialFormConfig);
+    const [selectedDoctorId, setSelectedDoctorId] = useState(preselectedDoctorId);
+    const [availableDates, setAvailableDates] = useState([]);
+    const [timeSlots, setTimeSlots] = useState([]);
+    const [selectedDate, setSelectedDate] = useState('');
+    const [scheduleConfig, setScheduleConfig] = useState(null);
+
+    // Use dynamic form config if available, otherwise fallback to initial config
+    const formConfig = dynamicFormConfig || initialFormConfig;
+
+    // Load form configuration when doctor is selected
+    useEffect(() => {
+        const loadDoctorFormConfig = async () => {
+            if (selectedDoctorId && !previewMode) {
+                try {
+                    const config = await getDynamicFormConfig(selectedDoctorId);
+                    setDynamicFormConfig(config);
+                } catch (error) {
+                    console.error('Error loading doctor form config:', error);
+                    // Fall back to initial config or default
+                    setDynamicFormConfig(initialFormConfig);
+                }
+            }
+        };
+
+        loadDoctorFormConfig();
+    }, [selectedDoctorId, previewMode, initialFormConfig]);
+
+    // Load doctor's schedule configuration
+    useEffect(() => {
+        const loadScheduleConfig = async () => {
+            if (selectedDoctorId) {
+                try {
+                    const config = await getDoctorSchedule(selectedDoctorId);
+                    setScheduleConfig(config);
+                    
+                    // Generate available dates
+                    const dates = getAvailableDates(config, 30);
+                    setAvailableDates(dates);
+                    
+                    // Clear selected date and time slots when doctor changes
+                    setSelectedDate('');
+                    setTimeSlots([]);
+                } catch (error) {
+                    console.error('Error loading schedule config:', error);
+                }
+            }
+        };
+
+        loadScheduleConfig();
+    }, [selectedDoctorId]);
+
+    // Update time slots when date is selected
+    useEffect(() => {
+        if (scheduleConfig && selectedDate) {
+            const slots = generateTimeSlots(scheduleConfig, selectedDate);
+            setTimeSlots(slots);
+        } else {
+            setTimeSlots([]);
+        }
+    }, [scheduleConfig, selectedDate]);
 
     // Generate dynamic schema
     const appointmentFormSchema = useMemo(() => generateFormSchema(formConfig), [formConfig]);
@@ -207,6 +305,16 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig, doct
     };
 
     const onSubmit = async (data) => {
+        // Prevent submission in preview mode
+        if (previewMode) {
+            toast({
+                title: "Preview Mode",
+                description: "Form submission is disabled in preview mode.",
+                variant: "default",
+            });
+            return;
+        }
+
         // Combine date and time
         const [time, period] = data.timeSlot.split(' ');
         let [hours, minutes] = time.split(':').map(Number);
@@ -220,12 +328,25 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig, doct
         const appointmentDateTime = new Date(data.appointmentDate);
         appointmentDateTime.setHours(hours, minutes);
 
-        // Extract custom fields
+        // Extract custom fields from template sections and legacy fields
         const customFieldsData = {};
+        
+        // Handle template-based sections
+        if (formConfig?.customSections) {
+            formConfig.customSections.forEach(section => {
+                section.fields.forEach(field => {
+                    if (data[field.id] !== undefined) {
+                        customFieldsData[field.id] = data[field.id];
+                    }
+                });
+            });
+        }
+        
+        // Handle legacy custom fields
         formConfig?.customFields?.forEach(field => {
-          if (data[field.id] !== undefined) {
-            customFieldsData[field.id] = data[field.id];
-          }
+            if (data[field.id] !== undefined) {
+                customFieldsData[field.id] = data[field.id];
+            }
         });
 
         const result = await createAppointment({
@@ -321,6 +442,125 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig, doct
             <Input placeholder={fieldConfig.placeholder || ''} {...form.register(fieldName)} />
           );
       }
+    };
+
+    // Render field for template-based forms
+    const renderTemplateField = (fieldConfig, formField) => {
+        switch (fieldConfig.type) {
+            case 'text':
+            case 'tel':
+                return (
+                    <Input 
+                        placeholder={fieldConfig.placeholder || ''} 
+                        type={fieldConfig.type}
+                        {...formField} 
+                    />
+                );
+            case 'number':
+                return (
+                    <Input 
+                        type="number" 
+                        placeholder={fieldConfig.placeholder || ''} 
+                        {...formField}
+                        onChange={(e) => formField.onChange(e.target.valueAsNumber || 0)}
+                    />
+                );
+            case 'email':
+                return (
+                    <Input 
+                        type="email" 
+                        placeholder={fieldConfig.placeholder || ''} 
+                        {...formField} 
+                    />
+                );
+            case 'textarea':
+                return (
+                    <Textarea 
+                        placeholder={fieldConfig.placeholder || ''} 
+                        {...formField} 
+                    />
+                );
+            case 'date':
+                return (
+                    <Input 
+                        type="date" 
+                        {...formField} 
+                    />
+                );
+            case 'select':
+                return (
+                    <Select onValueChange={formField.onChange} value={formField.value}>
+                        <SelectTrigger>
+                            <SelectValue placeholder={fieldConfig.placeholder || 'Select an option'} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {fieldConfig.options?.map(option => (
+                                <SelectItem key={option} value={option}>
+                                    {option}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                );
+            case 'radio':
+                return (
+                    <RadioGroup
+                        onValueChange={formField.onChange}
+                        value={formField.value}
+                        className="flex flex-col space-y-2"
+                    >
+                        {fieldConfig.options?.map(option => (
+                            <div key={option} className="flex items-center space-x-2">
+                                <RadioGroupItem value={option} id={`${fieldConfig.id}-${option}`} />
+                                <Label htmlFor={`${fieldConfig.id}-${option}`}>{option}</Label>
+                            </div>
+                        ))}
+                    </RadioGroup>
+                );
+            case 'checkbox':
+                return (
+                    <div className="flex items-center space-x-2">
+                        <UICheckbox
+                            id={fieldConfig.id}
+                            checked={formField.value || false}
+                            onCheckedChange={formField.onChange}
+                        />
+                        <Label htmlFor={fieldConfig.id}>{fieldConfig.label}</Label>
+                    </div>
+                );
+            case 'checkbox-group':
+                return (
+                    <div className="space-y-2">
+                        {fieldConfig.options?.map(option => {
+                            const isChecked = Array.isArray(formField.value) && formField.value.includes(option);
+                            return (
+                                <div key={option} className="flex items-center space-x-2">
+                                    <UICheckbox
+                                        id={`${fieldConfig.id}-${option}`}
+                                        checked={isChecked}
+                                        onCheckedChange={(checked) => {
+                                            const currentValue = Array.isArray(formField.value) ? formField.value : [];
+                                            if (checked) {
+                                                formField.onChange([...currentValue, option]);
+                                            } else {
+                                                formField.onChange(currentValue.filter(v => v !== option));
+                                            }
+                                        }}
+                                    />
+                                    <Label htmlFor={`${fieldConfig.id}-${option}`}>{option}</Label>
+                                </div>
+                            );
+                        })}
+                    </div>
+                );
+            default:
+                return (
+                    <Input 
+                        placeholder={fieldConfig.placeholder || ''} 
+                        {...formField} 
+                    />
+                );
+        }
     };
 
     return (
@@ -485,14 +725,26 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig, doct
                                 <FormField control={form.control} name="doctorId" render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('forms.appointment.doctor_label')} *</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={isDoctorPrefilled}>
+                                        <Select 
+                                            onValueChange={(value) => {
+                                                field.onChange(value);
+                                                setSelectedDoctorId(value);
+                                            }} 
+                                            defaultValue={field.value} 
+                                            value={field.value} 
+                                            disabled={isDoctorPrefilled}
+                                        >
                                             <FormControl><SelectTrigger><SelectValue placeholder={t('forms.appointment.doctor_placeholder')} /></SelectTrigger></FormControl>
                                             <SelectContent>
-                                                {doctors.map(doctor => (
+                                                {doctors?.map(doctor => (
                                                     <SelectItem key={doctor.id} value={doctor.id}>
                                                         {doctor.name} ({doctor.specialization})
                                                     </SelectItem>
-                                                ))}
+                                                )) || (
+                                                    <SelectItem value="" disabled>
+                                                        No doctors available
+                                                    </SelectItem>
+                                                )}
                                             </SelectContent>
                                         </Select>
                                         <FormMessage />
@@ -500,7 +752,36 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig, doct
                                 )} />
                             </div>
 
-                            {/* Custom Fields */}
+                            {/* Template-based Form Sections */}
+                            {formConfig?.customSections?.map(section => (
+                                <div key={section.id} className="space-y-4">
+                                    <div className="space-y-3">
+                                        <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                                            {section.title}
+                                        </h3>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            {section.fields.map(field => (
+                                                <FormField 
+                                                    key={field.id} 
+                                                    control={form.control} 
+                                                    name={field.id} 
+                                                    render={({ field: formField }) => (
+                                                        <FormItem className={field.type === 'textarea' || field.type === 'checkbox-group' ? 'sm:col-span-2' : ''}>
+                                                            <FormLabel>{field.label} {field.required ? '*' : ''}</FormLabel>
+                                                            <FormControl>
+                                                                {renderTemplateField(field, formField)}
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )} 
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {/* Legacy Custom Fields (for backward compatibility) */}
                             {formConfig?.customFields?.map(field => (
                                 <FormField key={field.id} control={form.control} name={field.id} render={({ field: formField }) => (
                                     <FormItem>
@@ -597,14 +878,17 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig, doct
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>{t('forms.appointment.date_label')} *</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select onValueChange={(value) => {
+                                                field.onChange(value);
+                                                setSelectedDate(value);
+                                            }} defaultValue={field.value}>
                                                 <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder={t('forms.appointment.date_placeholder')} />
                                                 </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                {fridays.map(day => (
+                                                {availableDates.map(day => (
                                                     <SelectItem key={day.value} value={day.value}>
                                                         {day.label}
                                                     </SelectItem>
@@ -629,8 +913,8 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig, doct
                                                 </FormControl>
                                                 <SelectContent>
                                                 {timeSlots.map(slot => (
-                                                    <SelectItem key={slot} value={slot}>
-                                                        {slot}
+                                                    <SelectItem key={slot.value} value={slot.value}>
+                                                        {slot.label}
                                                     </SelectItem>
                                                 ))}
                                                 </SelectContent>
@@ -642,25 +926,32 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig, doct
                             </div>
                         </div>
 
-                        <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-4">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() => router.back()}
-                                disabled={form.formState.isSubmitting}
-                                className="border-gray-300 hover:bg-gray-50 transition-all duration-200 px-6 lg:px-8 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
-                            >
-                                {t('forms.buttons.cancel')}
-                            </Button>
-                            <Button
-                                type="submit"
-                                disabled={form.formState.isSubmitting}
-                                className="mb-4 sm:mb-0 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-6 lg:px-8 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
-                            >
-                                {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 lg:h-5 lg:w-5 animate-spin" />}
-                                <span className="text-sm lg:text-base">{t('forms.buttons.book_appointment')}</span>
-                            </Button>
-                        </div>
+                        {!previewMode && (
+                            <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-4">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => router.back()}
+                                    disabled={form.formState.isSubmitting}
+                                    className="border-gray-300 hover:bg-gray-50 transition-all duration-200 px-6 lg:px-8 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
+                                >
+                                    {t('forms.buttons.cancel')}
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    disabled={form.formState.isSubmitting}
+                                    className="mb-4 sm:mb-0 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-6 lg:px-8 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
+                                >
+                                    {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 lg:h-5 lg:w-5 animate-spin" />}
+                                    <span className="text-sm lg:text-base">{t('forms.buttons.book_appointment')}</span>
+                                </Button>
+                            </div>
+                        )}
+                        {previewMode && (
+                            <div className="text-center py-4">
+                                <p className="text-gray-500 text-sm">This is a preview of your appointment form</p>
+                            </div>
+                        )}
                     </form>
                 </Form>
             </CardContent>
@@ -668,17 +959,4 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig, doct
     );
 }
 
-const appointmentFormSchema = z.object({
-  patientType: z.enum(["new", "returning"], { required_error: "Please select patient type." }),
-  hospitalId: z.string().min(1, "Hospital ID is required."),
-  patientName: z.string().min(2, "Name must be at least 2 characters."),
-  patientPhone: z.string().min(10, "Please enter a valid phone number."),
-  patientEmail: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
-  age: z.string().min(1, "Age is required.").max(3),
-  gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender."}),
-  healthPriority: z.enum(["critical", "urgent", "normal", "routine"], { required_error: "Please select a health priority."}),
-  description: z.string().optional(),
-  doctorId: z.string({ required_error: "Please select a doctor." }),
-  appointmentDate: z.string({ required_error: "Please select a date." }),
-  timeSlot: z.string({ required_error: "Please select a time slot." }),
-});
+

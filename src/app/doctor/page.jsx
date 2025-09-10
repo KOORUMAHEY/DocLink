@@ -82,8 +82,9 @@ async function DoctorDashboardContent({ doctorId }) {
 }
 
 
-export default function DoctorDashboardPage({ searchParams }) {
-    const doctorId = searchParams.id;
+export default async function DoctorDashboardPage({ searchParams }) {
+    const params = await searchParams;
+    const doctorId = params.id;
     if (!doctorId) {
         return <p>Doctor ID is missing. Please login again.</p>
     }

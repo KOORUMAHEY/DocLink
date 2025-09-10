@@ -2,22 +2,11 @@
 "use client"
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, Home, Stethoscope, Users, Calendar } from 'lucide-react';
+import { Bell, Stethoscope, Home, Calendar, Users, Plus, Settings, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarInset,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
-import { Sparkles } from 'lucide-react';
-
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 const adminNavItems = [
     { href: '/admin', label: 'Dashboard', icon: Home },
@@ -26,57 +15,132 @@ const adminNavItems = [
     { href: '/admin/patients', label: 'Patients', icon: Users },
 ];
 
+function AdminNav() {
+    const pathname = usePathname();
+    return (
+        <nav className="hidden md:flex items-center gap-2">
+            {adminNavItems.map(item => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                    <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                            'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
+                            isActive
+                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        )}
+                    >
+                        <Icon className="h-4 w-4" />
+                        {item.label}
+                    </Link>
+                );
+            })}
+        </nav>
+    );
+}
+
+function MobileAdminNav() {
+    const pathname = usePathname();
+    return (
+        <nav className="md:hidden flex items-center gap-1 overflow-x-auto">
+            {adminNavItems.map(item => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                    <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                            'flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap',
+                            isActive
+                                ? 'bg-primary text-primary-foreground shadow-sm'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        )}
+                    >
+                        <Icon className="h-4 w-4" />
+                        <span className="hidden sm:inline">{item.label}</span>
+                    </Link>
+                );
+            })}
+        </nav>
+    );
+}
 
 export default function AdminLayout({
   children,
 }) {
-  const pathname = usePathname();
-
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
-            <h2 className="text-lg font-semibold tracking-tight">DocLink Admin</h2>
-          </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu>
-            {adminNavItems.map(item => (
-                 <SidebarMenuItem key={item.href}>
-                    <Link href={item.href}>
-                        <SidebarMenuButton
-                            isActive={pathname === item.href}
-                            className={cn(pathname === item.href && "font-semibold")}
-                            asChild
-                        >
-                            <span>
-                                <item.icon className="mr-2 h-4 w-4" />
-                                {item.label}
-                            </span>
-                        </SidebarMenuButton>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
+       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo/Brand */}
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg">
+                <Stethoscope className="h-5 w-5 text-white" />
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-lg font-bold text-gray-900">DocLink Admin</h1>
+                <span className="text-xs text-gray-500 hidden sm:block">Healthcare Management</span>
+              </div>
+            </div>
+
+            {/* Desktop Navigation */}
+            <AdminNav />
+
+            {/* Mobile Navigation */}
+            <MobileAdminNav />
+
+            {/* Right Side Actions */}
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-blue-50">
+                <Bell className="h-4 w-4" />
+                <span className="sr-only">Notifications</span>
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                    <Avatar className="h-9 w-9">
+                      <AvatarImage src="/avatars/admin.png" alt="Admin" />
+                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">A</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">Admin User</p>
+                      <p className="text-xs leading-none text-muted-foreground">admin@doclink.com</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/" className="flex items-center">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Exit Admin</span>
                     </Link>
-                 </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarContent>
-      </Sidebar>
-      <SidebarInset>
-        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
-          <SidebarTrigger className="md:hidden" />
-          <div className="w-full flex-1">
-            {/* Can add a search bar here */}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
-          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-            <Bell className="h-4 w-4" />
-            <span className="sr-only">Toggle notifications</span>
-          </Button>
-        </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          {children}
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+        </div>
+       </header>
+
+       <main className="container mx-auto px-4 py-8">
+         <div className="space-y-8">
+           {children}
+         </div>
+       </main>
+    </div>
   );
 }

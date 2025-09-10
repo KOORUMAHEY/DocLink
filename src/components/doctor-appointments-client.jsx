@@ -15,7 +15,7 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppointmentDetailsClient } from './appointment-details-client';
-import { FileText } from 'lucide-react';
+import { FileText, Calendar, Clock, CheckCircle, XCircle, AlertCircle, TrendingUp, Activity } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 
 export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
@@ -40,81 +40,258 @@ export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
   const handleViewDetails = (appointment) => {
     setSelectedAppointment(appointment);
   };
-  
+
   // Find the appointment from the list to ensure we have the latest data
   const currentlySelectedAppointment = appointments.find(a => a.id === selectedAppointment?.id) || selectedAppointment;
 
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'scheduled':
+        return <Badge className="bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 border border-blue-300 hover:from-blue-200 hover:to-blue-300 transition-all duration-200 px-3 py-1"><Clock className="w-4 h-4 mr-2" />Scheduled</Badge>;
+      case 'completed':
+        return <Badge className="bg-gradient-to-r from-green-100 to-green-200 text-green-800 border border-green-300 hover:from-green-200 hover:to-green-300 transition-all duration-200 px-3 py-1"><CheckCircle className="w-4 h-4 mr-2" />Completed</Badge>;
+      case 'cancelled':
+        return <Badge className="bg-gradient-to-r from-red-100 to-red-200 text-red-800 border border-red-300 hover:from-red-200 hover:to-red-300 transition-all duration-200 px-3 py-1"><XCircle className="w-4 h-4 mr-2" />Cancelled</Badge>;
+      default:
+        return <Badge variant="secondary" className="bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 px-3 py-1"><AlertCircle className="w-4 h-4 mr-2" />{status}</Badge>;
+    }
+  };
 
   return (
-    <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-            <Card>
-                <CardHeader>
-                <CardTitle>Appointments for {doctor.name}</CardTitle>
-                <CardDescription>A list of your scheduled appointments.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                {appointments.length === 0 ? (
-                    <div className="text-center py-10">
-                        <p className="text-muted-foreground">You have no appointments scheduled.</p>
-                    </div>
-                ) : (
-                    <div className="relative w-full overflow-auto">
-                    <Table>
-                        <TableHeader>
-                        <TableRow>
-                            <TableHead>Patient</TableHead>
-                            <TableHead className="hidden sm:table-cell">Date & Time</TableHead>
-                            <TableHead className="hidden md:table-cell">Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
-                        </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                        {appointments.map((appt) => (
-                            <TableRow key={appt.id} className="cursor-pointer" onClick={() => handleViewDetails(appt)}>
-                            <TableCell className="font-medium">{appt.patientName}</TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                                {isClient && formattedDates[appt.id] ? formattedDates[appt.id] : <Skeleton className="h-4 w-[200px]" />}
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                                <Badge variant={appt.status === 'scheduled' ? 'default' : 'secondary'}>
-                                {appt.status}
-                                </Badge>
-                            </TableCell>
-                             <TableCell className="text-right">
-                                <Button variant="outline" size="sm" onClick={(e) => { e.stopPropagation(); handleViewDetails(appt);}}>
-                                    View Details
-                                </Button>
-                            </TableCell>
-                            </TableRow>
-                        ))}
-                        </TableBody>
-                    </Table>
-                    </div>
-                )}
-                </CardContent>
-            </Card>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50/30">
+      <div className="space-y-8 p-6 lg:p-8">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
+                <Calendar className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                  My Appointments
+                </h1>
+                <p className="text-lg text-muted-foreground mt-1">Manage your scheduled appointments</p>
+              </div>
+            </div>
+          </div>
         </div>
-      
-        <div className="lg:col-span-1">
-            {currentlySelectedAppointment ? (
-                <div className="sticky top-20">
-                     <AppointmentDetailsClient 
-                        key={currentlySelectedAppointment.id} 
-                        appointment={currentlySelectedAppointment}
-                        role="doctor"
-                    />
+
+        {/* Stats Cards */}
+        <div className="grid gap-6 md:grid-cols-4">
+          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100/50">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Total</p>
+                  <p className="text-3xl font-bold text-blue-900">{appointments.length}</p>
+                  <div className="flex items-center gap-2 text-sm text-blue-600">
+                    <TrendingUp className="h-4 w-4" />
+                    <span>All appointments</span>
+                  </div>
                 </div>
-            ) : (
-                 <Card className="sticky top-20 flex flex-col items-center justify-center h-[calc(100vh-10rem)]">
-                    <CardContent className="text-center">
-                        <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-semibold">Select an Appointment</h3>
-                        <p className="text-muted-foreground">Click on an appointment from the list to view its details.</p>
-                    </CardContent>
-                </Card>
-            )}
+                <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Calendar className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+            <div className="absolute top-0 right-0 w-16 h-16 bg-blue-200/20 rounded-full -mr-8 -mt-8"></div>
+          </Card>
+
+          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-indigo-50 to-indigo-100/50">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Scheduled</p>
+                  <p className="text-3xl font-bold text-indigo-900">
+                    {appointments.filter(a => a.status === 'scheduled').length}
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-indigo-600">
+                    <Clock className="h-4 w-4" />
+                    <span>Upcoming</span>
+                  </div>
+                </div>
+                <div className="h-12 w-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <Clock className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+            <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-200/20 rounded-full -mr-8 -mt-8"></div>
+          </Card>
+
+          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-green-50 to-green-100/50">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-green-700 uppercase tracking-wide">Completed</p>
+                  <p className="text-3xl font-bold text-green-900">
+                    {appointments.filter(a => a.status === 'completed').length}
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-green-600">
+                    <CheckCircle className="h-4 w-4" />
+                    <span>Finished</span>
+                  </div>
+                </div>
+                <div className="h-12 w-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <CheckCircle className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+            <div className="absolute top-0 right-0 w-16 h-16 bg-green-200/20 rounded-full -mr-8 -mt-8"></div>
+          </Card>
+
+          <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-red-50 to-red-100/50">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold text-red-700 uppercase tracking-wide">Cancelled</p>
+                  <p className="text-3xl font-bold text-red-900">
+                    {appointments.filter(a => a.status === 'cancelled').length}
+                  </p>
+                  <div className="flex items-center gap-2 text-sm text-red-600">
+                    <XCircle className="h-4 w-4" />
+                    <span>No shows</span>
+                  </div>
+                </div>
+                <div className="h-12 w-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+                  <XCircle className="h-6 w-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+            <div className="absolute top-0 right-0 w-16 h-16 bg-red-200/20 rounded-full -mr-8 -mt-8"></div>
+          </Card>
         </div>
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100/50 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl font-bold text-gray-900">Appointments for {doctor.name}</CardTitle>
+                    <CardDescription className="text-lg text-muted-foreground mt-2">
+                      A list of your scheduled appointments.
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="h-5 w-5" />
+                    <span className="font-semibold">{appointments.length} total</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                {appointments.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className="flex flex-col items-center gap-6">
+                      <div className="relative">
+                        <div className="h-20 w-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
+                          <Calendar className="h-10 w-10 text-blue-600" />
+                        </div>
+                        <div className="absolute -top-2 -right-2 h-8 w-8 bg-gradient-to-br from-orange-400 to-orange-500 rounded-full flex items-center justify-center">
+                          <Activity className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <h3 className="text-2xl font-bold text-gray-900">No appointments scheduled</h3>
+                        <p className="text-lg text-muted-foreground max-w-md">
+                          You don't have any appointments scheduled at the moment. New appointments will appear here.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative w-full overflow-auto">
+                    <Table>
+                      <TableHeader className="bg-gradient-to-r from-gray-50 to-gray-100/50">
+                        <TableRow className="hover:bg-gray-100/50 border-b border-gray-200">
+                          <TableHead className="font-bold text-gray-900 py-6 px-8">Patient</TableHead>
+                          <TableHead className="hidden sm:table-cell font-bold text-gray-900 py-6 px-8 text-center">Date & Time</TableHead>
+                          <TableHead className="hidden md:table-cell font-bold text-gray-900 py-6 px-8 text-center">Status</TableHead>
+                          <TableHead className="text-right font-bold text-gray-900 py-6 px-8">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {appointments.map((appt) => (
+                          <TableRow key={appt.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-200 border-b border-gray-100 group cursor-pointer" onClick={() => handleViewDetails(appt)}>
+                            <TableCell className="py-6 px-8">
+                              <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                  <span className="text-white font-semibold text-sm">
+                                    {appt.patientName ? appt.patientName.charAt(0).toUpperCase() : 'P'}
+                                  </span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="font-bold text-gray-900 text-lg group-hover:text-blue-700 transition-colors">
+                                    {appt.patientName}
+                                  </span>
+                                  <span className="text-sm text-muted-foreground">
+                                    ID: {appt.hospitalId}
+                                  </span>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="hidden sm:table-cell text-center py-6 px-8">
+                              <div className="flex flex-col">
+                                <span className="font-medium text-gray-900">
+                                  {isClient && formattedDates[appt.id] ? format(new Date(appt.appointmentDate), 'MMM dd, yyyy') : <Skeleton className="h-4 w-20" />}
+                                </span>
+                                <span className="text-sm text-muted-foreground">
+                                  {isClient && formattedDates[appt.id] ? format(new Date(appt.appointmentDate), 'h:mm a') : <Skeleton className="h-3 w-16" />}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell text-center py-6 px-8">
+                              {getStatusBadge(appt.status)}
+                            </TableCell>
+                            <TableCell className="text-right py-6 px-8">
+                              <Button variant="ghost" size="sm" className="hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 rounded-lg" onClick={(e) => { e.stopPropagation(); handleViewDetails(appt);}}>
+                                View Details
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="lg:col-span-1">
+            {currentlySelectedAppointment ? (
+              <div className="sticky top-20">
+                <AppointmentDetailsClient
+                  key={currentlySelectedAppointment.id}
+                  appointment={currentlySelectedAppointment}
+                  role="doctor"
+                />
+              </div>
+            ) : (
+              <Card className="sticky top-20 border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
+                <CardContent className="flex flex-col items-center justify-center h-[calc(100vh-15rem)] text-center p-8">
+                  <div className="space-y-6">
+                    <div className="relative">
+                      <div className="h-20 w-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center mx-auto">
+                        <FileText className="h-10 w-10 text-blue-600" />
+                      </div>
+                      <div className="absolute -top-2 -right-2 h-8 w-8 bg-gradient-to-br from-orange-400 to-orange-500 rounded-full flex items-center justify-center">
+                        <Activity className="h-4 w-4 text-white" />
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <h3 className="text-xl font-bold text-gray-900">Select an Appointment</h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        Click on an appointment from the list to view its details and manage the appointment.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

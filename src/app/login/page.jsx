@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Stethoscope } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -69,11 +69,11 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex min-h-[calc(100vh-112px)] items-center justify-center bg-secondary">
-            <Card className="w-full max-w-sm">
+        <div className="flex min-h-[calc(100vh-112px)] items-center justify-center bg-background px-4">
+            <Card className="w-full max-w-sm border-0 shadow-lg">
                 <CardHeader className="text-center">
                      <div className="flex justify-center items-center gap-2 mb-4">
-                        <Sparkles className="w-8 h-8 text-primary" />
+                        <Stethoscope className="w-8 h-8 text-primary" />
                     </div>
                     <CardTitle className="text-2xl">{t('login.title')}</CardTitle>
                     <CardDescription>{t('login.description')}</CardDescription>

@@ -416,10 +416,10 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
             <RadioGroup
               onValueChange={(value) => form.setValue(fieldName, value)}
               value={form.watch(fieldName)}
-              className="flex flex-col space-y-2"
+              className="flex flex-col space-y-2 sm:space-y-3"
             >
               {fieldConfig.options?.map(option => (
-                <div key={option} className="flex items-center space-x-2">
+                <div key={option} className="flex items-center space-x-2 sm:space-x-3">
                   <RadioGroupItem value={option} id={`${fieldName}-${option}`} />
                   <Label htmlFor={`${fieldName}-${option}`}>{option}</Label>
                 </div>
@@ -428,7 +428,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
           );
         case 'checkbox':
           return (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <UICheckbox
                 id={fieldName}
                 checked={form.watch(fieldName)}
@@ -507,10 +507,10 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                     <RadioGroup
                         onValueChange={formField.onChange}
                         value={formField.value}
-                        className="flex flex-col space-y-2"
+                        className="flex flex-col space-y-2 sm:space-y-3"
                     >
                         {fieldConfig.options?.map(option => (
-                            <div key={option} className="flex items-center space-x-2">
+                            <div key={option} className="flex items-center space-x-2 sm:space-x-3">
                                 <RadioGroupItem value={option} id={`${fieldConfig.id}-${option}`} />
                                 <Label htmlFor={`${fieldConfig.id}-${option}`}>{option}</Label>
                             </div>
@@ -519,7 +519,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                 );
             case 'checkbox':
                 return (
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 sm:space-x-3">
                         <UICheckbox
                             id={fieldConfig.id}
                             checked={formField.value || false}
@@ -530,11 +530,11 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                 );
             case 'checkbox-group':
                 return (
-                    <div className="space-y-2">
+                    <div className="space-y-2 sm:space-y-3">
                         {fieldConfig.options?.map(option => {
                             const isChecked = Array.isArray(formField.value) && formField.value.includes(option);
                             return (
-                                <div key={option} className="flex items-center space-x-2">
+                                <div key={option} className="flex items-center space-x-2 sm:space-x-3">
                                     <UICheckbox
                                         id={`${fieldConfig.id}-${option}`}
                                         checked={isChecked}
@@ -564,35 +564,36 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
     };
 
     return (
-        <Card className="w-full border-0 shadow-xl bg-gradient-to-br from-white to-blue-50/30">
+        <div className="w-full p-2 sm:p-4 lg:p-6">
+            <Card className="w-full border-0 shadow-xl bg-gradient-to-br from-white to-blue-50/30 mx-auto max-w-4xl">
             <CardHeader className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-2">
-                        <Calendar className="w-6 h-6 lg:w-7 lg:h-7" />
-                        <CardTitle className="text-2xl lg:text-3xl font-bold">{t('forms.appointment.title')}</CardTitle>
+                    <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:gap-3 sm:space-y-0 mb-2">
+                        <Calendar className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" />
+                        <CardTitle className="text-xl sm:text-2xl lg:text-3xl font-bold">{t('forms.appointment.title')}</CardTitle>
                     </div>
                     {doctor && (
                         <div className="mb-2">
-                            <p className="text-blue-100 text-sm lg:text-base">
+                            <p className="text-blue-100 text-xs sm:text-sm lg:text-base">
                                 Booking with: <span className="font-semibold">{doctor.name}</span> - {doctor.specialization}
                             </p>
                         </div>
                     )}
-                    <CardDescription className="text-blue-100 text-sm lg:text-base">
+                    <CardDescription className="text-blue-100 text-xs sm:text-sm lg:text-base">
                         {t('forms.appointment.description')}
                     </CardDescription>
                 </div>
                 <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
                 <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
             </CardHeader>
-            <CardContent className="p-6 lg:p-8">
+            <CardContent className="p-4 sm:p-6 lg:p-8">
                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-3 pb-2 border-b border-gray-200">
-                               <User className="text-blue-600 w-5 h-5 lg:w-6 lg:h-6" />
-                               <h3 className="text-lg lg:text-xl font-semibold text-gray-800">{t('forms.appointment.patient_info_title')}</h3>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+                        <div className="space-y-4 sm:space-y-6">
+                            <div className="flex items-center gap-2 sm:gap-3 pb-2 border-b border-gray-200">
+                               <User className="text-blue-600 w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
+                               <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-800">{t('forms.appointment.patient_info_title')}</h3>
                             </div>
 
                              <FormField
@@ -615,9 +616,9 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                             }
                                         }}
                                         defaultValue={field.value}
-                                        className="flex flex-col sm:flex-row gap-4"
+                                        className="flex flex-col sm:flex-row gap-3 sm:gap-4"
                                         >
-                                        <FormItem className="flex items-center space-x-3 space-y-0">
+                                        <FormItem className="flex items-center space-x-2 sm:space-x-3 space-y-0">
                                             <FormControl>
                                             <RadioGroupItem value="new" />
                                             </FormControl>
@@ -642,19 +643,19 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{t('forms.appointment.hospital_id_label')} *</FormLabel>
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-col space-y-2 sm:flex-row sm:gap-2 sm:space-y-0">
                                             <FormControl>
-                                                <Input placeholder={t('forms.appointment.hospital_id_placeholder')} {...field} />
+                                                <Input placeholder={t('forms.appointment.hospital_id_placeholder')} {...field} className="flex-1" />
                                             </FormControl>
                                             {patientType === 'returning' && (
                                                 <Button
                                                     type="button"
                                                     onClick={handleFetchDetails}
                                                     disabled={isFetching}
-                                                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-4 lg:px-6 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
+                                                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold text-sm sm:text-base"
                                                 >
                                                     {isFetching ? <Loader2 className="h-4 w-4 lg:h-5 lg:w-5 animate-spin" /> : <Search className="h-4 w-4 lg:h-5 lg:w-5" />}
-                                                    <span className="ml-2 hidden sm:inline text-sm lg:text-base">{t('forms.buttons.fetch_details')}</span>
+                                                    <span className="ml-2 sm:inline text-xs sm:text-sm lg:text-base">{t('forms.buttons.fetch_details')}</span>
                                                 </Button>
                                             )}
                                         </div>
@@ -663,7 +664,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 )}
                             />
 
-                            <div className="grid md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 {/* Dynamic Standard Fields */}
                                 {formConfig?.requiredFields?.includes('patientName') || formConfig?.optionalFields?.includes('patientName') ? (
                                     <FormField control={form.control} name="patientName" render={({ field }) => (
@@ -756,10 +757,10 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                             {formConfig?.customSections?.map(section => (
                                 <div key={section.id} className="space-y-4">
                                     <div className="space-y-3">
-                                        <h3 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
+                                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
                                             {section.title}
                                         </h3>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                             {section.fields.map(field => (
                                                 <FormField 
                                                     key={field.id} 
@@ -871,7 +872,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 </AlertDescription>
                             </Alert>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                  <FormField
                                     control={form.control}
                                     name="appointmentDate"
@@ -927,23 +928,23 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                         </div>
 
                         {!previewMode && (
-                            <div className="flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-4">
+                            <div className="flex flex-col space-y-3 sm:flex-row-reverse sm:justify-start sm:gap-4 sm:space-y-0 pt-4 border-t border-gray-200">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={() => router.back()}
                                     disabled={form.formState.isSubmitting}
-                                    className="border-gray-300 hover:bg-gray-50 transition-all duration-200 px-6 lg:px-8 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
+                                    className="w-full sm:w-auto border-gray-300 hover:bg-gray-50 transition-all duration-200 px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold text-sm sm:text-base"
                                 >
                                     {t('forms.buttons.cancel')}
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={form.formState.isSubmitting}
-                                    className="mb-4 sm:mb-0 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-6 lg:px-8 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
+                                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
                                 >
-                                    {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 lg:h-5 lg:w-5 animate-spin" />}
-                                    <span className="text-sm lg:text-base">{t('forms.buttons.book_appointment')}</span>
+                                    {form.formState.isSubmitting && <Loader2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 animate-spin" />}
+                                    <span className="text-sm sm:text-base">{t('forms.buttons.book_appointment')}</span>
                                 </Button>
                             </div>
                         )}
@@ -956,6 +957,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                 </Form>
             </CardContent>
         </Card>
+        </div>
     );
 }
 

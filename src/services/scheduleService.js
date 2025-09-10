@@ -115,7 +115,11 @@ export const getAvailableDates = (scheduleConfig, numberOfDays = 30) => {
     
     // Check if day is enabled and not in unavailable dates
     const isDayEnabled = scheduleConfig.workingHours[dayName]?.enabled;
-    const isDateUnavailable = scheduleConfig.unavailableDates?.includes(dateString);
+    const isDateUnavailable = scheduleConfig.unavailableDates?.some(holiday => {
+      // Handle both old format (string) and new format (object with date property)
+      const holidayDate = typeof holiday === 'string' ? holiday : holiday.date;
+      return holidayDate === dateString;
+    });
     
     if (isDayEnabled && !isDateUnavailable) {
       dates.push({

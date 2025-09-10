@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { Bell, Stethoscope, Home, Calendar, Users, Activity } from 'lucide-react';
+import { Bell, Stethoscope, Home, Calendar, Users, Activity, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,7 @@ function DoctorNavLinks() {
   const doctorNavItems = [
       { href: `/doctor?id=${doctorId}`, label: 'Dashboard', icon: Home },
       { href: `/doctor/appointments?id=${doctorId}`, label: 'Appointments', icon: Calendar },
+      { href: `/doctor/appointments/form?id=${doctorId}`, label: 'Appointment Form', icon: Plus },
       { href: `/doctor/patients?id=${doctorId}`, label: 'My Patients', icon: Users },
   ];
 

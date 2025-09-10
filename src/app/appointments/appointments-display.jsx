@@ -53,16 +53,16 @@ function AppointmentsDisplay({ appointments }) {
 
   if (appointments.length === 0) {
     return (
-      <Card className="border border-gray-200 shadow-sm bg-white">
-        <CardContent className="text-center py-16">
-          <div className="relative mb-6">
-            <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Calendar className="h-10 w-10 text-slate-400" />
+      <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
+        <CardContent className="text-center py-12 sm:py-16 px-4 sm:px-6">
+          <div className="relative mb-4 sm:mb-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar className="h-8 w-8 sm:h-10 sm:w-10 text-blue-600" />
             </div>
           </div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Appointments Found</h3>
-          <p className="text-gray-600 mb-1">We couldn't find any appointments matching your search.</p>
-          <p className="text-gray-500 text-sm">Try adjusting your search criteria or book a new appointment.</p>
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No Appointments Found</h3>
+          <p className="text-sm sm:text-base text-muted-foreground mb-1">We couldn't find any appointments matching your search.</p>
+          <p className="text-xs sm:text-sm text-muted-foreground">Try adjusting your search criteria or book a new appointment.</p>
         </CardContent>
       </Card>
     );
@@ -70,15 +70,15 @@ function AppointmentsDisplay({ appointments }) {
 
   return (
     <>
-      <Card className="border border-gray-200 shadow-sm bg-white">
-        <CardHeader className="bg-slate-50 border-b border-gray-200">
+      <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-b border-gray-200 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center">
-                <Calendar className="mr-2 h-5 w-5 text-slate-600" />
+              <CardTitle className="text-lg sm:text-xl font-bold text-gray-900 flex items-center">
+                <Calendar className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 Appointment Results
               </CardTitle>
-              <CardDescription className="text-gray-600 mt-1">
+              <CardDescription className="text-sm sm:text-base text-muted-foreground mt-1">
                 Found {appointments.length} appointment{appointments.length !== 1 ? 's' : ''} matching your search criteria
               </CardDescription>
             </div>
@@ -89,59 +89,59 @@ function AppointmentsDisplay({ appointments }) {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50 hover:bg-gray-50 border-b border-gray-200">
-                  <TableHead className="font-semibold text-gray-900 py-4 px-6 text-left">Patient Details</TableHead>
-                  <TableHead className="font-semibold text-gray-900 py-4 px-6 hidden sm:table-cell text-left">Healthcare Provider</TableHead>
-                  <TableHead className="font-semibold text-gray-900 py-4 px-6 text-left">Schedule Information</TableHead>
-                  <TableHead className="font-semibold text-gray-900 py-4 px-6 hidden md:table-cell text-center">Status</TableHead>
-                  <TableHead className="font-semibold text-gray-900 py-4 px-6 text-right">Actions</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-left">Patient Details</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 hidden sm:table-cell text-left">Healthcare Provider</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-left">Schedule Information</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 hidden md:table-cell text-center">Status</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {appointments.map((appointment) => (
-                  <TableRow key={appointment.id} className="hover:bg-gray-50 transition-colors duration-150 border-b border-gray-100">
-                    <TableCell className="py-4 px-6">
+                  <TableRow key={appointment.id} className="hover:bg-blue-50/50 transition-colors duration-200 border-b border-gray-100">
+                    <TableCell className="py-3 sm:py-4 px-3 sm:px-6">
                       <div className="flex items-center space-x-3">
-                        <Avatar className="h-10 w-10">
+                        <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                           <AvatarImage src={appointment.patientAvatar} alt={appointment.patientName} />
-                          <AvatarFallback className="bg-slate-100 text-slate-600 font-medium text-sm">
+                          <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 font-medium text-xs sm:text-sm">
                             {appointment.patientName.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium text-gray-900 text-sm">{appointment.patientName}</p>
-                          <p className="text-xs text-gray-500">{appointment.patientEmail}</p>
-                          <p className="text-xs text-gray-500">{appointment.patientPhone}</p>
+                          <p className="font-medium text-gray-900 text-sm sm:text-base">{appointment.patientName}</p>
+                          <p className="text-xs text-muted-foreground">{appointment.patientEmail}</p>
+                          <p className="text-xs text-muted-foreground">{appointment.patientPhone}</p>
                           <div className="sm:hidden mt-1">
                             <p className="text-xs text-gray-600">Dr. {appointment.doctorName} • {appointment.specialty}</p>
                           </div>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="py-4 px-6 hidden sm:table-cell">
+                    <TableCell className="py-3 sm:py-4 px-3 sm:px-6 hidden sm:table-cell">
                       <div className="flex items-center space-x-3">
                         <Avatar className="h-8 w-8">
                           <AvatarImage src={appointment.doctorAvatar} alt={appointment.doctorName} />
-                          <AvatarFallback className="bg-slate-100 text-slate-600 font-medium text-xs">
+                          <AvatarFallback className="bg-gradient-to-br from-green-100 to-green-200 text-green-700 font-medium text-xs">
                             {appointment.doctorName.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-gray-900 text-sm">Dr. {appointment.doctorName}</p>
-                          <p className="text-xs text-gray-500">{appointment.specialty}</p>
+                          <p className="text-xs text-muted-foreground">{appointment.specialty}</p>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="py-4 px-6">
+                    <TableCell className="py-3 sm:py-4 px-3 sm:px-6">
                       <div className="space-y-1">
                         <div className="flex items-center text-sm text-gray-900">
-                          <Calendar className="h-4 w-4 mr-2 text-slate-500 flex-shrink-0" />
+                          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 flex-shrink-0" />
                           {format(new Date(appointment.appointmentDate), 'MMM dd, yyyy')}
                         </div>
                         <div className="flex items-center text-sm text-gray-700">
-                          <Clock className="h-4 w-4 mr-2 text-slate-500 flex-shrink-0" />
+                          <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 flex-shrink-0" />
                           {appointment.time}
                         </div>
-                        <div className="flex items-center text-xs text-gray-500">
+                        <div className="flex items-center text-xs text-muted-foreground">
                           <Users className="h-3 w-3 mr-1 flex-shrink-0" />
                           Room {appointment.roomNumber}
                         </div>
@@ -159,7 +159,7 @@ function AppointmentsDisplay({ appointments }) {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="py-4 px-6 hidden md:table-cell text-center">
+                    <TableCell className="py-3 sm:py-4 px-3 sm:px-6 hidden md:table-cell text-center">
                       <Badge
                         variant={
                           appointment.status === 'confirmed' ? 'default' :
@@ -171,11 +171,11 @@ function AppointmentsDisplay({ appointments }) {
                         {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
                       </Badge>
                     </TableCell>
-                    <TableCell className="py-4 px-6 text-right">
+                    <TableCell className="py-3 sm:py-4 px-3 sm:px-6 text-right">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-xs border-gray-300 hover:bg-gray-50"
+                        className="text-xs border-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200"
                         onClick={() => handleViewDetails(appointment)}
                       >
                         View Details
@@ -192,30 +192,30 @@ function AppointmentsDisplay({ appointments }) {
       {/* Modal */}
       {isModalOpen && selectedAppointment && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onClick={handleCloseModal}
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-title"
         >
           <div
-            className="relative max-w-2xl w-full mx-4 max-h-[90vh] overflow-hidden"
+            className="relative max-w-2xl w-full max-h-[90vh] overflow-hidden rounded-xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-white rounded-lg shadow-xl border border-gray-200">
-              <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                <h2 id="modal-title" className="text-lg font-semibold text-gray-900">Appointment Details</h2>
+            <div className="bg-white rounded-xl border-0 shadow-xl overflow-hidden">
+              <div className="flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-blue-100/50">
+                <h2 id="modal-title" className="text-lg sm:text-xl font-bold text-gray-900">Appointment Details</h2>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleCloseModal}
-                  className="h-8 w-8 p-0 hover:bg-gray-100"
+                  className="h-8 w-8 p-0 hover:bg-gray-100 rounded-lg"
                   aria-label="Close modal"
                 >
                   <X className="h-4 w-4 text-gray-500" />
                 </Button>
               </div>
-              <div className="p-6 overflow-y-auto max-h-[70vh]">
+              <div className="p-4 sm:p-6 overflow-y-auto max-h-[70vh]">
                 <AppointmentDetailsClient appointment={selectedAppointment} role="user" />
               </div>
             </div>

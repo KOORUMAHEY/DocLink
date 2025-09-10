@@ -75,15 +75,15 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
-        <div className="container mx-auto px-4">
-          <div className="flex h-16 items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex h-14 sm:h-16 items-center justify-between">
             {/* Logo/Brand */}
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg">
-                <Stethoscope className="h-5 w-5 text-white" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg">
+                <Stethoscope className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               <div className="flex flex-col">
-                <h1 className="text-lg font-bold text-gray-900">DocLink Admin</h1>
+                <h1 className="text-base sm:text-lg font-bold text-gray-900">DocLink Admin</h1>
                 <span className="text-xs text-gray-500 hidden sm:block">Healthcare Management</span>
               </div>
             </div>
@@ -95,18 +95,18 @@ export default function AdminLayout({
             <MobileAdminNav />
 
             {/* Right Side Actions */}
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full hover:bg-blue-50">
-                <Bell className="h-4 w-4" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-blue-50">
+                <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="sr-only">Notifications</span>
               </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-                    <Avatar className="h-9 w-9">
+                  <Button variant="ghost" className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full">
+                    <Avatar className="h-8 w-8 sm:h-9 sm:w-9">
                       <AvatarImage src="/avatars/admin.png" alt="Admin" />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">A</AvatarFallback>
+                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs sm:text-sm">A</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
@@ -136,8 +136,8 @@ export default function AdminLayout({
         </div>
        </header>
 
-       <main className="container mx-auto px-4 py-8">
-         <div className="space-y-8">
+       <main className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8">
+         <div className="space-y-6 sm:space-y-8">
            {children}
          </div>
        </main>

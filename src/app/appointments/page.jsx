@@ -89,6 +89,5 @@ export default async function AppointmentsPage({ searchParams }) {
           </Card>
         )}
       </div>
-    </div>
   );
 }

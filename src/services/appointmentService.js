@@ -1,4 +1,3 @@
-
 import { db } from '@/lib/firebase';
 import { collection, getDocs, doc, getDoc, addDoc, query, orderBy, where } from 'firebase/firestore';
 import { getDoctorById } from './doctorService';
@@ -137,4 +136,11 @@ export const createAppointment = async (data) => {
     console.error("Failed to create appointment in Firestore:", error);
     throw new Error("Could not create appointment.");
  }
+};
+
+// Stub for updateAppointmentStatusInDb
+export const updateAppointmentStatusInDb = async (appointmentId, status) => {
+  // TODO: Implement actual update logic
+  console.log(`Stub: update status for appointment ${appointmentId} to ${status}`);
+  return { appointmentId, status };
 };

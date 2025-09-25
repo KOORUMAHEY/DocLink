@@ -7,12 +7,12 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCK0yLfr8EpCrCZ0OBuAaZtuz1qZ2Ftqgs",
-  authDomain: "doclinkjipmer.firebaseapp.com",
-  projectId: "doclinkjipmer",
-  storageBucket: "doclinkjipmer.appspot.com",
-  messagingSenderId: "489033618166",
-  appId: "1:489033618166:web:f814a59ce93dd53b6412d7"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
 // Initialize Firebase

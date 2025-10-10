@@ -55,7 +55,18 @@ export const getAppointments = async (filters = {}) => {
     return appointmentList;
   } catch (error) {
     console.error("Failed to fetch appointments from Firestore:", error);
-    throw new Error("Could not fetch appointments.");
+    console.error("Error details:", {
+      message: error.message,
+      code: error.code,
+      stack: error.stack
+    });
+    
+    // Check if it's a Firebase configuration error
+    if (error.message && error.message.includes('Firebase')) {
+      throw new Error("Firebase is not configured properly. Please check your environment variables.");
+    }
+    
+    throw new Error(`Could not fetch appointments: ${error.message}`);
   }
 };
 

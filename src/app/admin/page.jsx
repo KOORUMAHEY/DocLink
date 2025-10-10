@@ -35,13 +35,17 @@ async function getDashboardStats() {
     };
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
+    console.error('Please ensure Firebase is properly configured with environment variables.');
+    
+    // Return default values with a warning
     return {
       totalAppointments: 0,
       scheduledAppointments: 0,
       completedAppointments: 0,
       activeDoctors: 0,
       totalPatients: 0,
-      occupancyRate: 0
+      occupancyRate: 0,
+      error: error.message
     };
   }
 }

@@ -123,23 +123,44 @@ export const createAppointment = async (data) => {
         await createOrUpdatePatient(data);
     }
 
+    // Helper function to remove undefined values (Firestore doesn't accept undefined)
+    const cleanData = (obj) => {
+        const cleaned = {};
+        Object.keys(obj).forEach(key => {
+            const value = obj[key];
+            if (value !== undefined) {
+                // For nested objects, recursively clean
+                if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+                    cleaned[key] = cleanData(value);
+                } else {
+                    cleaned[key] = value;
+                }
+            }
+        });
+        return cleaned;
+    };
 
-    const newAppointment = {
+    // Build appointment object with proper null fallbacks
+    const appointmentData = {
         patientType: data.patientType,
         hospitalId: data.hospitalId,
-        patientName: data.patientName,
-        patientPhone: data.patientPhone,
-        patientEmail: data.patientEmail,
-        age: data.age,
-        gender: data.gender,
-        healthPriority: data.healthPriority,
-        description: data.description || 'N/A',
         doctorId: data.doctorId,
         doctorName,
         appointmentDate: data.appointmentDate,
         status: 'scheduled',
+        healthPriority: data.healthPriority || 'normal',
+        description: data.description || 'N/A',
         customFields: data.customFields || {},
     };
+
+    // Add optional fields only if they have values
+    if (data.patientName) appointmentData.patientName = data.patientName;
+    if (data.patientPhone) appointmentData.patientPhone = data.patientPhone;
+    if (data.patientEmail) appointmentData.patientEmail = data.patientEmail;
+    if (data.age) appointmentData.age = data.age;
+    if (data.gender) appointmentData.gender = data.gender;
+
+    const newAppointment = cleanData(appointmentData);
 
     const docRef = await addDoc(collection(db, 'appointments'), newAppointment);
     

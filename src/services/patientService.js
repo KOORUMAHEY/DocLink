@@ -49,17 +49,35 @@ export const getPatientByHospitalId = async (hospitalId) => {
 export const createOrUpdatePatient = async (patientData) => {
     try {
         const patientRef = doc(db, 'patients', patientData.hospitalId);
-        // Using setDoc with merge: true to create or update.
-        await setDoc(patientRef, {
-            name: patientData.patientName,
-            phone: patientData.patientPhone,
-            email: patientData.patientEmail,
-            age: patientData.age,
-            gender: patientData.gender,
+        
+        // Helper function to remove undefined values (Firestore doesn't accept undefined)
+        const cleanData = (obj) => {
+            const cleaned = {};
+            Object.keys(obj).forEach(key => {
+                const value = obj[key];
+                if (value !== undefined) {
+                    cleaned[key] = value;
+                }
+            });
+            return cleaned;
+        };
+        
+        // Build patient object with only defined values
+        const patientDoc = {
             hospitalId: patientData.hospitalId,
-            doctorId: patientData.doctorId || null,
-            doctorName: patientData.doctorName || null,
-        }, { merge: true });
+        };
+        
+        // Add optional fields only if they have values
+        if (patientData.patientName) patientDoc.name = patientData.patientName;
+        if (patientData.patientPhone) patientDoc.phone = patientData.patientPhone;
+        if (patientData.patientEmail) patientDoc.email = patientData.patientEmail;
+        if (patientData.age) patientDoc.age = patientData.age;
+        if (patientData.gender) patientDoc.gender = patientData.gender;
+        if (patientData.doctorId) patientDoc.doctorId = patientData.doctorId;
+        if (patientData.doctorName) patientDoc.doctorName = patientData.doctorName;
+        
+        // Using setDoc with merge: true to create or update.
+        await setDoc(patientRef, cleanData(patientDoc), { merge: true });
 
         return { success: true };
     } catch(error) {

@@ -79,7 +79,7 @@ export const createOrUpdatePatient = async (patientData) => {
         // Using setDoc with merge: true to create or update.
         await setDoc(patientRef, cleanData(patientDoc), { merge: true });
 
-        return { success: true };
+        return patientRef;
     } catch(error) {
         console.error("Failed to create or update patient:", error);
         return { success: false, error: "Could not save patient data."};

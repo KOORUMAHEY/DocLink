@@ -20,6 +20,14 @@ export default async function AppointmentsPage({ searchParams }) {
     appointments = await getAppointments({ searchQuery });
   }
 
+  // Convert Firestore Timestamps to plain objects for client components
+  const serializedAppointments = appointments.map(appointment => ({
+    ...appointment,
+    appointmentDate: appointment.appointmentDate?.toDate?.() || appointment.appointmentDate,
+    createdAt: appointment.createdAt?.toDate?.() || appointment.createdAt,
+    lastUpdated: appointment.lastUpdated?.toDate?.() || appointment.lastUpdated,
+  }));
+
   return (
     <div className="space-y-6 lg:space-y-8">
       {/* Page Header */}
@@ -66,7 +74,7 @@ export default async function AppointmentsPage({ searchParams }) {
 
         {/* Results Section */}
         {hasSearchQuery ? (
-          <AppointmentsDisplay appointments={appointments} />
+          <AppointmentsDisplay appointments={serializedAppointments} />
         ) : (
           <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
             <CardContent className="text-center py-12 sm:py-16 px-4 sm:px-6">

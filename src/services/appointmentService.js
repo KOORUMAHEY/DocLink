@@ -110,68 +110,71 @@ export const getAppointmentById = async (id) => {
 };
 
 export const createAppointment = async (data) => {
- try {
-    const doctor = await getDoctorById(data.doctorId);
-
-    if (!doctor) {
-        throw new Error("Doctor not found");
-    }
-    const doctorName = doctor.name;
-    
-    // If it's a new patient, create an entry in the 'patients' collection
-    if (data.patientType === 'new') {
-        await createOrUpdatePatient(data);
+  try {
+    // Convert the date string to a Firestore timestamp
+    const appointmentDate = new Date(data.appointmentDate);
+    if (isNaN(appointmentDate.getTime())) {
+      throw new Error('Invalid appointment date');
     }
 
-    // Helper function to remove undefined values (Firestore doesn't accept undefined)
-    const cleanData = (obj) => {
-        const cleaned = {};
-        Object.keys(obj).forEach(key => {
-            const value = obj[key];
-            if (value !== undefined) {
-                // For nested objects, recursively clean
-                if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
-                    cleaned[key] = cleanData(value);
-                } else {
-                    cleaned[key] = value;
-                }
-            }
-        });
-        return cleaned;
+    const timeSlot = data.timeSlot.split('-')[0].trim(); // Get start time
+    const [hours, minutes] = timeSlot.split(':').map(Number);
+    appointmentDate.setHours(hours, minutes, 0, 0);
+
+    // First create or update the patient
+    let patientData = {
+      hospitalId: data.hospitalId,
+      patientName: data.patientName,
+      patientPhone: data.patientPhone,
+      patientEmail: data.patientEmail,
+      age: data.age,
+      gender: data.gender,
     };
+    
+    const patientRef = await createOrUpdatePatient(patientData);
 
-    // Build appointment object with proper null fallbacks
+    // Prepare appointment data
     const appointmentData = {
-        patientType: data.patientType,
-        hospitalId: data.hospitalId,
-        doctorId: data.doctorId,
-        doctorName,
-        appointmentDate: data.appointmentDate,
-        status: 'scheduled',
-        healthPriority: data.healthPriority || 'normal',
-        description: data.description || 'N/A',
-        customFields: data.customFields || {},
+      ...data,
+      appointmentDate: appointmentDate,
+      createdAt: new Date(),
+      status: 'scheduled',
+      patientId: patientRef.id,
+      lastUpdated: new Date()
     };
 
-    // Add optional fields only if they have values
-    if (data.patientName) appointmentData.patientName = data.patientName;
-    if (data.patientPhone) appointmentData.patientPhone = data.patientPhone;
-    if (data.patientEmail) appointmentData.patientEmail = data.patientEmail;
-    if (data.age) appointmentData.age = data.age;
-    if (data.gender) appointmentData.gender = data.gender;
+    // Remove redundant patient data from appointment
+    delete appointmentData.patientName;
+    delete appointmentData.patientPhone;
+    delete appointmentData.patientEmail;
+    delete appointmentData.age;
+    delete appointmentData.gender;
 
-    const newAppointment = cleanData(appointmentData);
+    // Create the appointment
+    const appointmentsCol = collection(db, 'appointments');
+    const docRef = await addDoc(appointmentsCol, appointmentData);
 
-    const docRef = await addDoc(collection(db, 'appointments'), newAppointment);
-    
-    return { ...newAppointment, id: docRef.id };
- } catch(error) {
-    console.error("Failed to create appointment in Firestore:", error);
-    throw new Error("Could not create appointment.");
- }
-};
+    // Get doctor details for confirmation
+    const doctorDetails = await getDoctorById(data.doctorId);
 
-// Stub for updateAppointmentStatusInDb
+    return { 
+      id: docRef.id,
+      doctor: doctorDetails,
+      date: appointmentDate,
+      timeSlot: data.timeSlot,
+      patientId: patientRef.id
+    };
+  } catch (error) {
+    console.error('Error creating appointment:', error);
+    if (error.code === 'permission-denied') {
+      throw new Error('You do not have permission to create appointments.');
+    }
+    if (error.message.includes('Firebase')) {
+      throw new Error('System is temporarily unavailable. Please try again later.');
+    }
+    throw new Error(error.message || 'Failed to create appointment. Please try again.');
+  }
+};// Stub for updateAppointmentStatusInDb
 export const updateAppointmentStatusInDb = async (appointmentId, status) => {
   // TODO: Implement actual update logic
   console.log(`Stub: update status for appointment ${appointmentId} to ${status}`);

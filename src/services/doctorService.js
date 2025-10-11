@@ -1,20 +1,22 @@
 
 import { db } from '@/lib/firebase';
 import { collection, getDocs, doc, getDoc, addDoc, query, where } from 'firebase/firestore';
+import { doctors as mockDoctors } from '@/lib/mock-data';
 
 export const getDoctors = async () => {
   try {
     const doctorsCol = collection(db, 'doctors');
     const doctorSnapshot = await getDocs(doctorsCol);
     if (doctorSnapshot.empty) {
-        console.log("No doctors found in Firestore.");
-        return [];
+        console.log("No doctors found in Firestore, using mock data.");
+        return mockDoctors;
     }
     const doctorList = doctorSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     return doctorList;
   } catch (error) {
     console.error("Failed to fetch doctors from Firestore:", error);
-    throw new Error("Could not fetch doctors.");
+    console.log("Falling back to mock data.");
+    return mockDoctors;
   }
 };
 

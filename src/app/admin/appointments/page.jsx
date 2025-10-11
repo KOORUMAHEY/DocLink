@@ -54,6 +54,14 @@ function getStatusBadge(status) {
 export default async function AdminAppointmentsPage() {
   const appointments = await getAppointments();
 
+  // Serialize Firestore Timestamps for client compatibility
+  const serializedAppointments = appointments.map(appt => ({
+    ...appt,
+    appointmentDate: appt.appointmentDate?.toDate?.() || new Date(appt.appointmentDate),
+    createdAt: appt.createdAt?.toDate?.() || new Date(appt.createdAt),
+    lastUpdated: appt.lastUpdated?.toDate?.() || new Date(appt.lastUpdated),
+  }));
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30">
       <div className="space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8">
@@ -92,7 +100,7 @@ export default async function AdminAppointmentsPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-2">
                   <p className="text-sm font-semibold text-blue-700 uppercase tracking-wide">Total</p>
-                  <p className="text-4xl font-bold text-blue-900">{appointments.length}</p>
+                  <p className="text-4xl font-bold text-blue-900">{serializedAppointments.length}</p>
                   <div className="flex items-center gap-2 text-sm text-blue-600">
                     <TrendingUp className="h-4 w-4" />
                     <span>+8% from last week</span>
@@ -112,7 +120,7 @@ export default async function AdminAppointmentsPage() {
                 <div className="space-y-2">
                   <p className="text-sm font-semibold text-indigo-700 uppercase tracking-wide">Scheduled</p>
                   <p className="text-4xl font-bold text-indigo-900">
-                    {appointments.filter(a => a.status === 'scheduled').length}
+                    {serializedAppointments.filter(a => a.status === 'scheduled').length}
                   </p>
                   <div className="flex items-center gap-2 text-sm text-indigo-600">
                     <Clock className="h-4 w-4" />
@@ -133,7 +141,7 @@ export default async function AdminAppointmentsPage() {
                 <div className="space-y-2">
                   <p className="text-sm font-semibold text-green-700 uppercase tracking-wide">Completed</p>
                   <p className="text-4xl font-bold text-green-900">
-                    {appointments.filter(a => a.status === 'completed').length}
+                    {serializedAppointments.filter(a => a.status === 'completed').length}
                   </p>
                   <div className="flex items-center gap-2 text-sm text-green-600">
                     <CheckCircle className="h-4 w-4" />
@@ -154,7 +162,7 @@ export default async function AdminAppointmentsPage() {
                 <div className="space-y-2">
                   <p className="text-sm font-semibold text-red-700 uppercase tracking-wide">Cancelled</p>
                   <p className="text-4xl font-bold text-red-900">
-                    {appointments.filter(a => a.status === 'cancelled').length}
+                    {serializedAppointments.filter(a => a.status === 'cancelled').length}
                   </p>
                   <div className="flex items-center gap-2 text-sm text-red-600">
                     <XCircle className="h-4 w-4" />
@@ -220,7 +228,7 @@ export default async function AdminAppointmentsPage() {
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-5 w-5" />
-              <span className="font-semibold">{appointments.length} total</span>
+              <span className="font-semibold">{serializedAppointments.length} total</span>
             </div>
           </div>
         </CardHeader>
@@ -238,7 +246,7 @@ export default async function AdminAppointmentsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {appointments.length === 0 ? (
+                  {serializedAppointments.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center py-16">
                         <div className="flex flex-col items-center gap-6">
@@ -264,7 +272,7 @@ export default async function AdminAppointmentsPage() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    appointments.map((appt) => (
+                    serializedAppointments.map((appt) => (
                       <TableRow key={appt.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-200 border-b border-gray-100 group">
                         <TableCell className="py-6 px-8">
                           <div className="flex flex-col">

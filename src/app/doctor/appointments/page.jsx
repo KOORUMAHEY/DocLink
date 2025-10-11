@@ -15,7 +15,15 @@ async function DoctorAppointmentsContent({ doctorId }) {
     notFound();
   }
 
-  return <DoctorAppointmentsClient doctor={doctor} initialAppointments={appointments} />;
+  // Serialize Firestore Timestamps for client compatibility
+  const serializedAppointments = appointments.map(appt => ({
+    ...appt,
+    appointmentDate: appt.appointmentDate?.toDate?.() || new Date(appt.appointmentDate),
+    createdAt: appt.createdAt?.toDate?.() || new Date(appt.createdAt),
+    lastUpdated: appt.lastUpdated?.toDate?.() || new Date(appt.lastUpdated),
+  }));
+
+  return <DoctorAppointmentsClient doctor={doctor} initialAppointments={serializedAppointments} />;
 }
 
 export default async function DoctorAppointmentsPage({ searchParams }) {

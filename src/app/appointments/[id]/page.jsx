@@ -10,6 +10,14 @@ export default async function AppointmentDetailsPage({ params }) {
     notFound();
   }
 
+  // Convert Firestore Timestamps to plain objects for client components
+  const serializedAppointment = {
+    ...appointment,
+    appointmentDate: appointment.appointmentDate?.toDate?.() || appointment.appointmentDate,
+    createdAt: appointment.createdAt?.toDate?.() || appointment.createdAt,
+    lastUpdated: appointment.lastUpdated?.toDate?.() || appointment.lastUpdated,
+  };
+
   // Pass role="user" for the public-facing page
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4 sm:p-6 lg:p-8">
@@ -27,7 +35,7 @@ export default async function AppointmentDetailsPage({ params }) {
 
       {/* Appointment Details */}
       <div className="max-w-4xl mx-auto">
-        <AppointmentDetailsClient appointment={appointment} role="user" />
+        <AppointmentDetailsClient appointment={serializedAppointment} role="user" />
       </div>
     </div>
   );

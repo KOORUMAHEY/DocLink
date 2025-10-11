@@ -54,9 +54,20 @@ export function Footer() {
         </div>
 
         <div className="border-t border-gray-300 mt-8 pt-8 text-center">
-          <p className="text-sm text-gray-700">
-            © {new Date().getFullYear()} DocLink. All rights reserved.
-          </p>
+          <div className="space-y-2">
+            <p className="text-sm text-gray-700">
+              © {new Date().getFullYear()} DocLink. All rights reserved.
+            </p>
+            <p className="text-xs text-gray-600">
+              123 Healthcare Avenue, Medical District, Chennai, Tamil Nadu 600001
+            </p>
+            <p className="text-xs text-gray-600">
+              Support: support@doclink.com | Emergency: 108
+            </p>
+            <p className="text-xs text-gray-500 mt-4">
+              This platform is for healthcare professionals only. All medical data is encrypted and HIPAA compliant.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

@@ -7,7 +7,8 @@
         "account": "My Account",
         "my_appointments": "My Appointments",
         "doctor_login": "Doctor Login",
-        "emergency": "Emergency: 108"
+        "emergency": "Emergency: 108",
+        "tagline": "Connecting Healthcare Professionals"
     },
     "home": {
         "hero": {
@@ -60,11 +61,15 @@
         }
     },
     "login": {
-        "title": "Login",
-        "description": "Access your dashboard to manage appointments.",
-        "email_label": "Email",
+        "title": "Secure Login for Doctors",
+        "description": "Access your practice dashboard to manage appointments and patient care.",
+        "email_label": "Registered Email Address",
         "password_label": "Password",
-        "button": "Login"
+        "button": "Login",
+        "forgot_password": "Forgot Password?",
+        "sign_up": "Sign Up as Doctor",
+        "having_trouble": "Having trouble? Contact Support",
+        "secured_by": "Secured by DocLink"
     },
     "forms": {
         "buttons": {

@@ -30,7 +30,7 @@ export function Navbar() {
 							</div>
 							<div className="flex flex-col">
 								<span className="text-lg font-bold text-gray-900 leading-tight">DocLink</span>
-								<span className="text-xs text-gray-500 hidden sm:block">Healthcare</span>
+								<span className="text-xs text-gray-500 hidden sm:block">{t('navbar.tagline')}</span>
 							</div>
 						</Link>
 					</div>
@@ -133,7 +133,10 @@ export function Navbar() {
 											<div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
 												<HiHeart className="h-4 w-4 text-white" />
 											</div>
-											<span className="text-lg font-bold text-gray-900">DocLink</span>
+											<div className="flex flex-col">
+												<span className="text-lg font-bold text-gray-900">DocLink</span>
+												<span className="text-xs text-gray-500">{t('navbar.tagline')}</span>
+											</div>
 										</div>
 									</div>
 

@@ -15,14 +15,18 @@ import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AppointmentDetailsClient } from './appointment-details-client';
-import { FileText, Calendar, Clock, CheckCircle, XCircle, AlertCircle, TrendingUp, Activity } from 'lucide-react';
+import { FileText, Calendar, Clock, CheckCircle, XCircle, AlertCircle, TrendingUp, Activity, Search, Filter, Plus } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
 
-export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
+export function DoctorAppointmentsClient({ doctor, initialAppointments }) { // eslint-disable-line react/prop-types
   const [appointments, setAppointments] = useState(initialAppointments);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [formattedDates, setFormattedDates] = useState({});
   const [isClient, setIsClient] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   useEffect(() => {
     setIsClient(true);
@@ -41,8 +45,44 @@ export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
     setSelectedAppointment(appointment);
   };
 
+  // Filter and search appointments
+  const filteredAppointments = appointments.filter(appt => {
+    const matchesSearch = searchTerm === '' ||
+      appt.patientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      appt.hospitalId?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesStatus = statusFilter === 'all' || appt.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  }).sort((a, b) => {
+    let aValue, bValue;
+
+    switch (sortBy) {
+      case 'date':
+        aValue = new Date(a.appointmentDate);
+        bValue = new Date(b.appointmentDate);
+        break;
+      case 'patient':
+        aValue = a.patientName || '';
+        bValue = b.patientName || '';
+        break;
+      case 'status':
+        aValue = a.status;
+        bValue = b.status;
+        break;
+      default:
+        return 0;
+    }
+
+    if (sortOrder === 'asc') {
+      return aValue > bValue ? 1 : -1;
+    } else {
+      return aValue < bValue ? 1 : -1;
+    }
+  });
+
   // Find the appointment from the list to ensure we have the latest data
-  const currentlySelectedAppointment = appointments.find(a => a.id === selectedAppointment?.id) || selectedAppointment;
+  const currentlySelectedAppointment = filteredAppointments.find(a => a.id === selectedAppointment?.id) || selectedAppointment;
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -58,26 +98,69 @@ export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-green-50/30">
-      <div className="space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
-                <Calendar className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                  My Appointments
-                </h1>
-                <p className="text-lg text-muted-foreground mt-1">Manage your scheduled appointments</p>
-              </div>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
+              <Calendar className="h-8 w-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                My Appointments
+              </h1>
+              <p className="text-lg text-muted-foreground mt-1">Manage your scheduled appointments</p>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Stats Cards */}
+        {/* Search and Filters */}
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <input
+                type="text"
+                placeholder="Search patients or IDs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full sm:w-64"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="all">All Status</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="date">Sort by Date</option>
+              <option value="patient">Sort by Patient</option>
+              <option value="status">Sort by Status</option>
+            </select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className="px-3"
+            >
+              {sortOrder === 'asc' ? '↑' : '↓'}
+            </Button>
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {filteredAppointments.length} of {appointments.length} appointments
+          </div>
+        </div>
         <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <Card className="relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-blue-50 to-blue-100/50">
             <CardContent className="p-4 sm:p-6">
@@ -170,7 +253,7 @@ export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
                   <div>
                     <CardTitle className="text-2xl font-bold text-gray-900">Appointments for {doctor.name}</CardTitle>
                     <CardDescription className="text-lg text-muted-foreground mt-2">
-                      A list of your scheduled appointments.
+                      A list of your scheduled appointments. Showing {filteredAppointments.length} of {appointments.length} appointments.
                     </CardDescription>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -180,7 +263,7 @@ export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
                 </div>
               </CardHeader>
               <CardContent className="p-0">
-                {appointments.length === 0 ? (
+                {filteredAppointments.length === 0 ? (
                   <div className="text-center py-16">
                     <div className="flex flex-col items-center gap-6">
                       <div className="relative">
@@ -211,7 +294,7 @@ export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {appointments.map((appt) => (
+                        {filteredAppointments.map((appt) => (
                           <TableRow key={appt.id} className="hover:bg-gradient-to-r hover:from-blue-50/50 hover:to-purple-50/50 transition-all duration-200 border-b border-gray-100 group cursor-pointer" onClick={() => handleViewDetails(appt)}>
                             <TableCell className="py-6 px-8">
                               <div className="flex items-center gap-4">
@@ -291,7 +374,6 @@ export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
             )}
           </div>
         </div>
-      </div>
     </div>
   );
 }

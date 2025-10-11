@@ -49,6 +49,11 @@ export default function AdvancedTemplateDesigner({ doctorId, onFormConfigChange 
   const [previewMode, setPreviewMode] = useState(false);
   const [draggedField, setDraggedField] = useState(null);
   const [draggedSection, setDraggedSection] = useState(null);
+  const [selectedTheme, setSelectedTheme] = useState({
+    name: 'Blue Professional',
+    gradient: 'from-blue-600 to-blue-700',
+    primaryColor: 'blue'
+  });
 
   useEffect(() => {
     loadFormConfig();

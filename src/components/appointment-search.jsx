@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -65,22 +64,25 @@ export function AppointmentSearch() {
                 <FormItem className="w-full sm:w-auto flex-grow">
                   <FormLabel className="text-gray-700 font-semibold text-sm lg:text-base">{t('forms.search.label')}</FormLabel>
                   <FormControl>
-                    <Input 
-                      placeholder={t('forms.search.placeholder')} 
-                      {...field}
-                      className="border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 h-12 lg:h-14 text-sm lg:text-base"
-                    />
+                    <div className="relative">
+                      <Input 
+                        placeholder="Enter Phone Number or Hospital ID" 
+                        {...field}
+                        className="border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 h-14 lg:h-16 text-base lg:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 pr-12"
+                      />
+                      <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    </div>
                   </FormControl>
-                  <FormMessage className="text-red-500" />
+                  <FormMessage className="text-red-600 font-medium text-sm mt-2" />
                 </FormItem>
               )}
             />
             <Button 
               type="submit" 
-              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-6 lg:px-8 py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold h-12 lg:h-14"
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8 lg:px-10 py-4 lg:py-4 rounded-xl font-bold text-base lg:text-lg h-14 lg:h-16"
             >
-                <Search className="mr-2 h-4 w-4 lg:h-5 lg:w-5" />
-                <span className="text-sm lg:text-base">{t('forms.buttons.search')}</span>
+                <Search className="mr-3 h-5 w-5 lg:h-6 lg:w-6" />
+                <span>Search</span>
             </Button>
           </form>
         </Form>
@@ -89,4 +91,3 @@ export function AppointmentSearch() {
   );
 }
 
-    

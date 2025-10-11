@@ -1,6 +1,5 @@
-
 import Link from 'next/link';
-import { Sparkles, MessageSquare, Hash, Briefcase } from 'lucide-react';
+import { Sparkles, Facebook, Twitter, Linkedin } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -21,15 +20,18 @@ export function Footer() {
           {/* Quick Links */}
           <div className="flex flex-col items-center sm:items-start">
             <h3 className="font-semibold text-gray-900 mb-4">Quick Links</h3>
-            <div className="space-y-2">
-              <Link href="/contact" className="block text-sm text-gray-700 hover:text-blue-600 transition-colors">
-                Contact
+            <div className="flex flex-wrap gap-6">
+              <Link href="/contact" className="flex items-center space-x-2 text-sm text-gray-700 hover:text-blue-600 transition-colors">
+                <span className="text-blue-600">📞</span>
+                <span>Contact</span>
               </Link>
-              <Link href="/privacy" className="block text-sm text-gray-700 hover:text-blue-600 transition-colors">
-                Privacy Policy
+              <Link href="/privacy" className="flex items-center space-x-2 text-sm text-gray-700 hover:text-blue-600 transition-colors">
+                <span className="text-blue-600">🔒</span>
+                <span>Privacy</span>
               </Link>
-              <Link href="/terms" className="block text-sm text-gray-700 hover:text-blue-600 transition-colors">
-                Terms of Service
+              <Link href="/terms" className="flex items-center space-x-2 text-sm text-gray-700 hover:text-blue-600 transition-colors">
+                <span className="text-blue-600">📋</span>
+                <span>Terms</span>
               </Link>
             </div>
           </div>
@@ -38,15 +40,15 @@ export function Footer() {
           <div className="flex flex-col items-center sm:items-start sm:col-span-1 lg:col-span-1">
             <h3 className="font-semibold text-gray-900 mb-4">Follow Us</h3>
             <div className="flex space-x-4">
-              <button className="text-gray-700 hover:text-blue-600 p-2 rounded-full hover:bg-gray-200 transition-all">
-                <MessageSquare className="h-5 w-5" />
-              </button>
-              <button className="text-gray-700 hover:text-blue-600 p-2 rounded-full hover:bg-gray-200 transition-all">
-                <Hash className="h-5 w-5" />
-              </button>
-              <button className="text-gray-700 hover:text-blue-600 p-2 rounded-full hover:bg-gray-200 transition-all">
-                <Briefcase className="h-5 w-5" />
-              </button>
+              <a href="#" className="text-gray-700 hover:text-blue-600 p-3 rounded-full hover:bg-blue-50 transition-all duration-200 border border-gray-200 hover:border-blue-300" aria-label="Follow us on Facebook">
+                <Facebook className="h-6 w-6" />
+              </a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 p-3 rounded-full hover:bg-blue-50 transition-all duration-200 border border-gray-200 hover:border-blue-300" aria-label="Follow us on Twitter">
+                <Twitter className="h-6 w-6" />
+              </a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 p-3 rounded-full hover:bg-blue-50 transition-all duration-200 border border-gray-200 hover:border-blue-300" aria-label="Follow us on LinkedIn">
+                <Linkedin className="h-6 w-6" />
+              </a>
             </div>
           </div>
         </div>

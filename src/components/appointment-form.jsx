@@ -1,4 +1,3 @@
-
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -214,9 +213,9 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
       const defaults = {
         patientType: "new",
         hospitalId: "",
-        doctorId: preselectedDoctorId,
-        appointmentDate: undefined,
-        timeSlot: undefined,
+        doctorId: preselectedDoctorId || "",
+        appointmentDate: "",
+        timeSlot: "",
       };
 
       // Add standard fields
@@ -225,7 +224,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
         patientPhone: "",
         patientEmail: "",
         age: "",
-        gender: undefined,
+        gender: "",
         healthPriority: "normal",
         description: "",
       };
@@ -243,7 +242,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
             defaults[field.id] = false;
             break;
           case 'number':
-            defaults[field.id] = undefined;
+            defaults[field.id] = 0;
             break;
           default:
             defaults[field.id] = "";
@@ -284,7 +283,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
           form.setValue("patientEmail", patientEmail || "");
         }
         if (formConfig?.requiredFields?.includes('age') || formConfig?.optionalFields?.includes('age')) {
-          form.setValue("age", age);
+          form.setValue("age", age?.toString() || "");
         }
         if (formConfig?.requiredFields?.includes('gender') || formConfig?.optionalFields?.includes('gender')) {
           form.setValue("gender", gender);

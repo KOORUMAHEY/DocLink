@@ -580,12 +580,17 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
       }
     };
 
-    // Render field for template-based forms
-    const renderTemplateField = (fieldConfig, formField) => {
+    // Unified field renderer
+    const renderFormField = (fieldConfig, formField) => {
         // Ensure the field has a defined value to prevent controlled/uncontrolled issues
+        let fieldValue = formField.value;
+        if (fieldValue === undefined) {
+            fieldValue = fieldConfig.type === 'checkbox-group' ? [] : fieldConfig.type === 'checkbox' ? false : "";
+        }
+
         const fieldProps = {
             ...formField,
-            value: formField.value ?? (fieldConfig.type === 'number' ? 0 : ''),
+            value: fieldValue,
         };
 
         switch (fieldConfig.type) {
@@ -930,7 +935,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                                         <FormItem className={field.type === 'textarea' || field.type === 'checkbox-group' ? 'sm:col-span-2' : ''}>
                                                             <FormLabel>{field.label} {field.required ? '*' : ''}</FormLabel>
                                                             <FormControl>
-                                                                {renderTemplateField(field, formField)}
+                                                                {renderFormField(field, formField)}
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
@@ -948,7 +953,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                     <FormItem>
                                         <FormLabel>{field.label} {field.required ? '*' : ''}</FormLabel>
                                         <FormControl>
-                                            {renderField(field, field.id)}
+                                            {renderFormField(field, formField)}
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -1120,5 +1125,3 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
         </div>
     );
 }
-
-

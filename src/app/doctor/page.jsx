@@ -68,7 +68,7 @@ async function DoctorDashboardContent({ doctorId }) {
                 <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                   Welcome, {doctor.name}
                 </h1>
-                <p className="text-lg text-muted-foreground mt-1">Here's a summary of your activity.</p>
+                <p className="text-lg text-muted-foreground mt-1">Here&apos;s a summary of your activity.</p>
               </div>
             </div>
           </div>

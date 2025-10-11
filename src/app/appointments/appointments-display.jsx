@@ -58,7 +58,7 @@ function AppointmentsDisplay({ appointments }) {
             </div>
           </div>
           <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No Appointments Found</h3>
-          <p className="text-sm sm:text-base text-muted-foreground mb-1">We couldn't find any appointments matching your search.</p>
+          <p className="text-sm sm:text-base text-muted-foreground mb-1">We couldn&apos;t find any appointments matching your search.</p>
           <p className="text-xs sm:text-sm text-muted-foreground">Try adjusting your search criteria or book a new appointment.</p>
         </CardContent>
       </Card>

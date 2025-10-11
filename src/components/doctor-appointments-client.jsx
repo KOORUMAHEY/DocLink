@@ -194,7 +194,7 @@ export function DoctorAppointmentsClient({ doctor, initialAppointments }) {
                       <div className="space-y-2">
                         <h3 className="text-2xl font-bold text-gray-900">No appointments scheduled</h3>
                         <p className="text-lg text-muted-foreground max-w-md">
-                          You don't have any appointments scheduled at the moment. New appointments will appear here.
+                          You don&apos;t have any appointments scheduled at the moment. New appointments will appear here.
                         </p>
                       </div>
                     </div>

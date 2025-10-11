@@ -180,7 +180,7 @@ function DoctorPatientsContent() {
                   <div className="space-y-2">
                     <h3 className="text-2xl font-bold text-gray-900">No saved patients</h3>
                     <p className="text-lg text-muted-foreground max-w-md">
-                      You haven't saved any patients yet. Save patients from appointment details to access them quickly here.
+                      You haven&apos;t saved any patients yet. Save patients from appointment details to access them quickly here.
                     </p>
                   </div>
                 </div>

@@ -115,7 +115,7 @@ export default async function AdminDashboardPage() {
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
                   Dashboard
                 </h1>
-                <p className="text-base sm:text-lg text-muted-foreground mt-1">Welcome back! Here's what's happening with your clinic.</p>
+                <p className="text-base sm:text-lg text-muted-foreground mt-1">Welcome back! Here&apos;s what&apos;s happening with your clinic.</p>
               </div>
             </div>
           </div>

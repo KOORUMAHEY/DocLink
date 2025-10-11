@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Menu, User, Languages, Calendar, X } from 'lucide-react';
+import { Menu, User, Languages, Calendar } from 'lucide-react';
 import { HiHeart } from 'react-icons/hi';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/context/i18n';
@@ -38,7 +37,7 @@ export function Navbar() {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          <nav className="hidden md:flex items-center space-x-6">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
@@ -49,13 +48,12 @@ export function Navbar() {
                   className={cn(
                     'flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                     isActive
-                      ? 'bg-blue-50 text-blue-700 shadow-sm'
+                      ? 'bg-blue-50 text-blue-700 shadow-sm border-b-2 border-blue-600'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                   )}
                 >
                   <Icon className={cn('h-4 w-4', isActive ? 'text-blue-600' : 'text-gray-500')} />
                   <span>{t(`navbar.${link.label}`)}</span>
-                  {isActive && <div className="w-1.5 h-1.5 bg-blue-600 rounded-full"></div>}
                 </Link>
               );
             })}

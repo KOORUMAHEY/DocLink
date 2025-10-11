@@ -17,32 +17,51 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:py-20 md:py-32">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-12 px-4 sm:py-20 md:py-32" style={{backgroundImage: 'url(https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundBlendMode: 'overlay'}}>
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
         <div className="container relative mx-auto max-w-6xl">
-          <div className="mx-auto max-w-4xl text-center">
-            <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm font-medium tracking-wide uppercase">
-              <Sparkles className="mr-2 h-4 w-4" />
-              DocLink Healthcare
-            </Badge>
-            <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-6xl md:text-7xl lg:text-8xl leading-[1.1] px-2">
-              {t('home.hero.title')}
-            </h1>
-            <p className="mx-auto mb-8 max-w-3xl text-lg text-gray-700 sm:text-xl md:text-2xl leading-relaxed font-light px-2">
-              {t('home.hero.subtitle')}
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4 px-4">
-              <Button asChild size="lg" className="w-full px-6 py-4 text-base sm:w-auto sm:px-8 sm:py-6 sm:text-lg min-h-[48px] touch-manipulation">
-                <Link href="/appointments/book">
-                  {t('home.actions.book.button')}
-                  <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg" className="w-full px-6 py-4 text-base sm:w-auto sm:px-8 sm:py-6 sm:text-lg min-h-[48px] touch-manipulation">
-                <Link href="/appointments">
-                  {t('home.actions.manage.button')}
-                </Link>
-              </Button>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+            <div className="mx-auto max-w-2xl text-center lg:text-left lg:mx-0">
+              <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm font-medium tracking-wide uppercase">
+                <Sparkles className="mr-2 h-4 w-4" />
+                DocLink Healthcare
+              </Badge>
+              <h1 className="mb-6 text-4xl font-extrabold tracking-tight text-gray-900 sm:text-6xl md:text-7xl lg:text-8xl leading-[1.1] px-2">
+                {t('home.hero.title')}
+              </h1>
+              <p className="mx-auto mb-4 max-w-3xl text-lg text-gray-700 sm:text-xl md:text-2xl leading-relaxed font-light px-2 lg:mx-0">
+                {t('home.hero.subtitle')}
+              </p>
+              <p className="mx-auto mb-8 max-w-3xl text-base text-gray-600 sm:text-lg leading-relaxed px-2 lg:mx-0">
+                Connect to healthcare. Book and manage appointments online.
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start sm:gap-4 px-4 lg:px-0">
+                <Button asChild size="lg" className="w-full px-6 py-4 text-base sm:w-auto sm:px-8 sm:py-6 sm:text-lg min-h-[48px] touch-manipulation hover:scale-105 transition-transform">
+                  <Link href="/appointments/book">
+                    {t('home.actions.book.button')}
+                    <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="w-full px-6 py-4 text-base sm:w-auto sm:px-8 sm:py-6 sm:text-lg min-h-[48px] touch-manipulation hover:scale-105 transition-transform">
+                  <Link href="/appointments">
+                    {t('home.actions.manage.button')}
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div className="flex justify-center lg:justify-end">
+              <div className="relative">
+                <div className="w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 bg-gradient-to-br from-blue-100 to-green-100 rounded-full flex items-center justify-center shadow-2xl">
+                  <div className="text-center">
+                    <Heart className="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 text-blue-600 mx-auto mb-4" />
+                    <p className="text-sm sm:text-base lg:text-lg font-semibold text-gray-700">Healthcare</p>
+                    <p className="text-xs sm:text-sm text-gray-600">Made Easy</p>
+                  </div>
+                </div>
+                <div className="absolute -top-4 -right-4 w-12 h-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                  <CheckCircle className="h-6 w-6 text-white" />
+                </div>
+              </div>
             </div>
           </div>
 

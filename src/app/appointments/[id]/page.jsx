@@ -20,7 +20,7 @@ export default async function AppointmentDetailsPage({ params }) {
 
   // Pass role="user" for the public-facing page
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4 sm:p-6 lg:p-8">
+    <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 p-4 sm:p-6 lg:p-8">
       {/* Page Header */}
       <div className="mb-6 lg:mb-8">
         <div className="text-center lg:text-left">

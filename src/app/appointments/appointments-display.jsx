@@ -420,170 +420,162 @@ function AppointmentsDisplay({ appointments }) {
           </div>
         </CardHeader>
 
+        <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-b border-gray-200 p-4 sm:p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg sm:text-xl font-bold text-gray-900 flex items-center">
+                <Calendar className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+                Appointment Results
+              </CardTitle>
+              <CardDescription className="text-sm sm:text-base text-muted-foreground mt-1">
+                Found {appointments.length} appointment{appointments.length !== 1 ? 's' : ''} matching your search criteria
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
         <CardContent className="p-0">
-          {/* Stats Overview */}
-          {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-6 bg-gray-50/50 border-b">
-            <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Calendar className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Total</p>
-                <p className="text-2xl font-bold text-gray-900">{appointments.length}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <div className="p-3 bg-green-100 rounded-lg">
-                <Clock className="h-5 w-5 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Upcoming</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {appointments.filter(a => new Date(a.appointmentDate) > new Date()).length}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-4 bg-white rounded-lg shadow-sm">
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <Users className="h-5 w-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Doctors</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {new Set(appointments.map(a => a.doctorId)).size}
-                </p>
+          {/* Welcome Card */}
+          {appointments.length > 0 && (
+            <div className="p-6 lg:p-8 bg-gradient-to-r from-blue-50 to-green-50 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <Avatar className="h-16 w-16 border-4 border-white shadow-lg">
+                    {appointments[0].patientAvatar ? (
+                      <AvatarImage src={appointments[0].patientAvatar} alt={appointments[0].patientName} />
+                    ) : null}
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-green-500 text-white font-bold text-xl">
+                      {appointments[0].patientName.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Welcome, {appointments[0].patientName}</h2>
+                    <p className="text-gray-600 text-lg">Patient ID: {appointments[0].patientId || 'J1234M'}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-500">Upcoming Appointments</p>
+                  <p className="text-3xl font-bold text-blue-600">{appointments.length}</p>
+                </div>
               </div>
             </div>
-          </div> */}
+          )}
 
-          {/* Appointments Table */}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50 hover:bg-gray-50">
-                  <TableHead className="font-semibold text-gray-900">Patient</TableHead>
-                  <TableHead className="font-semibold text-gray-900 hidden lg:table-cell">Doctor</TableHead>
-                  <TableHead className="font-semibold text-gray-900">Appointment</TableHead>
-                  <TableHead className="font-semibold text-gray-900 hidden md:table-cell text-center">Status</TableHead>
-                  <TableHead className="font-semibold text-gray-900 text-right">Actions</TableHead>
+                <TableRow className="bg-gray-50 hover:bg-gray-50 border-b border-gray-200">
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-left">Patient Details</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 hidden sm:table-cell text-left">Healthcare Provider</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-left">Schedule Information</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 hidden md:table-cell text-center">Status</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {appointments.map((appointment) => (
-                  <TableRow 
-                    key={appointment.id} 
-                    className="hover:bg-blue-50/30 transition-colors cursor-pointer"
-                    onClick={() => handleViewDetails(appointment)}
-                  >
-                    {/* Patient Column */}
-                    <TableCell className="py-4">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12 border-2 border-gray-100">
-                          {appointment.patientAvatar && (
+                  <TableRow key={appointment.id} className="hover:bg-blue-50/50 transition-colors duration-200 border-b border-gray-100">
+                    <TableCell className="py-3 sm:py-4 px-3 sm:px-6">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+                          {appointment.patientAvatar ? (
                             <AvatarImage src={appointment.patientAvatar} alt={appointment.patientName} />
-                          )}
-                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-semibold">
-                            {appointment.patientName?.split(' ').map(n => n[0]).join('')}
+                          ) : null}
+                          <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 font-medium text-xs sm:text-sm">
+                            {appointment.patientName.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0">
-                          <p className="font-semibold text-gray-900">{appointment.patientName}</p>
-                          <p className="text-sm text-gray-500">ID: {appointment.hospitalId}</p>
-                          {appointment.patientPhone && (
-                            <p className="text-xs text-gray-400 flex items-center gap-1">
-                              <Phone className="h-3 w-3" />
-                              {appointment.patientPhone}
-                            </p>
-                          )}
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-gray-900 text-sm sm:text-base">{appointment.patientName}</p>
+                          <p className="text-xs text-muted-foreground">{appointment.patientEmail}</p>
+                          <p className="text-xs text-muted-foreground">{appointment.patientPhone}</p>
+                          <div className="sm:hidden mt-1">
+                            <p className="text-xs text-gray-600">Dr. {appointment.doctorName} • {appointment.specialty}</p>
+                          </div>
                         </div>
                       </div>
                     </TableCell>
-
-                    {/* Doctor Column - Hidden on mobile */}
-                    <TableCell className="py-4 hidden lg:table-cell">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10 border-2 border-gray-100">
-                          {appointment.doctorAvatar && (
+                    <TableCell className="py-3 sm:py-4 px-3 sm:px-6 hidden sm:table-cell">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-8 w-8">
+                          {appointment.doctorAvatar ? (
                             <AvatarImage src={appointment.doctorAvatar} alt={appointment.doctorName} />
-                          )}
-                          <AvatarFallback className="bg-gradient-to-br from-green-500 to-emerald-600 text-white font-semibold text-sm">
-                            {appointment.doctorName?.split(' ').map(n => n[0]).join('')}
+                          ) : null}
+                          <AvatarFallback className="bg-gradient-to-br from-green-100 to-green-200 text-green-700 font-medium text-xs">
+                            {appointment.doctorName.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="min-w-0">
-                          <p className="font-medium text-gray-900">Dr. {appointment.doctorName}</p>
-                          <p className="text-sm text-gray-500">{appointment.specialty || 'General'}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-medium text-gray-900 text-sm">Dr. {appointment.doctorName}</p>
+                          <p className="text-xs text-muted-foreground">{appointment.specialty}</p>
                         </div>
                       </div>
                     </TableCell>
-
-                    {/* Appointment Details Column */}
-                    <TableCell className="py-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm font-medium text-gray-900">
-                          <Calendar className="h-4 w-4 text-blue-500" />
+                    <TableCell className="py-3 sm:py-4 px-3 sm:px-6">
+                      <div className="space-y-1">
+                        <div className="flex items-center text-sm text-gray-900">
+                          <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 flex-shrink-0" />
                           {format(new Date(appointment.appointmentDate), 'MMM dd, yyyy')}
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Clock className="h-4 w-4 text-gray-400" />
-                          {appointment.time || format(new Date(appointment.appointmentDate), 'h:mm a')}
+                        <div className="flex items-center text-sm text-gray-700">
+                          <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-2 text-blue-500 flex-shrink-0" />
+                          {appointment.time}
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <MapPin className="h-3 w-3" />
-                          Room {appointment.roomNumber || 'TBA'}
+                        <div className="flex items-center text-xs text-muted-foreground">
+                          <Users className="h-3 w-3 mr-1 flex-shrink-0" />
+                          Room {appointment.roomNumber}
                         </div>
-                        {/* Show doctor on mobile */}
-                        <div className="lg:hidden pt-1 border-t mt-2">
-                          <p className="text-xs text-gray-500">Dr. {appointment.doctorName}</p>
-                        </div>
-                        {/* Show status on mobile */}
-                        <div className="md:hidden pt-1">
-                          <Badge 
-                            variant={getStatusVariant(appointment.status)}
+                        <div className="md:hidden mt-2">
+                          <Badge
+                            variant={
+                              appointment.status === 'confirmed' ? 'default' :
+                                appointment.status === 'pending' ? 'secondary' :
+                                  appointment.status === 'cancelled' ? 'destructive' : 'outline'
+                            }
                             className="text-xs"
                           >
-                            {appointment.status?.charAt(0).toUpperCase() + appointment.status?.slice(1)}
+                            {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
                           </Badge>
                         </div>
                       </div>
                     </TableCell>
-
-                    {/* Status Column - Hidden on mobile */}
-                    <TableCell className="py-4 hidden md:table-cell text-center">
-                      <Badge 
-                        variant={getStatusVariant(appointment.status)}
-                        className="font-medium"
+                    <TableCell className="py-3 sm:py-4 px-3 sm:px-6 hidden md:table-cell text-center">
+                      <Badge
+                        variant={
+                          appointment.status === 'confirmed' ? 'default' :
+                            appointment.status === 'pending' ? 'secondary' :
+                              appointment.status === 'cancelled' ? 'destructive' : 'outline'
+                        }
+                        className="text-xs font-medium"
                       >
-                        {appointment.status?.charAt(0).toUpperCase() + appointment.status?.slice(1)}
+                        {appointment.status.charAt(0).toUpperCase() + appointment.status.slice(1)}
                       </Badge>
                     </TableCell>
-
-                    {/* Actions Column */}
-                    <TableCell className="py-4 text-right">
+                    <TableCell className="py-3 sm:py-4 px-3 sm:px-6 text-right">
                       <div className="flex flex-col sm:flex-row gap-2 justify-end">
                         <Button
                           variant="outline"
                           size="sm"
-                          className="hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleViewDetails(appointment);
-                          }}
+                          className="text-xs border-2 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 text-blue-600 hover:text-blue-700"
+                          onClick={() => handleViewDetails(appointment)}
                         >
-                          <Eye className="h-4 w-4 sm:mr-2" />
-                          <span className="hidden sm:inline">View</span>
+                          View Details
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          className="hover:bg-green-50 hover:border-green-300 hover:text-green-700"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleReschedule(appointment);
-                          }}
+                          className="text-xs border-2 hover:bg-green-50 hover:border-green-300 transition-all duration-200 text-green-600 hover:text-green-700"
+                          onClick={() => handleReschedule(appointment)}
                         >
-                          <RefreshCw className="h-4 w-4 sm:mr-2" />
-                          <span className="hidden sm:inline">Reschedule</span>
+                          Reschedule
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs border-2 hover:bg-red-50 hover:border-red-300 transition-all duration-200 text-red-600 hover:text-red-700"
+                          onClick={() => handleCancel(appointment)}
+                        >
+                          Cancel
                         </Button>
                       </div>
                     </TableCell>
@@ -593,6 +585,7 @@ function AppointmentsDisplay({ appointments }) {
             </Table>
           </div>
         </CardContent>
+      </Card>
       </Card>
     </>
   );

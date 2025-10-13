@@ -1,5 +1,5 @@
 
-import { getAppointmentById } from '@/services/appointmentService';
+import { getAppointmentById } from '@/features/appointments/services/appointmentService';
 import { notFound } from 'next/navigation';
 import { AppointmentDetailsClient } from '@/components/appointment-details-client';
 

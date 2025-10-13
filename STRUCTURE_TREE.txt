@@ -1,0 +1,261 @@
+DocLink Project Structure
+=========================
+
+📁 DocLink/
+│
+├── 📚 DOCUMENTATION
+│   ├── 📋 INDEX.md                      ← START HERE! Navigation to all docs
+│   ├── 📝 STRUCTURE_RECOMMENDATIONS.md  ← Executive summary (5 min read)
+│   ├── 📖 STRUCTURE_GUIDE.md            ← Complete guide (15 min read)
+│   ├── ✅ MIGRATION_CHECKLIST.md        ← 9-phase migration plan
+│   ├── ⚡ QUICK_START.md                ← Daily reference & examples
+│   ├── 🏗️ ARCHITECTURE.md               ← Visual diagrams
+│   ├── 📊 SUMMARY.md                    ← Project summary
+│   └── 🌲 STRUCTURE_TREE.txt            ← This file
+│
+├── 📱 src/
+│   │
+│   ├── 🎯 features/                     ← NEW: Feature modules
+│   │   │
+│   │   ├── 📅 appointments/             ← Appointments feature (30% complete)
+│   │   │   ├── components/              ← UI components
+│   │   │   │   ├── AppointmentCard.jsx
+│   │   │   │   ├── AppointmentForm.jsx
+│   │   │   │   ├── AppointmentSearch.jsx
+│   │   │   │   └── AppointmentsList.jsx
+│   │   │   ├── hooks/                   ← React hooks
+│   │   │   │   └── ✅ useAppointments.js (CREATED)
+│   │   │   ├── services/                ← API calls
+│   │   │   │   └── appointmentService.js
+│   │   │   ├── actions/                 ← Server actions
+│   │   │   │   └── appointmentActions.js
+│   │   │   ├── utils/                   ← Helper functions
+│   │   │   │   └── ✅ appointmentHelpers.js (CREATED)
+│   │   │   ├── constants/               ← Feature constants
+│   │   │   │   └── ✅ appointmentStatus.js (CREATED)
+│   │   │   └── types/                   ← Type definitions
+│   │   │       └── appointment.types.js
+│   │   │
+│   │   ├── 👨‍⚕️ doctors/                     ← Doctors feature (planned)
+│   │   │   ├── components/
+│   │   │   ├── hooks/
+│   │   │   ├── services/
+│   │   │   ├── actions/
+│   │   │   ├── utils/
+│   │   │   └── constants/
+│   │   │
+│   │   ├── 🏥 patients/                  ← Patients feature (planned)
+│   │   │   ├── components/
+│   │   │   ├── hooks/
+│   │   │   ├── services/
+│   │   │   └── utils/
+│   │   │
+│   │   ├── 🔐 admin/                     ← Admin feature (planned)
+│   │   │   ├── components/
+│   │   │   ├── services/
+│   │   │   └── hooks/
+│   │   │
+│   │   └── 📋 templates/                 ← Templates feature (planned)
+│   │       ├── components/
+│   │       └── services/
+│   │
+│   ├── 🧩 components/                   ← Shared UI components
+│   │   │
+│   │   ├── 🎨 ui/                       ← shadcn/ui primitives
+│   │   │   ├── button.jsx
+│   │   │   ├── card.jsx
+│   │   │   ├── dialog.jsx
+│   │   │   ├── input.jsx
+│   │   │   ├── form.jsx
+│   │   │   ├── badge.jsx
+│   │   │   ├── table.jsx
+│   │   │   ├── alert.jsx
+│   │   │   ├── avatar.jsx
+│   │   │   ├── checkbox.jsx
+│   │   │   ├── dropdown-menu.jsx
+│   │   │   ├── label.jsx
+│   │   │   ├── radio-group.jsx
+│   │   │   ├── select.jsx
+│   │   │   ├── separator.jsx
+│   │   │   ├── sheet.jsx
+│   │   │   ├── sidebar.jsx
+│   │   │   ├── skeleton.jsx
+│   │   │   ├── switch.jsx
+│   │   │   ├── tabs.jsx
+│   │   │   ├── textarea.jsx
+│   │   │   ├── toast.jsx
+│   │   │   ├── toaster.jsx
+│   │   │   └── tooltip.jsx
+│   │   │
+│   │   ├── ✨ shared/                   ← NEW: Reusable components
+│   │   │   ├── ✅ EmptyState.jsx       (CREATED)
+│   │   │   ├── ✅ LoadingSpinner.jsx   (CREATED)
+│   │   │   ├── DataTable.jsx           (planned)
+│   │   │   ├── SearchBar.jsx           (planned)
+│   │   │   ├── ErrorBoundary.jsx       (planned)
+│   │   │   └── Pagination.jsx          (planned)
+│   │   │
+│   │   ├── 🎯 layout/                   ← Layout components
+│   │   │   ├── navbar.jsx
+│   │   │   └── footer.jsx
+│   │   │
+│   │   └── 🎨 icons/                    ← Custom icons
+│   │       ├── icon-book-appointment.jsx
+│   │       ├── icon-doctor-access.jsx
+│   │       └── icon-manage-booking.jsx
+│   │
+│   ├── 📄 app/                          ← Next.js App Router
+│   │   ├── layout.jsx                   ← Root layout
+│   │   ├── page.jsx                     ← Home page
+│   │   ├── globals.css                  ← Global styles
+│   │   │
+│   │   ├── 📅 appointments/
+│   │   │   ├── layout.jsx
+│   │   │   ├── page.jsx                 ← List appointments
+│   │   │   ├── appointments-display.jsx
+│   │   │   ├── [id]/
+│   │   │   │   └── page.jsx            ← Appointment details
+│   │   │   └── book/
+│   │   │       ├── page.jsx            ← Book appointment
+│   │   │       └── client.jsx
+│   │   │
+│   │   ├── 👨‍⚕️ doctor/
+│   │   │   ├── layout.jsx
+│   │   │   ├── page.jsx                 ← Doctor dashboard
+│   │   │   ├── appointments/
+│   │   │   │   ├── page.jsx
+│   │   │   │   └── form/
+│   │   │   │       └── page.jsx
+│   │   │   └── patients/
+│   │   │       └── page.jsx
+│   │   │
+│   │   ├── 🔐 admin/
+│   │   │   ├── layout.jsx
+│   │   │   ├── page.jsx                 ← Admin dashboard
+│   │   │   ├── appointments/
+│   │   │   │   └── page.jsx
+│   │   │   ├── doctors/
+│   │   │   │   ├── page.jsx
+│   │   │   │   └── new/
+│   │   │   │       └── page.jsx
+│   │   │   └── patients/
+│   │   │       └── page.jsx
+│   │   │
+│   │   └── 🔒 login/
+│   │       └── page.jsx
+│   │
+│   ├── 🔧 lib/                          ← Utility libraries
+│   │   ├── firebase.js                  ← Firebase config
+│   │   ├── utils.js                     ← General utilities (cn, etc.)
+│   │   ├── ✅ constants.js              (CREATED - Global constants)
+│   │   ├── validators.js                (planned)
+│   │   ├── mock-data.js                 ← Mock data for testing
+│   │   │
+│   │   └── firebase/                    (planned split)
+│   │       ├── config.js
+│   │       ├── firestore.js
+│   │       ├── auth.js
+│   │       └── storage.js
+│   │
+│   ├── 🎣 hooks/                        ← Global custom hooks
+│   │   ├── use-toast.js                 ← Toast notifications
+│   │   ├── use-mobile.jsx               ← Mobile detection
+│   │   ├── ✅ useDebounce.js            (CREATED)
+│   │   ├── useLocalStorage.js           (planned)
+│   │   └── useMediaQuery.js             (planned)
+│   │
+│   ├── ⚙️ config/                        ← NEW: Configuration files
+│   │   ├── ✅ routes.js                 (CREATED - Route constants)
+│   │   ├── firebase.config.js           (planned)
+│   │   └── app.config.js                (planned)
+│   │
+│   ├── 📝 types/                        ← NEW: Type definitions
+│   │   ├── ✅ global.types.js           (CREATED - JSDoc types)
+│   │   ├── api.types.js                 (planned)
+│   │   └── database.types.js            (planned)
+│   │
+│   ├── 🌍 locales/                      ← i18n translations
+│   │   ├── en.json                      ← English
+│   │   ├── hi.json                      ← Hindi
+│   │   └── ta.json                      ← Tamil
+│   │
+│   ├── 🎨 context/                      ← React contexts
+│   │   └── i18n.js                      ← Internationalization
+│   │
+│   ├── 🗄️ services/                     ← LEGACY: To be migrated
+│   │   ├── appointmentService.js        → Move to features/appointments/
+│   │   ├── doctorService.js             → Move to features/doctors/
+│   │   ├── patientService.js            → Move to features/patients/
+│   │   ├── formService.js
+│   │   ├── scheduleService.js
+│   │   ├── templateService.js
+│   │   └── admin/
+│   │       ├── activityService.js       → Move to features/admin/
+│   │       ├── adminService.js          → Move to features/admin/
+│   │       ├── adminUserService.js
+│   │       └── systemSettingsService.js
+│   │
+│   ├── 🎬 actions/                      ← LEGACY: To be migrated
+│   │   ├── appointments.js              → Move to features/appointments/
+│   │   ├── doctors.js                   → Move to features/doctors/
+│   │   └── patients.js                  → Move to features/patients/
+│   │
+│   └── 🔌 dataconnect-generated/       ← Firebase Data Connect
+│       ├── index.cjs.js
+│       ├── index.d.ts
+│       ├── package.json
+│       ├── esm/
+│       └── react/
+│
+├── 🔥 dataconnect/                      ← Firebase Data Connect config
+│   ├── dataconnect.yaml
+│   ├── seed_data.gql
+│   ├── example/
+│   │   ├── connector.yaml
+│   │   ├── mutations.gql
+│   │   └── queries.gql
+│   └── schema/
+│       └── schema.gql
+│
+├── 🌐 public/                           ← Static assets
+│   └── images/
+│
+├── ⚙️ Configuration Files
+│   ├── package.json                     ← Dependencies
+│   ├── next.config.mjs                  ← Next.js config
+│   ├── tailwind.config.js               ← Tailwind CSS
+│   ├── postcss.config.mjs               ← PostCSS
+│   ├── jsconfig.json                    ← JS/Path config
+│   ├── components.json                  ← shadcn/ui config
+│   ├── .eslintrc.json                   ← ESLint rules
+│   ├── firebase.json                    ← Firebase config
+│   ├── apphosting.yaml                  ← Firebase hosting
+│   └── .firebaserc                      ← Firebase projects
+│
+└── 📖 README.md                         ← Project readme
+
+Legend:
+=======
+✅ = Created/Completed
+🟡 = In Progress
+⚪ = Planned
+🔧 = Utility/Tool
+🎯 = Feature
+📄 = Page/Route
+🧩 = Component
+📚 = Documentation
+
+Current Status:
+===============
+Documentation: ✅ 100% Complete
+Code Structure: 🟡 10% Complete
+Migration: ⚪ Pending
+
+Next Steps:
+===========
+1. Review all documentation (INDEX.md)
+2. Try new utilities (QUICK_START.md)
+3. Start migration (MIGRATION_CHECKLIST.md)
+
+Generated: October 13, 2025
+Version: 2.0 - Feature-Based Architecture

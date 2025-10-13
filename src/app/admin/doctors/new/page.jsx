@@ -1,9 +1,10 @@
 
-import { DoctorForm } from '@/components/doctor-form';
+import { DoctorForm } from '@/features/doctors';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, UserPlus } from 'lucide-react';
 import Link from 'next/link';
+import { ROUTES } from '@/config/routes';
 
 export default function NewDoctorPage() {
     return (
@@ -12,7 +13,7 @@ export default function NewDoctorPage() {
                 {/* Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                     <Button variant="ghost" size="sm" asChild className="w-fit">
-                        <Link href="/admin/doctors">
+                        <Link href={ROUTES.ADMIN.DOCTORS}>
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             <span className="hidden sm:inline">Back to Doctors</span>
                             <span className="sm:hidden">Back</span>
@@ -60,10 +61,10 @@ export default function NewDoctorPage() {
                                     and the specialization will help patients find the right healthcare professional.
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-sm">
-                                    <Link href="/admin/doctors" className="text-blue-600 hover:text-blue-800 hover:underline transition-colors font-medium">
+                                    <Link href={ROUTES.ADMIN.DOCTORS} className="text-blue-600 hover:text-blue-800 hover:underline transition-colors font-medium">
                                         View existing doctors →
                                     </Link>
-                                    <Link href="/admin" className="text-blue-600 hover:text-blue-800 hover:underline transition-colors font-medium">
+                                    <Link href={ROUTES.ADMIN.DASHBOARD} className="text-blue-600 hover:text-blue-800 hover:underline transition-colors font-medium">
                                         Back to dashboard →
                                     </Link>
                                 </div>

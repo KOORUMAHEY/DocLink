@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { IconBookAppointment } from '@/components/icons/icon-book-appointment';
 import { IconManageBooking } from '@/components/icons/icon-manage-booking';
 import { useI18n } from '@/context/i18n';
+import { ROUTES } from '@/config/routes';
 
 
 
@@ -78,13 +79,13 @@ export default function Home() {
             {/* CTA Buttons */}
             <div className="flex flex-col gap-6 sm:flex-row sm:justify-center sm:gap-8 pt-12 animate-fade-in" style={{animationDelay: '0.8s'}}>
               <Button asChild size="lg" className="w-full px-10 py-5 text-xl sm:w-auto sm:px-12 sm:py-6 sm:text-2xl min-h-[64px] bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold rounded-xl shadow-2xl hover:shadow-3xl active:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 border-0">
-                <Link href="/appointments/book">
+                <Link href={ROUTES.APPOINTMENTS.BOOK}>
                   Book Appointment
                   <ArrowRight className="ml-3 h-6 w-6" />
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="w-full px-10 py-5 text-xl sm:w-auto sm:px-12 sm:py-6 sm:text-2xl min-h-[64px] border-4 border-white text-white hover:bg-white hover:text-blue-600 active:bg-blue-50 active:text-blue-700 font-bold rounded-xl shadow-2xl hover:shadow-3xl active:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 bg-transparent">
-                <Link href="/appointments">
+                <Link href={ROUTES.APPOINTMENTS.ROOT}>
                   Manage Booking
                 </Link>
               </Button>
@@ -121,7 +122,7 @@ export default function Home() {
               </CardContent>
               <div className="p-4 sm:p-6 pt-0">
                 <Button asChild className="w-full py-3 px-6 text-sm sm:py-3 sm:text-base min-h-[48px] touch-manipulation bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-0">
-                  <Link href="/appointments/book" className="flex items-center justify-center space-x-2">
+                  <Link href={ROUTES.APPOINTMENTS.BOOK} className="flex items-center justify-center space-x-2">
                     <span>{t('home.actions.book.button')}</span>
                     <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>
@@ -145,7 +146,7 @@ export default function Home() {
               </CardContent>
               <div className="p-4 sm:p-6 pt-0">
                 <Button asChild variant="outline" className="w-full py-3 px-6 text-sm sm:py-3 sm:text-base min-h-[48px] touch-manipulation border-2 border-teal-500 text-teal-700 hover:bg-teal-500 hover:text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105 bg-white hover:border-teal-500">
-                  <Link href="/appointments" className="flex items-center justify-center">
+                  <Link href={ROUTES.APPOINTMENTS.ROOT} className="flex items-center justify-center">
                     <span>{t('home.actions.manage.button')}</span>
                   </Link>
                 </Button>

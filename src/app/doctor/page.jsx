@@ -1,6 +1,6 @@
 
-import { getAppointmentsByDoctor } from '@/services/appointmentService';
-import { getDoctorById } from '@/services/doctorService';
+import { getAppointmentsByDoctor } from '@/features/appointments/services/appointmentService';
+import { getDoctorById } from '@/features/doctors';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Users, Activity, CheckCircle, Stethoscope, Plus } from 'lucide-react';

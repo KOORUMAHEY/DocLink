@@ -1,7 +1,6 @@
-import { getAppointmentsByDoctor } from '@/services/appointmentService';
-import { getDoctorById } from '@/services/doctorService';
+import { getAppointmentsByDoctor } from '@/features/appointments/services/appointmentService';
+import { getDoctorById, DoctorAppointmentsClient } from '@/features/doctors';
 import { notFound } from 'next/navigation';
-import { DoctorAppointmentsClient } from '@/components/doctor-appointments-client';
 import { Suspense } from 'react';
 import { Calendar, Users } from 'lucide-react';
 

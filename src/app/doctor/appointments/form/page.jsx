@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { AppointmentForm } from '@/components/appointment-form';
 import AdvancedTemplateDesigner from '@/components/advanced-template-designer';
 import ScheduleManager from '@/components/schedule-manager';
-import { getDoctorById } from '@/services/doctorService';
+import { getDoctorById } from '@/features/doctors';
 import { getDynamicFormConfig } from '@/services/templateService';
 import { formTemplates } from '@/services/templateService';
 import { 

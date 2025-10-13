@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { z } from "zod";
-import { getDoctorByEmail } from "@/services/doctorService";
+import { getDoctorByEmail } from "@/features/doctors";
 import { useI18n } from "@/context/i18n";
 
 const loginFormSchema = z.object({

@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { Calendar, Clock, User, Stethoscope, Hash, Mail, Phone, FileText, UserCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
-import { savePatientForDoctor } from '@/services/patientService';
+import { savePatientForDoctor } from '@/features/patients';
 import { useToast } from '@/hooks/use-toast';
 
 export function AppointmentDetailsClient({ appointment: initialAppointment, role = 'user' }) {

@@ -1,5 +1,5 @@
 
-import { getDoctors } from '@/services/doctorService';
+import { getDoctors } from '@/features/doctors';
 import {
   Table,
   TableBody,
@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Suspense } from 'react';
+import { ROUTES } from '@/config/routes';
 
 function DoctorsTableSkeleton() {
   return (
@@ -66,7 +67,7 @@ export default async function AdminDoctorsPage() {
               <span className="hidden sm:inline">Search</span>
             </Button>
             <Button asChild className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto">
-              <Link href="/admin/doctors/new">
+              <Link href={ROUTES.ADMIN.DOCTORS_NEW}>
                 <Plus className="mr-2 h-4 w-4" />
                 <span className="hidden sm:inline">Add Doctor</span>
                 <span className="sm:hidden">Add</span>
@@ -205,7 +206,7 @@ export default async function AdminDoctorsPage() {
                             </p>
                           </div>
                           <Button asChild className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3 text-lg">
-                            <Link href="/admin/doctors/new">
+                            <Link href={ROUTES.ADMIN.DOCTORS_NEW}>
                               <Plus className="mr-2 h-5 w-5" />
                               Add First Doctor
                             </Link>

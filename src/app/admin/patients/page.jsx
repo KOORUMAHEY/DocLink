@@ -1,5 +1,5 @@
 
-import { getUniquePatients } from '@/services/patientService';
+import { getUniquePatients } from '@/features/patients';
 import {
   Table,
   TableBody,

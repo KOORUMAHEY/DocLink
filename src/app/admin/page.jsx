@@ -7,10 +7,10 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { getDashboardStats } from '@/services/admin/adminService';
-import { getSystemLogs, getRecentActivities, getUpcomingAppointments } from '@/services/admin/activityService';
+import { getDashboardStats, getSystemLogs, getRecentActivities, getUpcomingAppointments } from '@/features/admin';
 import DataVisualizations from '@/components/data-visualizations';
 import { useState, useEffect } from 'react';
+import { ROUTES } from '@/config/routes';
 
 function Sparkline({ data, color }) {
   if (!data || data.length < 2) return null;
@@ -190,14 +190,14 @@ export default function AdminDashboardPage() {
           <div className="flex items-center gap-3">
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <Button variant="outline" className="border-2 hover:bg-gray-50 transition-all duration-200 shadow-sm w-full sm:w-auto" asChild>
-                <Link href="/admin/appointments">
+                <Link href={ROUTES.ADMIN.APPOINTMENTS}>
                   <Calendar className="mr-2 h-4 w-4" />
                   <span className="hidden sm:inline">View Appointments</span>
                   <span className="sm:hidden">Appointments</span>
                 </Link>
               </Button>
               <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto" asChild>
-                <Link href="/admin/doctors/new">
+                <Link href={ROUTES.ADMIN.DOCTORS_NEW}>
                   <Stethoscope className="mr-2 h-4 w-4" />
                   <span className="hidden sm:inline">Add Doctor</span>
                   <span className="sm:hidden">Add Doctor</span>
@@ -405,7 +405,7 @@ export default function AdminDashboardPage() {
               {/* Floating Action Pills */}
               <div className="flex flex-wrap gap-3">
                 <Button variant="outline" className="h-12 px-4 bg-gradient-to-r from-green-50 to-green-100/50 border-2 border-green-200 hover:border-green-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 rounded-full font-medium" asChild>
-                  <Link href="/admin/doctors/new" className="flex items-center gap-2">
+                  <Link href={ROUTES.ADMIN.DOCTORS_NEW} className="flex items-center gap-2">
                     <div className="p-1.5 bg-green-500 rounded-full">
                       <Plus className="h-3 w-3 text-white" />
                     </div>
@@ -413,7 +413,7 @@ export default function AdminDashboardPage() {
                   </Link>
                 </Button>
                 <Button variant="outline" className="h-12 px-4 bg-gradient-to-r from-blue-50 to-blue-100/50 border-2 border-blue-200 hover:border-blue-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 rounded-full font-medium" asChild>
-                  <Link href="/admin/appointments" className="flex items-center gap-2">
+                  <Link href={ROUTES.ADMIN.APPOINTMENTS} className="flex items-center gap-2">
                     <div className="p-1.5 bg-blue-500 rounded-full">
                       <Calendar className="h-3 w-3 text-white" />
                     </div>
@@ -421,7 +421,7 @@ export default function AdminDashboardPage() {
                   </Link>
                 </Button>
                 <Button variant="outline" className="h-12 px-4 bg-gradient-to-r from-purple-50 to-purple-100/50 border-2 border-purple-200 hover:border-purple-400 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 rounded-full font-medium" asChild>
-                  <Link href="/admin/patients" className="flex items-center gap-2">
+                  <Link href={ROUTES.ADMIN.PATIENTS} className="flex items-center gap-2">
                     <div className="p-1.5 bg-purple-500 rounded-full">
                       <Users className="h-3 w-3 text-white" />
                     </div>
@@ -917,19 +917,19 @@ export default function AdminDashboardPage() {
             <div className="space-y-4">
               <h4 className="text-lg font-semibold text-gray-900">Quick Links</h4>
               <div className="grid grid-cols-2 gap-3">
-                <Link href="/admin/appointments" className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                <Link href={ROUTES.ADMIN.APPOINTMENTS} className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
                   <Calendar className="h-4 w-4" />
                   Appointments
                 </Link>
-                <Link href="/admin/doctors" className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                <Link href={ROUTES.ADMIN.DOCTORS} className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
                   <Stethoscope className="h-4 w-4" />
                   Doctors
                 </Link>
-                <Link href="/admin/patients" className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                <Link href={ROUTES.ADMIN.PATIENTS} className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
                   <Users className="h-4 w-4" />
                   Patients
                 </Link>
-                <Link href="/admin" className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
+                <Link href={ROUTES.ADMIN.DASHBOARD} className="flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
                   <Home className="h-4 w-4" />
                   Dashboard
                 </Link>

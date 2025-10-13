@@ -1,5 +1,5 @@
 
-import { getAppointments } from '@/services/appointmentService';
+import { getAppointments } from '@/features/appointments/services/appointmentService';
 import {
   Table,
   TableBody,

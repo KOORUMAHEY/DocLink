@@ -1,6 +1,6 @@
 
 'use client';
-import { getSavedPatientsForDoctor } from '@/services/patientService';
+import { getSavedPatientsForDoctor } from '@/features/patients';
 import {
   Table,
   TableBody,

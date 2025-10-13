@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { Calendar, Users, Activity, TrendingUp, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { getAppointmentTrends } from '@/services/admin/activityService';
+import { getAppointmentTrends } from '@/features/admin';
 
 const topDoctorsData = [
   { name: 'Dr. Smith', appointments: 45 },

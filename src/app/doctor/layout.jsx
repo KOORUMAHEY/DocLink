@@ -5,10 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { Menu, X, Stethoscope } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DoctorSidebar } from '@/components/doctor-sidebar';
-import { DoctorHeader } from '@/components/doctor-header';
-import { DoctorFooter } from '@/components/doctor-footer';
-import { getDoctorById } from '@/services/doctorService';
+import { DoctorSidebar, DoctorHeader, DoctorFooter, getDoctorById } from '@/features/doctors';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function DoctorLayoutContent({ children }) {

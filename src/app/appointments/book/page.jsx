@@ -1,8 +1,8 @@
 
-import { getDoctors } from '@/services/doctorService';
+import { getDoctors } from '@/features/doctors';
 import { Suspense } from 'react';
 import { BookAppointmentClient } from './client';
-import { AppointmentForm } from '@/components/appointment-form';
+import { AppointmentForm } from '@/features/appointments/components/AppointmentForm';
 
 export default async function BookAppointmentPage() {
     const doctors = await getDoctors();

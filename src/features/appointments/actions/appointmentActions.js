@@ -8,20 +8,26 @@ import { TOAST_MESSAGES } from '@/lib/constants';
 
 export async function createAppointment(data) {
   try {
+    console.log('Creating appointment with data:', data);
     const newAppointment = await createAppointmentService(data);
+    console.log('Appointment service returned:', newAppointment);
     revalidatePath(ROUTES.APPOINTMENTS.ROOT);
     revalidatePath(ROUTES.ADMIN.APPOINTMENTS);
-    return { 
+    const result = { 
       success: true, 
       appointmentId: newAppointment.id,
-      message: TOAST_MESSAGES.SUCCESS.APPOINTMENT_CREATED
+      message: TOAST_MESSAGES.APPOINTMENTS.CREATE_SUCCESS
     };
+    console.log('Action returning success result:', result);
+    return result;
   } catch (error) {
     console.error('Failed to create appointment:', error);
-    return { 
+    const result = { 
       success: false, 
       error: error instanceof Error ? error.message : TOAST_MESSAGES.ERROR.GENERIC
     };
+    console.log('Action returning error result:', result);
+    return result;
   }
 }
 

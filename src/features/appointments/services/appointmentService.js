@@ -17,8 +17,8 @@ import {
   orderBy,
   Timestamp 
 } from 'firebase/firestore';
+import { getPatientByHospitalId } from '@/features/patients';
 import { getDoctorById } from '@/features/doctors';
-import { createOrUpdatePatient } from '@/features/patients';
 import { appointments as mockAppointments } from '@/lib/mock-data';
 
 export const getAppointments = async (filters = {}) => {
@@ -115,7 +115,45 @@ export const getAppointmentById = async (id) => {
     const docRef = doc(db, 'appointments', id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() };
+      const appointmentData = { id: docSnap.id, ...docSnap.data() };
+      console.log('Retrieved appointment data:', appointmentData);
+      console.log('Appointment date from Firestore:', appointmentData.appointmentDate);
+      console.log('Appointment date type:', typeof appointmentData.appointmentDate);
+      
+      // Fetch patient details if patientId exists
+      if (appointmentData.patientId) {
+        try {
+          const patientData = await getPatientByHospitalId(appointmentData.patientId);
+          if (patientData) {
+            // Merge patient data into appointment
+            appointmentData.patientName = patientData.name || patientData.patientName;
+            appointmentData.patientPhone = patientData.phone || patientData.patientPhone;
+            appointmentData.patientEmail = patientData.email || patientData.patientEmail;
+            appointmentData.age = patientData.age;
+            appointmentData.gender = patientData.gender;
+            appointmentData.hospitalId = patientData.hospitalId || appointmentData.patientId;
+          }
+        } catch (patientError) {
+          console.warn('Could not fetch patient details for appointment:', patientError);
+        }
+      }
+      
+      // Fetch doctor details if doctorId exists
+      if (appointmentData.doctorId) {
+        try {
+          const doctorData = await getDoctorById(appointmentData.doctorId);
+          if (doctorData) {
+            // Merge doctor data into appointment
+            appointmentData.doctorName = doctorData.name || doctorData.doctorName;
+            appointmentData.specialty = doctorData.specialty || doctorData.specialization;
+            appointmentData.doctorEmail = doctorData.email;
+            appointmentData.doctorPhone = doctorData.phone;
+          }
+        } catch (doctorError) {
+          console.warn('Could not fetch doctor details for appointment:', doctorError);
+        }
+      }
+      return appointmentData;
     } else {
         console.log(`Appointment ${id} not found in Firestore.`);
         return null;
@@ -130,13 +168,33 @@ export const createAppointment = async (data) => {
   try {
     // Convert the date string to a Firestore timestamp
     const appointmentDate = new Date(data.appointmentDate);
+    console.log('Original appointmentDate string:', data.appointmentDate);
+    console.log('Parsed appointmentDate:', appointmentDate);
     if (isNaN(appointmentDate.getTime())) {
       throw new Error('Invalid appointment date');
     }
 
     const timeSlot = data.timeSlot.split('-')[0].trim(); // Get start time
-    const [hours, minutes] = timeSlot.split(':').map(Number);
+    console.log('Time slot:', timeSlot);
+    // Parse time like "9:15 AM" or "2:30 PM"
+    const timeMatch = timeSlot.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (!timeMatch) {
+      throw new Error('Invalid time slot format');
+    }
+    
+    let hours = parseInt(timeMatch[1]);
+    const minutes = parseInt(timeMatch[2]);
+    const ampm = timeMatch[3].toUpperCase();
+    
+    if (ampm === 'PM' && hours !== 12) {
+      hours += 12;
+    } else if (ampm === 'AM' && hours === 12) {
+      hours = 0;
+    }
+    
+    console.log('Setting hours:', hours, 'minutes:', minutes);
     appointmentDate.setHours(hours, minutes, 0, 0);
+    console.log('Final appointmentDate:', appointmentDate);
 
     // First create or update the patient
     let patientData = {

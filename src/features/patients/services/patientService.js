@@ -67,7 +67,7 @@ export const createOrUpdatePatient = async (patientData) => {
     return patientRef;
   } catch(error) {
     console.error("Failed to create/update patient:", error);
-    return { success: false, error: "Could not save patient data." };
+    throw new Error("Could not save patient data.");
   }
 };
 

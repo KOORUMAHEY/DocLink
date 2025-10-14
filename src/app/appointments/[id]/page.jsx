@@ -4,7 +4,8 @@ import { notFound } from 'next/navigation';
 import { AppointmentDetailsClient } from '@/components/appointment-details-client';
 
 export default async function AppointmentDetailsPage({ params }) {
-  const appointment = await getAppointmentById(params.id);
+  const { id } = await params;
+  const appointment = await getAppointmentById(id);
 
   if (!appointment) {
     notFound();
@@ -17,6 +18,10 @@ export default async function AppointmentDetailsPage({ params }) {
     createdAt: appointment.createdAt?.toDate?.() || appointment.createdAt,
     lastUpdated: appointment.lastUpdated?.toDate?.() || appointment.lastUpdated,
   };
+  
+  console.log('Appointment data before serialization:', appointment);
+  console.log('Serialized appointment date:', serializedAppointment.appointmentDate);
+  console.log('Serialized appointment date type:', typeof serializedAppointment.appointmentDate);
 
   // Pass role="user" for the public-facing page
   return (

@@ -489,14 +489,15 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
 
             const result = await createAppointment(cleanAppointmentData);
 
-            if (result.success && result.appointmentId) {
+            if (result && result.success && result.appointmentId) {
                 toast({
                     title: t('forms.appointment.booked_title'),
                     description: t('forms.appointment.booked_desc'),
                 });
                 router.push(`/appointments/${result.appointmentId}`);
             } else {
-                throw new Error(result.error || t('forms.appointment.booked_error'));
+                const errorMessage = result?.error || t('forms.appointment.booked_error') || 'Failed to create appointment';
+                throw new Error(errorMessage);
             }
         } catch (error) {
             console.error('Error booking appointment:', error);

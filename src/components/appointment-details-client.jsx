@@ -23,10 +23,16 @@ export function AppointmentDetailsClient({ appointment: initialAppointment, role
 
   useEffect(() => {
     if (appointment?.appointmentDate) {
+      console.log('Client received appointment date:', appointment.appointmentDate);
+      console.log('Client appointment date type:', typeof appointment.appointmentDate);
       const date = new Date(appointment.appointmentDate);
+      console.log('Parsed date object:', date);
+      console.log('Is date valid:', !isNaN(date));
       if(!isNaN(date)) {
         setFormattedDate(format(date, 'PPP'));
         setFormattedTime(format(date, 'p'));
+        console.log('Formatted date:', format(date, 'PPP'));
+        console.log('Formatted time:', format(date, 'p'));
       }
     }
   }, [appointment?.appointmentDate]);

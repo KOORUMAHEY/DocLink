@@ -86,20 +86,22 @@ export function DoctorForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        
+        {/* Name and Specialization Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm sm:text-base font-medium">
+                <FormLabel className="text-base font-semibold">
                   {t('forms.doctor.name_label')}
                 </FormLabel>
                 <FormControl>
                   <Input 
-                    placeholder={t('forms.doctor.name_placeholder')} 
-                    className="h-10 sm:h-11 text-sm sm:text-base"
+                    placeholder="Dr. John Smith" 
+                    className="h-12 text-base"
                     {...field} 
                   />
                 </FormControl>
@@ -107,58 +109,19 @@ export function DoctorForm() {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="specialization"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm sm:text-base font-medium">
+                <FormLabel className="text-base font-semibold">
                   {t('forms.doctor.specialization_label')}
                 </FormLabel>
                 <FormControl>
                   <Input 
-                    placeholder={t('forms.doctor.specialization_placeholder')} 
-                    className="h-10 sm:h-11 text-sm sm:text-base"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm sm:text-base font-medium">
-                  {t('forms.doctor.email_label')}
-                </FormLabel>
-                <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder={t('forms.doctor.email_placeholder')} 
-                    className="h-10 sm:h-11 text-sm sm:text-base"
-                    {...field} 
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-sm sm:text-base font-medium">
-                  {t('forms.doctor.password_label')}
-                </FormLabel>
-                <FormControl>
-                  <Input 
-                    type="password" 
-                    placeholder="••••••••" 
-                    className="h-10 sm:h-11 text-sm sm:text-base"
+                    placeholder="Cardiology, Pediatrics, etc." 
+                    className="h-12 text-base"
                     {...field} 
                   />
                 </FormControl>
@@ -167,18 +130,65 @@ export function DoctorForm() {
             )}
           />
         </div>
+
+        {/* Email and Password Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-base font-semibold">
+                  {t('forms.doctor.email_label')}
+                </FormLabel>
+                <FormControl>
+                  <Input 
+                    type="email" 
+                    placeholder="doctor@example.com" 
+                    className="h-12 text-base"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-base font-semibold">
+                  {t('forms.doctor.password_label')}
+                </FormLabel>
+                <FormControl>
+                  <Input 
+                    type="password" 
+                    placeholder="Minimum 6 characters" 
+                    className="h-12 text-base"
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        {/* Bio */}
         <FormField
           control={form.control}
           name="bio"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm sm:text-base font-medium">
-                {t('forms.doctor.bio_label')}
+              <FormLabel className="text-base font-semibold">
+                {t('forms.doctor.bio_label')} <span className="text-gray-400 font-normal">(Optional)</span>
               </FormLabel>
               <FormControl>
                 <Textarea 
-                  placeholder={t('forms.doctor.bio_placeholder')} 
-                  className="min-h-[100px] sm:min-h-[120px] text-sm sm:text-base resize-y"
+                  placeholder="Brief professional background and expertise..." 
+                  className="min-h-[120px] text-base"
                   {...field} 
                 />
               </FormControl>
@@ -186,37 +196,51 @@ export function DoctorForm() {
             </FormItem>
           )}
         />
+
+        {/* Image URL */}
         <FormField
           control={form.control}
           name="imageUrl"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm sm:text-base font-medium">
-                {t('forms.doctor.image_url_label')}
+              <FormLabel className="text-base font-semibold">
+                {t('forms.doctor.image_url_label')} <span className="text-gray-400 font-normal">(Optional)</span>
               </FormLabel>
               <FormControl>
                 <Input 
-                  placeholder={t('forms.doctor.image_url_placeholder')} 
-                  className="h-10 sm:h-11 text-sm sm:text-base"
+                  placeholder="https://example.com/doctor-photo.jpg" 
+                  className="h-12 text-base"
                   {...field} 
                 />
               </FormControl>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                {t('forms.doctor.image_url_desc')}
+              <p className="text-sm text-gray-500 mt-1">
+                Leave empty for a default avatar
               </p>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div className="pt-4 sm:pt-6">
+        {/* Submit Button */}
+        <div className="pt-4 flex gap-4">
           <Button 
             type="submit" 
             disabled={form.formState.isSubmitting}
-            className="w-full sm:w-auto min-w-[120px] h-10 sm:h-11 text-sm sm:text-base"
+            size="lg"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 h-12"
           >
-            {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {t('forms.buttons.add_doctor')}
+            {form.formState.isSubmitting && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
+            {form.formState.isSubmitting ? 'Adding Doctor...' : t('forms.buttons.add_doctor')}
+          </Button>
+          
+          <Button 
+            type="button"
+            variant="outline"
+            size="lg"
+            onClick={() => router.push(ROUTES.ADMIN.DOCTORS)}
+            className="h-12"
+          >
+            Cancel
           </Button>
         </div>
       </form>

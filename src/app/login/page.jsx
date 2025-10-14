@@ -6,22 +6,24 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Stethoscope, Heart, Eye, EyeOff, Shield, Lock } from "lucide-react";
+import { Loader2, Stethoscope, Heart, Eye, EyeOff, Shield, Lock, UserCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { z } from "zod";
-import { getDoctorByEmail } from "@/features/doctors";
+import { authenticateUser, getRedirectPath } from "@/lib/auth";
+import { useAuth } from "@/context/auth";
 import { useI18n } from "@/context/i18n";
 
 const loginFormSchema = z.object({
     email: z.string().email("Please enter a valid email address."),
-    password: z.string().min(1, "Password is required."),
+    password: z.string().min(6, "Password must be at least 6 characters."),
 });
 
 export default function LoginPage() {
     const router = useRouter();
     const { toast } = useToast();
+    const { login } = useAuth();
     const { t } = useI18n();
     const [showPassword, setShowPassword] = useState(false);
 
@@ -34,29 +36,25 @@ export default function LoginPage() {
     });
 
     const onSubmit = async (data) => {
-        if (data.email.includes('admin')) {
-            toast({
-                title: "Admin Login Successful",
-                description: "Redirecting to admin dashboard...",
-            });
-            router.push("/admin");
-            return;
-        }
-
         try {
-            const doctor = await getDoctorByEmail(data.email);
+            const result = await authenticateUser(data.email, data.password);
 
-            if (doctor && doctor.password === data.password) {
+            if (result.success) {
+                // Store user in context
+                login(result.user);
+                
                 toast({
-                    title: "Login Successful",
-                    description: "Redirecting to your dashboard...",
+                    title: result.message,
+                    description: `Welcome back, ${result.user.name}!`,
                 });
-                // Redirect to the doctor dashboard with the doctor's ID
-                router.push(`/doctor?id=${doctor.id}`);
+                
+                // Redirect based on role
+                const redirectPath = getRedirectPath(result.user.role);
+                router.push(redirectPath);
             } else {
-                 toast({
+                toast({
                     title: "Login Failed",
-                    description: "Invalid email or password.",
+                    description: result.error || "Invalid email or password.",
                     variant: "destructive"
                 });
             }
@@ -161,6 +159,18 @@ export default function LoginPage() {
 
                     {/* Additional Links */}
                     <div className="mt-6 space-y-3">
+                        {/* Admin Login Info */}
+                        <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-3">
+                            <div className="flex items-start gap-2">
+                                <Shield className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
+                                <div className="text-xs text-gray-700">
+                                    <p className="font-semibold text-purple-900 mb-1">Admin Access</p>
+                                    <p className="text-gray-600">Email: <span className="font-mono font-medium">admin@doclink.in</span></p>
+                                    <p className="text-gray-600">Password: <span className="font-mono font-medium">12345678</span></p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="flex justify-between text-sm">
                             <a href="#" className="text-blue-600 hover:text-blue-800 font-medium hover:underline">
                                 {t('login.forgot_password')}
@@ -174,6 +184,7 @@ export default function LoginPage() {
                         <div className="flex items-center justify-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
                             <Shield className="w-4 h-4 text-green-600" />
                             <Lock className="w-4 h-4 text-blue-600" />
+                            <UserCircle className="w-4 h-4 text-purple-600" />
                             <span className="font-medium">{t('login.secured_by')}</span>
                         </div>
 

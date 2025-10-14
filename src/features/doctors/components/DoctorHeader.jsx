@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { Bell, Settings, User, LogOut, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -16,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-export function DoctorHeader({ doctor }) { // eslint-disable-line react/prop-types // eslint-disable-line react/prop-types
+export function DoctorHeader({ doctor }) {
   const [notifications] = useState([
     { id: 1, title: 'New appointment request', time: '5 min ago', urgent: true },
     { id: 2, title: 'Patient follow-up reminder', time: '1 hour ago', urgent: false },
@@ -156,3 +157,11 @@ export function DoctorHeader({ doctor }) { // eslint-disable-line react/prop-typ
     </header>
   );
 }
+
+DoctorHeader.propTypes = {
+  doctor: PropTypes.shape({
+    name: PropTypes.string,
+    avatar: PropTypes.string,
+    specialization: PropTypes.string,
+  }),
+};

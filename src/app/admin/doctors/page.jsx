@@ -44,37 +44,36 @@ export default async function AdminDoctorsPage() {
   const doctors = await getDoctors();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30">
-      <div className="space-y-6 sm:space-y-8 p-4 sm:p-6 lg:p-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="p-2 sm:p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg">
-                <Users className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                  Doctors
-                </h1>
-                <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mt-1">Manage your team of healthcare professionals</p>
-              </div>
+    <div className="space-y-6 sm:space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="p-2 sm:p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg">
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                Doctors
+              </h1>
+              <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mt-1">Manage your team of healthcare professionals</p>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <Button variant="outline" className="border-2 hover:bg-gray-50 transition-all duration-200 shadow-sm w-full sm:w-auto">
-              <Search className="mr-2 h-4 w-4" />
-              <span className="hidden sm:inline">Search</span>
-            </Button>
-            <Button asChild className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto">
-              <Link href={ROUTES.ADMIN.DOCTORS_NEW}>
-                <Plus className="mr-2 h-4 w-4" />
-                <span className="hidden sm:inline">Add Doctor</span>
-                <span className="sm:hidden">Add</span>
-              </Link>
-            </Button>
-          </div>
         </div>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Button variant="outline" className="border-2 hover:bg-gray-50 transition-all duration-200 shadow-sm w-full sm:w-auto">
+            <Search className="mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Search</span>
+          </Button>
+          <Button asChild className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto">
+            <Link href={ROUTES.ADMIN.DOCTORS_NEW}>
+              <Plus className="mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Add Doctor</span>
+              <span className="sm:hidden">Add</span>
+            </Link>
+          </Button>
+        </div>
+      </div>
 
         {/* Stats Cards */}
         <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -304,7 +303,6 @@ export default async function AdminDoctorsPage() {
           </Suspense>
         </CardContent>
       </Card>
-      </div>
     </div>
   );
 }

@@ -178,34 +178,33 @@ export default function AdminDashboardPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 transition-colors">
-      <div className="space-y-6 md:space-y-8 p-4 sm:p-6 lg:p-8">
-        {/* Header */}
-        <header className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-start sm:space-y-0" role="banner">
-          <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent" id="main-heading">
-              Dashboard
-            </h1>
+    <div className="space-y-6 md:space-y-8 relative">
+      {/* Header */}
+      <header className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-start sm:space-y-0" role="banner">
+        <div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent" id="main-heading">
+            Dashboard
+          </h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <Button variant="outline" className="border-2 hover:bg-gray-50 transition-all duration-200 shadow-sm w-full sm:w-auto" asChild>
+              <Link href={ROUTES.ADMIN.APPOINTMENTS}>
+                <Calendar className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">View Appointments</span>
+                <span className="sm:hidden">Appointments</span>
+              </Link>
+            </Button>
+            <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto" asChild>
+              <Link href={ROUTES.ADMIN.DOCTORS_NEW}>
+                <Stethoscope className="mr-2 h-4 w-4" />
+                <span className="hidden sm:inline">Add Doctor</span>
+                <span className="sm:hidden">Add Doctor</span>
+              </Link>
+            </Button>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button variant="outline" className="border-2 hover:bg-gray-50 transition-all duration-200 shadow-sm w-full sm:w-auto" asChild>
-                <Link href={ROUTES.ADMIN.APPOINTMENTS}>
-                  <Calendar className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">View Appointments</span>
-                  <span className="sm:hidden">Appointments</span>
-                </Link>
-              </Button>
-              <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl transition-all duration-200 w-full sm:w-auto" asChild>
-                <Link href={ROUTES.ADMIN.DOCTORS_NEW}>
-                  <Stethoscope className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Add Doctor</span>
-                  <span className="sm:hidden">Add Doctor</span>
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </header>
+        </div>
+      </header>
 
         {/* Modern Filters and Controls */}
         <section className="bg-gradient-to-r from-white via-blue-50/30 to-white backdrop-blur-sm rounded-2xl p-6 border border-gray-200/60 shadow-lg" aria-labelledby="filters-heading">
@@ -700,10 +699,12 @@ export default function AdminDashboardPage() {
           </Card>
         </div>
 
-        {/* System Logs and Security Monitoring */}
-        <div className="lg:col-span-1">
-          <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50/50">
-            <CardHeader className="pb-3">
+        {/* System Logs and Analytics Grid */}
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-3">
+          {/* System Logs and Security Monitoring */}
+          <div className="lg:col-span-1">
+            <Card className="shadow-lg border-0 bg-gradient-to-br from-white to-gray-50/50">
+              <CardHeader className="pb-3">
               <CardTitle className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
                 <Activity className="h-5 w-5 text-red-500" />
                 System Logs

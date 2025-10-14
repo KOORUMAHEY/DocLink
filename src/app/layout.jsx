@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
 import { I18nProvider } from '@/context/i18n';
+import { AuthProvider } from '@/context/auth';
 
 export const metadata = {
   title: 'DocLink - Your Health, Connected',
@@ -23,14 +24,16 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className={cn('min-h-screen bg-background font-body antialiased')}>
-        <I18nProvider>
-            <div className="relative flex min-h-dvh flex-col">
-              <Navbar />
-              <main className="flex-1">{children}</main>
-              <Footer />
-            </div>
-            <Toaster />
-        </I18nProvider>
+        <AuthProvider>
+          <I18nProvider>
+              <div className="relative flex min-h-dvh flex-col">
+                <Navbar />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </div>
+              <Toaster />
+          </I18nProvider>
+        </AuthProvider>
       </body>
     </html>
   );

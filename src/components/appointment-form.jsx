@@ -176,15 +176,12 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
     const { toast } = useToast();
     const { t } = useI18n();
     const [isFetching, setIsFetching] = useState(false);
-    const [isDoctorPrefilled, setIsDoctorPrefilled] = useState(false);
     const [dynamicFormConfig, setDynamicFormConfig] = useState(initialFormConfig);
     const [selectedDoctorId, setSelectedDoctorId] = useState(preselectedDoctorId);
     const [availableDates, setAvailableDates] = useState([]);
     const [timeSlots, setTimeSlots] = useState([]);
     const [selectedDate, setSelectedDate] = useState('');
     const [scheduleConfig, setScheduleConfig] = useState(null);
-    // State for form submission status
-    const [formError, setFormError] = useState(null);
 
     // Use dynamic form config if available, otherwise fallback to initial config
     const formConfig = dynamicFormConfig || initialFormConfig;

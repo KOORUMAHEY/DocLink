@@ -3,6 +3,7 @@ import { getAppointmentsByDoctor } from '@/features/appointments/services/appoin
 import { getDoctorById } from '@/features/doctors';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Calendar, Users, Activity, CheckCircle, Stethoscope, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';

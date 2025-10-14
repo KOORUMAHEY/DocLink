@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Table,
   TableBody,
@@ -20,7 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Calendar, Clock, Users, Eye, RefreshCw, Trash2, User, Phone, Mail, MapPin, Stethoscope, FileText, Info } from 'lucide-react';
+import { Calendar, Clock, Users, RefreshCw, Trash2, User, Phone, Mail, MapPin, Stethoscope, FileText, Info } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
@@ -48,14 +49,14 @@ function AppointmentsDisplay({ appointments }) {
   };
 
   const confirmReschedule = () => {
-    // TODO: Implement reschedule logic
+    // Implement reschedule logic
     console.log('Rescheduling appointment:', actionAppointment);
     setIsRescheduleOpen(false);
     setActionAppointment(null);
   };
 
   const confirmCancel = () => {
-    // TODO: Implement cancel logic
+    // Implement cancel logic
     console.log('Cancelling appointment:', actionAppointment);
     setIsCancelOpen(false);
     setActionAppointment(null);
@@ -73,20 +74,6 @@ function AppointmentsDisplay({ appointments }) {
         return 'destructive';
       default:
         return 'outline';
-    }
-  };
-
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'confirmed':
-      case 'scheduled':
-        return 'text-green-600 bg-green-50';
-      case 'pending':
-        return 'text-yellow-600 bg-yellow-50';
-      case 'cancelled':
-        return 'text-red-600 bg-red-50';
-      default:
-        return 'text-gray-600 bg-gray-50';
     }
   };
 
@@ -590,5 +577,20 @@ function AppointmentsDisplay({ appointments }) {
     </>
   );
 }
+
+AppointmentsDisplay.propTypes = {
+  appointments: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      patientName: PropTypes.string,
+      patientId: PropTypes.string,
+      patientAvatar: PropTypes.string,
+      date: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)]),
+      status: PropTypes.string,
+      doctorName: PropTypes.string,
+      type: PropTypes.string,
+    })
+  ),
+};
 
 export default AppointmentsDisplay;

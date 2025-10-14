@@ -32,6 +32,7 @@ export const ROUTES = {
     DOCTORS: '/admin/doctors',
     DOCTORS_NEW: '/admin/doctors/new',
     PATIENTS: '/admin/patients',
+    SETTINGS: '/admin/settings',
   },
 };
 

@@ -12,18 +12,20 @@ export default function AdminPageHeader({
   actions,
   stats,
   showRefresh = false,
-  onRefresh
+  onRefresh,
+  icon: Icon,
+  gradient = 'from-blue-500 to-cyan-500'
 }) {
   return (
-    <div className="mb-6 lg:mb-8">
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/50 p-6 lg:p-8">
+    <div className="mb-4 sm:mb-6 lg:mb-8">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 p-4 sm:p-6 lg:p-8">
         {/* Back Link */}
         {backLink && (
           <Link 
             href={backLink.href}
-            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 mb-4 transition-colors group"
+            className="inline-flex items-center gap-2 text-xs sm:text-sm text-gray-600 hover:text-gray-900 mb-3 sm:mb-4 transition-colors group"
           >
-            <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 group-hover:-translate-x-1 transition-transform" />
             {backLink.label}
           </Link>
         )}
@@ -31,21 +33,28 @@ export default function AdminPageHeader({
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 lg:gap-6">
           {/* Title Section */}
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 bg-clip-text text-transparent">
-                {title}
-              </h1>
-              {badge && (
-                <Badge 
-                  variant={badge.variant || 'default'} 
-                  className="text-xs lg:text-sm font-semibold"
-                >
-                  {badge.text}
-                </Badge>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-2">
+              {Icon && (
+                <div className={`hidden sm:flex h-12 w-12 lg:h-14 lg:w-14 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br ${gradient} shadow-lg flex-shrink-0`}>
+                  <Icon className="h-6 w-6 lg:h-7 lg:w-7 text-white" />
+                </div>
               )}
+              <div className="flex items-start sm:items-center gap-2 sm:gap-3 flex-wrap">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">
+                  {title}
+                </h1>
+                {badge && (
+                  <Badge 
+                    variant={badge.variant || 'default'} 
+                    className="text-xs font-semibold"
+                  >
+                    {badge.text}
+                  </Badge>
+                )}
+              </div>
             </div>
             {description && (
-              <p className="text-gray-600 text-sm lg:text-base max-w-2xl">
+              <p className="text-gray-600 text-xs sm:text-sm lg:text-base max-w-2xl ml-0 sm:ml-[4.5rem] lg:ml-[5rem]">
                 {description}
               </p>
             )}
@@ -53,20 +62,20 @@ export default function AdminPageHeader({
 
           {/* Actions Section */}
           {(actions || showRefresh) && (
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               {showRefresh && (
                 <Button
                   variant="outline"
-                  size="lg"
+                  size="sm"
                   onClick={onRefresh}
-                  className="border-2 hover:bg-gray-50"
+                  className="border-2 hover:bg-gray-50 text-xs sm:text-sm"
                 >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Refresh
+                  <RefreshCw className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Refresh</span>
                 </Button>
               )}
-              {actions && actions.map((action, index) => (
-                <div key={index}>
+              {actions?.map((action, index) => (
+                <div key={`action-${index}`}>
                   {action}
                 </div>
               ))}
@@ -76,19 +85,19 @@ export default function AdminPageHeader({
 
         {/* Stats Section */}
         {stats && stats.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t border-gray-200">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-200">
             {stats.map((stat, index) => {
-              const Icon = stat.icon;
+              const StatIcon = stat.icon;
               return (
-                <div key={index} className="flex items-center gap-3">
-                  {Icon && (
-                    <div className={`p-2 rounded-lg ${stat.iconBg || 'bg-blue-50'}`}>
-                      <Icon className={`h-5 w-5 ${stat.iconColor || 'text-blue-600'}`} />
+                <div key={`stat-${stat.label}-${index}`} className="flex items-center gap-2 sm:gap-3">
+                  {StatIcon && (
+                    <div className={`hidden sm:flex p-2 rounded-lg ${stat.iconBg || 'bg-blue-50'} flex-shrink-0`}>
+                      <StatIcon className={`h-4 w-4 lg:h-5 lg:w-5 ${stat.iconColor || 'text-blue-600'}`} />
                     </div>
                   )}
-                  <div>
-                    <p className="text-xs text-gray-600">{stat.label}</p>
-                    <p className="text-xl font-bold text-gray-900">{stat.value}</p>
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-600 truncate">{stat.label}</p>
+                    <p className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 truncate">{stat.value}</p>
                   </div>
                 </div>
               );
@@ -121,4 +130,6 @@ AdminPageHeader.propTypes = {
   })),
   showRefresh: PropTypes.bool,
   onRefresh: PropTypes.func,
+  icon: PropTypes.elementType,
+  gradient: PropTypes.string,
 };

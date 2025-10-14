@@ -2,10 +2,9 @@
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
-import { Navbar } from '@/components/layout/navbar';
-import { Footer } from '@/components/layout/footer';
 import { I18nProvider } from '@/context/i18n';
 import { AuthProvider } from '@/context/auth';
+import ConditionalLayout from '@/components/layout/ConditionalLayout';
 
 export const metadata = {
   title: 'DocLink - Your Health, Connected',
@@ -26,12 +25,10 @@ export default function RootLayout({
       <body className={cn('min-h-screen bg-background font-body antialiased')}>
         <AuthProvider>
           <I18nProvider>
-              <div className="relative flex min-h-dvh flex-col">
-                <Navbar />
-                <main className="flex-1">{children}</main>
-                <Footer />
-              </div>
-              <Toaster />
+            <ConditionalLayout>
+              {children}
+            </ConditionalLayout>
+            <Toaster />
           </I18nProvider>
         </AuthProvider>
       </body>

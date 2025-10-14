@@ -31,7 +31,7 @@ const doctorFormSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
   password: z.string().min(6, "Password must be at least 6 characters."),
   specialization: z.string().min(2, "Specialization is required."),
-  bio: z.string().min(10, "Bio must be at least 10 characters."),
+  bio: z.string().optional(),
   imageUrl: z.string().url("Please enter a valid URL.").optional().or(z.literal('')),
 });
 
@@ -42,6 +42,7 @@ export function DoctorForm() {
 
   const form = useForm({
     resolver: zodResolver(doctorFormSchema),
+    mode: 'onSubmit',
     defaultValues: {
       name: "",
       email: "",
@@ -53,22 +54,31 @@ export function DoctorForm() {
   });
 
   const onSubmit = async (data) => {
-    const result = await createDoctor({
-      ...data,
-      imageUrl: data.imageUrl || `https://picsum.photos/400/400?random=${Math.random()}`,
-    });
-
-    if (result.success) {
-      toast({
-        title: t('forms.doctor.added_title'),
-        description: result.message || t('forms.doctor.added_desc'),
+    try {
+      const result = await createDoctor({
+        ...data,
+        imageUrl: data.imageUrl || `https://picsum.photos/400/400?random=${Math.random()}`,
       });
-      router.push(ROUTES.ADMIN.DOCTORS);
-      router.refresh();
-    } else {
+
+      if (result.success) {
+        toast({
+          title: t('forms.doctor.added_title'),
+          description: result.message || t('forms.doctor.added_desc'),
+        });
+        router.push(ROUTES.ADMIN.DOCTORS);
+        router.refresh();
+      } else {
+        toast({
+          title: t('forms.toast.error'),
+          description: result.error || t('forms.doctor.added_error'),
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Failed to create doctor:', error);
       toast({
         title: t('forms.toast.error'),
-        description: result.error || t('forms.doctor.added_error'),
+        description: t('forms.doctor.added_error'),
         variant: "destructive",
       });
     }

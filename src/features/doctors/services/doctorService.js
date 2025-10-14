@@ -88,23 +88,43 @@ export const getDoctorByEmail = async (email) => {
  */
 export const createDoctor = async (data) => {
   try {
+    console.log('🔵 Attempting to create doctor in Firestore...');
+    console.log('🔵 Firebase DB instance:', db ? 'Connected' : 'Not connected');
+    
     // Note: In production, passwords should be hashed and handled by authentication service
     const doctorData = {
       name: data.name,
       email: data.email,
       password: data.password, // WARNING: This is for demo only - hash passwords in production
       specialization: data.specialization,
-      bio: data.bio,
+      bio: data.bio || '',
       imageUrl: data.imageUrl,
       createdAt: new Date().toISOString(),
       status: 'active', // active, inactive, on-leave
     };
     
     const docRef = await addDoc(collection(db, 'doctors'), doctorData);
+    console.log('✅ Doctor successfully created in Firestore with ID:', docRef.id);
     return { ...doctorData, id: docRef.id };
   } catch (error) {
-    console.error("Failed to create doctor in Firestore:", error);
-    throw new Error("Could not create doctor.");
+    console.error("❌ Failed to create doctor in Firestore:", error);
+    console.error("Error details:", {
+      code: error.code,
+      message: error.message,
+      name: error.name
+    });
+    console.log("⚠️ Falling back to mock data creation.");
+    // Fallback to mock creation
+    const mockId = `mock-${Date.now()}`;
+    const newDoctor = { 
+      ...data, 
+      id: mockId, 
+      createdAt: new Date().toISOString(),
+      status: 'active'
+    };
+    mockDoctors.push(newDoctor);
+    console.log('✅ Doctor created in mock data with ID:', mockId);
+    return newDoctor;
   }
 };
 

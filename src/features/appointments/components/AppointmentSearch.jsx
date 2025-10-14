@@ -30,6 +30,7 @@ export function AppointmentSearch() {
 
   const form = useForm({
     resolver: zodResolver(searchSchema),
+    mode: 'onSubmit',
     defaultValues: {
       query: searchParams.get('query') || "",
     },

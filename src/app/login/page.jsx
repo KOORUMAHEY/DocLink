@@ -29,6 +29,7 @@ export default function LoginPage() {
 
     const form = useForm({
         resolver: zodResolver(loginFormSchema),
+        mode: 'onSubmit',
         defaultValues: {
             email: "",
             password: "",
@@ -172,12 +173,24 @@ export default function LoginPage() {
                         </div>
 
                         <div className="flex justify-between text-sm">
-                            <a href="#" className="text-blue-600 hover:text-blue-800 font-medium hover:underline">
+                            <button
+                                type="button"
+                                className="text-blue-600 hover:text-blue-800 font-medium hover:underline bg-transparent border-none p-0 cursor-pointer"
+                                onClick={() => {
+                                    router.push('/forgot-password');
+                                }}
+                            >
                                 {t('login.forgot_password')}
-                            </a>
-                            <a href="#" className="text-green-600 hover:text-green-800 font-medium hover:underline">
+                            </button>
+                            <button
+                                type="button"
+                                className="text-green-600 hover:text-green-800 font-medium hover:underline bg-transparent border-none p-0 cursor-pointer"
+                                onClick={() => {
+                                    router.push('/sign-up');
+                                }}
+                            >
                                 {t('login.sign_up')}
-                            </a>
+                            </button>
                         </div>
                         
                         {/* Trust marks */}

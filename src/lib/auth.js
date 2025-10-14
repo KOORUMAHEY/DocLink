@@ -1,7 +1,7 @@
 // Authentication Service for DocLink
 // Handles both Doctor and Admin authentication
 
-import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { validateAdminCredentials, initializeSuperAdmin } from '@/features/admin/services/adminService';
 
@@ -62,38 +62,56 @@ export async function authenticateUser(email, password) {
     }
 
     // Check if doctor login
-    const doctorsRef = collection(db, 'doctors');
-    const q = query(doctorsRef, where('email', '==', email));
-    const querySnapshot = await getDocs(q);
+    try {
+      const doctorsRef = collection(db, 'doctors');
+      const q = query(doctorsRef, where('email', '==', email));
+      const querySnapshot = await getDocs(q);
 
-    if (querySnapshot.empty) {
+      if (querySnapshot.empty) {
+        return {
+          success: false,
+          error: 'Invalid email or password',
+        };
+      }
+
+      const doctorDoc = querySnapshot.docs[0];
+      const doctor = { id: doctorDoc.id, ...doctorDoc.data() };
+
+      // Verify password (in production, use proper password hashing)
+      if (doctor.password === password) {
+        return {
+          success: true,
+          user: {
+            email: doctor.email,
+            name: doctor.name,
+            role: 'doctor',
+            id: doctor.id,
+            specialization: doctor.specialization,
+            avatar: doctor.avatar,
+          },
+          message: 'Doctor login successful',
+        };
+      } else {
+        return {
+          success: false,
+          error: 'Invalid email or password',
+        };
+      }
+    } catch (doctorError) {
+      console.error('Firestore doctor query failed:', doctorError);
+      
+      // If permission error, provide helpful message
+      if (doctorError.code === 'permission-denied') {
+        return {
+          success: false,
+          error: 'Database permissions error. Please update Firestore security rules.',
+          details: 'Go to Firebase Console → Firestore → Rules and allow read/write access.',
+        };
+      }
+      
       return {
         success: false,
-        error: 'Invalid email or password',
-      };
-    }
-
-    const doctorDoc = querySnapshot.docs[0];
-    const doctor = { id: doctorDoc.id, ...doctorDoc.data() };
-
-    // Verify password (in production, use proper password hashing)
-    if (doctor.password === password) {
-      return {
-        success: true,
-        user: {
-          email: doctor.email,
-          name: doctor.name,
-          role: 'doctor',
-          id: doctor.id,
-          specialization: doctor.specialization,
-          avatar: doctor.avatar,
-        },
-        message: 'Doctor login successful',
-      };
-    } else {
-      return {
-        success: false,
-        error: 'Invalid email or password',
+        error: 'Unable to verify credentials. Please try again.',
       };
     }
   } catch (error) {
@@ -144,6 +162,7 @@ export async function isValidAdmin(email, password) {
     return result.success;
   } catch (error) {
     // Fallback to hardcoded credentials
+    console.warn('Admin validation error, using fallback:', error.message);
     return email.toLowerCase() === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password;
   }
 }

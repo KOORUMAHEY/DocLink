@@ -158,12 +158,15 @@ export function isAdmin(email) {
 }
 
 /**
- * Get redirect path based on user role
- * @param {string} role - User role ('admin' or 'doctor')
+ * Get redirect path based on role
+ * @param {string} role - User role
+ * @param {string} userId - User ID (required for doctor role)
  * @returns {string} Redirect path
  */
-export function getRedirectPath(role) {
-  return role === 'admin' ? '/admin' : '/doctor';
+export function getRedirectPath(role, userId = null) {
+  if (role === 'admin') return '/admin';
+  if (role === 'doctor' && userId) return `/doctor?id=${userId}`;
+  return '/doctor';
 }
 
 // Export admin credentials for reference (read-only)

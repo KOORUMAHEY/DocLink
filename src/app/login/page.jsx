@@ -48,8 +48,8 @@ export default function LoginPage() {
                     description: `Welcome back, ${result.user.name}!`,
                 });
                 
-                // Redirect based on role
-                const redirectPath = getRedirectPath(result.user.role);
+                // Redirect based on role (include doctor ID for doctors)
+                const redirectPath = getRedirectPath(result.user.role, result.user.id);
                 router.push(redirectPath);
             } else {
                 toast({

@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { z } from 'zod';
 import { 
   Dialog,
   DialogContent,
@@ -55,6 +57,28 @@ import {
   initializeSuperAdmin
 } from '@/features/admin/services/adminService';
 
+// Zod validation schema
+const adminSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters.'),
+  email: z.string()
+    .min(1, 'Email is required.')
+    .email('Please enter a valid email address.'),
+  password: z.string()
+    .min(6, 'Password must be at least 6 characters.'),
+  phone: z.string().optional(),
+  bio: z.string()
+    .min(10, 'Bio must be at least 10 characters.')
+    .optional()
+    .or(z.literal('')),
+});
+
+const editAdminSchema = adminSchema.extend({
+  password: z.string()
+    .min(6, 'Password must be at least 6 characters.')
+    .optional()
+    .or(z.literal('')),
+});
+
 export default function AdminSettingsPage() {
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,6 +87,7 @@ export default function AdminSettingsPage() {
   const [deleteDialogAdmin, setDeleteDialogAdmin] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAdmin, setSelectedAdmin] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -70,6 +95,7 @@ export default function AdminSettingsPage() {
     email: '',
     password: '',
     phone: '',
+    bio: '',
   });
 
   // Load admins
@@ -100,16 +126,13 @@ export default function AdminSettingsPage() {
 
   const handleAddAdmin = async () => {
     try {
-      if (!formData.name || !formData.email || !formData.password) {
-        toast({
-          title: 'Validation Error',
-          description: 'Please fill in all required fields',
-          variant: 'destructive',
-        });
-        return;
-      }
+      // Clear previous errors
+      setValidationErrors({});
 
-      await createAdmin(formData);
+      // Validate form data
+      const validatedData = adminSchema.parse(formData);
+
+      await createAdmin(validatedData);
       
       toast({
         title: 'Success',
@@ -117,15 +140,31 @@ export default function AdminSettingsPage() {
       });
 
       setIsAddDialogOpen(false);
-      setFormData({ name: '', email: '', password: '', phone: '' });
+      setFormData({ name: '', email: '', password: '', phone: '', bio: '' });
       loadAdmins();
     } catch (error) {
-      console.error('Error adding admin:', error);
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to add admin',
-        variant: 'destructive',
-      });
+      if (error instanceof z.ZodError) {
+        // Convert Zod errors to a more usable format
+        const errors = {};
+        error.errors.forEach((err) => {
+          const field = err.path[0];
+          errors[field] = err.message;
+        });
+        setValidationErrors(errors);
+        
+        toast({
+          title: 'Validation Error',
+          description: 'Please fix the errors in the form',
+          variant: 'destructive',
+        });
+      } else {
+        console.error('Error adding admin:', error);
+        toast({
+          title: 'Error',
+          description: error.message || 'Failed to add admin',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
@@ -133,15 +172,22 @@ export default function AdminSettingsPage() {
     try {
       if (!selectedAdmin) return;
 
+      // Clear previous errors
+      setValidationErrors({});
+
+      // Validate form data
+      const validatedData = editAdminSchema.parse(formData);
+
       const updates = {
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone,
+        name: validatedData.name,
+        email: validatedData.email,
+        phone: validatedData.phone,
+        bio: validatedData.bio,
       };
 
       // Only update password if provided
-      if (formData.password) {
-        updates.password = formData.password;
+      if (validatedData.password) {
+        updates.password = validatedData.password;
       }
 
       await updateAdmin(selectedAdmin.id, updates);
@@ -153,15 +199,31 @@ export default function AdminSettingsPage() {
 
       setIsEditDialogOpen(false);
       setSelectedAdmin(null);
-      setFormData({ name: '', email: '', password: '', phone: '' });
+      setFormData({ name: '', email: '', password: '', phone: '', bio: '' });
       loadAdmins();
     } catch (error) {
-      console.error('Error updating admin:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to update admin',
-        variant: 'destructive',
-      });
+      if (error instanceof z.ZodError) {
+        // Convert Zod errors to a more usable format
+        const errors = {};
+        error.errors.forEach((err) => {
+          const field = err.path[0];
+          errors[field] = err.message;
+        });
+        setValidationErrors(errors);
+        
+        toast({
+          title: 'Validation Error',
+          description: 'Please fix the errors in the form',
+          variant: 'destructive',
+        });
+      } else {
+        console.error('Error updating admin:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to update admin',
+          variant: 'destructive',
+        });
+      }
     }
   };
 
@@ -236,7 +298,9 @@ export default function AdminSettingsPage() {
       email: admin.email,
       password: '',
       phone: admin.phone || '',
+      bio: admin.bio || '',
     });
+    setValidationErrors({});
     setIsEditDialogOpen(true);
   };
 
@@ -244,6 +308,25 @@ export default function AdminSettingsPage() {
     admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     admin.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const openAddDialog = () => {
+    setFormData({ name: '', email: '', password: '', phone: '', bio: '' });
+    setValidationErrors({});
+    setIsAddDialogOpen(true);
+  };
+
+  const closeAddDialog = () => {
+    setIsAddDialogOpen(false);
+    setValidationErrors({});
+    setFormData({ name: '', email: '', password: '', phone: '', bio: '' });
+  };
+
+  const closeEditDialog = () => {
+    setIsEditDialogOpen(false);
+    setValidationErrors({});
+    setSelectedAdmin(null);
+    setFormData({ name: '', email: '', password: '', phone: '', bio: '' });
+  };
 
   if (loading) {
     return (
@@ -271,10 +354,7 @@ export default function AdminSettingsPage() {
             <Button 
               size="lg" 
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg"
-              onClick={() => {
-                setFormData({ name: '', email: '', password: '', phone: '' });
-                setIsAddDialogOpen(true);
-              }}
+              onClick={openAddDialog}
             >
               <UserPlus className="mr-2 h-5 w-5" />
               Add Admin
@@ -441,8 +521,8 @@ export default function AdminSettingsPage() {
       </div>
 
       {/* Add Admin Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent>
+      <Dialog open={isAddDialogOpen} onOpenChange={closeAddDialog}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Add New Admin</DialogTitle>
             <DialogDescription>
@@ -457,7 +537,11 @@ export default function AdminSettingsPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Admin Name"
+                className={validationErrors.name ? 'border-red-500' : ''}
               />
+              {validationErrors.name && (
+                <p className="text-sm text-red-600 mt-1">{validationErrors.name}</p>
+              )}
             </div>
             <div>
               <Label htmlFor="email">Email *</Label>
@@ -467,7 +551,11 @@ export default function AdminSettingsPage() {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="admin@example.com"
+                className={validationErrors.email ? 'border-red-500' : ''}
               />
+              {validationErrors.email && (
+                <p className="text-sm text-red-600 mt-1">{validationErrors.email}</p>
+              )}
             </div>
             <div>
               <Label htmlFor="password">Password *</Label>
@@ -476,8 +564,12 @@ export default function AdminSettingsPage() {
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="Minimum 8 characters"
+                placeholder="Minimum 6 characters"
+                className={validationErrors.password ? 'border-red-500' : ''}
               />
+              {validationErrors.password && (
+                <p className="text-sm text-red-600 mt-1">{validationErrors.password}</p>
+              )}
             </div>
             <div>
               <Label htmlFor="phone">Phone</Label>
@@ -486,11 +578,29 @@ export default function AdminSettingsPage() {
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 placeholder="+1234567890"
+                className={validationErrors.phone ? 'border-red-500' : ''}
               />
+              {validationErrors.phone && (
+                <p className="text-sm text-red-600 mt-1">{validationErrors.phone}</p>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea
+                id="bio"
+                value={formData.bio}
+                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                placeholder="Admin bio (minimum 10 characters)"
+                rows={3}
+                className={validationErrors.bio ? 'border-red-500' : ''}
+              />
+              {validationErrors.bio && (
+                <p className="text-sm text-red-600 mt-1">{validationErrors.bio}</p>
+              )}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+            <Button variant="outline" onClick={closeAddDialog}>
               Cancel
             </Button>
             <Button onClick={handleAddAdmin}>
@@ -501,8 +611,8 @@ export default function AdminSettingsPage() {
       </Dialog>
 
       {/* Edit Admin Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
+      <Dialog open={isEditDialogOpen} onOpenChange={closeEditDialog}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Admin</DialogTitle>
             <DialogDescription>
@@ -516,7 +626,11 @@ export default function AdminSettingsPage() {
                 id="edit-name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className={validationErrors.name ? 'border-red-500' : ''}
               />
+              {validationErrors.name && (
+                <p className="text-sm text-red-600 mt-1">{validationErrors.name}</p>
+              )}
             </div>
             <div>
               <Label htmlFor="edit-email">Email *</Label>
@@ -525,7 +639,11 @@ export default function AdminSettingsPage() {
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className={validationErrors.email ? 'border-red-500' : ''}
               />
+              {validationErrors.email && (
+                <p className="text-sm text-red-600 mt-1">{validationErrors.email}</p>
+              )}
             </div>
             <div>
               <Label htmlFor="edit-password">Password (leave empty to keep current)</Label>
@@ -534,8 +652,12 @@ export default function AdminSettingsPage() {
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                placeholder="Enter new password to change"
+                placeholder="Minimum 6 characters if changing"
+                className={validationErrors.password ? 'border-red-500' : ''}
               />
+              {validationErrors.password && (
+                <p className="text-sm text-red-600 mt-1">{validationErrors.password}</p>
+              )}
             </div>
             <div>
               <Label htmlFor="edit-phone">Phone</Label>
@@ -543,11 +665,29 @@ export default function AdminSettingsPage() {
                 id="edit-phone"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className={validationErrors.phone ? 'border-red-500' : ''}
               />
+              {validationErrors.phone && (
+                <p className="text-sm text-red-600 mt-1">{validationErrors.phone}</p>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="edit-bio">Bio</Label>
+              <Textarea
+                id="edit-bio"
+                value={formData.bio}
+                onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                placeholder="Admin bio (minimum 10 characters)"
+                rows={3}
+                className={validationErrors.bio ? 'border-red-500' : ''}
+              />
+              {validationErrors.bio && (
+                <p className="text-sm text-red-600 mt-1">{validationErrors.bio}</p>
+              )}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+            <Button variant="outline" onClick={closeEditDialog}>
               Cancel
             </Button>
             <Button onClick={handleEditAdmin}>

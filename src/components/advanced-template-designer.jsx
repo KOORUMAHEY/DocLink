@@ -65,12 +65,21 @@ export default function AdvancedTemplateDesigner({ doctorId, onFormConfigChange 
       setFormConfig(config);
       if (config.templateId && formTemplates[config.templateId]) {
         setSelectedTemplate(formTemplates[config.templateId]);
+      } else {
+        // Set common template as default if no template is configured
+        setSelectedTemplate(formTemplates.common);
       }
       if (config.customSections) {
         setCustomSections(config.customSections);
+      } else if (!config.templateId) {
+        // Initialize with common template sections if no config exists
+        setCustomSections([...formTemplates.common.sections]);
       }
     } catch (error) {
       console.error('Error loading form config:', error);
+      // Set common template as default on error
+      setSelectedTemplate(formTemplates.common);
+      setCustomSections([...formTemplates.common.sections]);
     }
   };
 
@@ -82,7 +91,7 @@ export default function AdvancedTemplateDesigner({ doctorId, onFormConfigChange 
 
   const saveConfiguration = async () => {
     const config = {
-      templateId: selectedTemplate?.id || 'general',
+      templateId: selectedTemplate?.id || 'common',
       customSections
     };
 

@@ -3,6 +3,26 @@ import { doc, getDoc, updateDoc, collection, getDocs, addDoc } from 'firebase/fi
 
 // Predefined form templates
 export const formTemplates = {
+  common: {
+    id: 'common',
+    name: 'Common',
+    description: 'Basic patient information form',
+    icon: '👤',
+    sections: [
+      {
+        id: 'patient_info',
+        title: 'Patient Information',
+        fields: [
+          { id: 'patientName', type: 'text', label: 'Name', required: true, placeholder: 'Enter patient name' },
+          { id: 'patientPhone', type: 'tel', label: 'Mobile Number', required: true, placeholder: '+1 (555) 123-4567' },
+          { id: 'patientEmail', type: 'email', label: 'Email', required: false, placeholder: 'patient@email.com' },
+          { id: 'age', type: 'number', label: 'Age', required: true, placeholder: '25' },
+          { id: 'gender', type: 'select', label: 'Gender', required: true, options: ['Male', 'Female', 'Other'] }
+        ]
+      }
+    ]
+  },
+
   general: {
     id: 'general',
     name: 'General Practice',

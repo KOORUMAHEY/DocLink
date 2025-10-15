@@ -1,72 +1,38 @@
-import { getAppointmentsByDoctor } from '@/features/appointments/services/appointmentService';
-import { getDoctorById, DoctorAppointmentsClient } from '@/features/doctors';
-import { notFound } from 'next/navigation';
+'use client';
+
+import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { Calendar, Users } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import Appointments from '@/doctor/pages/Appointments';
 
-async function DoctorAppointmentsContent({ doctorId }) {
-  const [doctor, appointments] = await Promise.all([
-    getDoctorById(doctorId),
-    getAppointmentsByDoctor(doctorId)
-  ]);
-
-  if (!doctor) {
-    notFound();
-  }
-
-  // Serialize Firestore Timestamps for client compatibility
-  const serializedAppointments = appointments.map(appt => ({
-    ...appt,
-    appointmentDate: appt.appointmentDate?.toDate?.() || new Date(appt.appointmentDate),
-    createdAt: appt.createdAt?.toDate?.() || new Date(appt.createdAt),
-    lastUpdated: appt.lastUpdated?.toDate?.() || new Date(appt.lastUpdated),
-  }));
-
-  return <DoctorAppointmentsClient doctor={doctor} initialAppointments={serializedAppointments} />;
-}
-
-export default async function DoctorAppointmentsPage({ searchParams }) {
-  const params = await searchParams;
-  const doctorId = params.id;
+function DoctorAppointmentsContent() {
+  const searchParams = useSearchParams();
+  const doctorId = searchParams.get('id');
 
   if (!doctorId) {
     return (
       <div className="p-6">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-          <div className="p-3 sm:p-4 bg-gradient-to-br from-red-100 to-red-200 rounded-full mb-4 sm:mb-6">
-            <Calendar className="h-10 w-10 sm:h-12 sm:w-12 text-red-600" />
-          </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Doctor Not Specified</h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-md">
-            Please log in again to access your appointments. The doctor ID is required to load your appointments.
-          </p>
-        </div>
+        <p className="text-red-600">Doctor ID is required</p>
       </div>
     );
   }
 
+  return <Appointments doctorId={doctorId} />;
+}
+
+export default function DoctorAppointmentsPage() {
   return (
     <Suspense fallback={
       <div className="p-6 space-y-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 sm:p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
-            <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-white animate-pulse" />
-          </div>
-          <div>
-            <div className="h-6 sm:h-8 bg-gray-300 rounded w-32 sm:w-48 animate-pulse"></div>
-            <div className="h-4 bg-gray-200 rounded w-48 sm:w-64 animate-pulse mt-2"></div>
-          </div>
+        <Skeleton className="h-20 w-full" />
+        <div className="grid gap-4">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-32 w-full" />
+          ))}
         </div>
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="h-24 sm:h-32 bg-white rounded-xl shadow-lg animate-pulse"></div>
-          <div className="h-24 sm:h-32 bg-white rounded-xl shadow-lg animate-pulse"></div>
-          <div className="h-24 sm:h-32 bg-white rounded-xl shadow-lg animate-pulse"></div>
-          <div className="h-24 sm:h-32 bg-white rounded-xl shadow-lg animate-pulse"></div>
-        </div>
-        <div className="h-80 sm:h-96 bg-white rounded-xl shadow-lg animate-pulse"></div>
       </div>
     }>
-      <DoctorAppointmentsContent doctorId={doctorId} />
+      <DoctorAppointmentsContent />
     </Suspense>
   );
 }

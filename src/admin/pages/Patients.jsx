@@ -56,7 +56,42 @@ export default function AdminPatientsPage() {
   const [patientToDelete, setPatientToDelete] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    age: '',
+    gender: '',
+    address: '',
+    medicalHistory: '',
+    emergencyContact: '',
+    insuranceInfo: '',
+    photoURL: '',
+    isActive: true
+  });
   const { toast } = useToast();
+
+  // Fetch patients
+  const fetchPatients = async () => {
+    setLoading(true);
+    try {
+      const data = await getUniquePatients();
+      setPatients(data);
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load patients. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPatients();
+  }, []);
 
   // Render table content based on state
   const renderTableContent = () => {

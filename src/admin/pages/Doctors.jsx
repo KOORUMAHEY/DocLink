@@ -56,6 +56,19 @@ export default function AdminDoctorsPage() {
   const [doctorToDelete, setDoctorToDelete] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    specialization: '',
+    bio: '',
+    imageUrl: '',
+    status: 'active',
+    licenseNumber: '',
+    experience: '',
+    education: '',
+    address: ''
+  });
   const { toast } = useToast();
 
   // Filter doctors

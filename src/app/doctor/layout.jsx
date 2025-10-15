@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { Stethoscope } from 'lucide-react';
 import DoctorLayout from '@/doctor/layout/DoctorLayout';
 import { getDoctorById } from '@/features/doctors';

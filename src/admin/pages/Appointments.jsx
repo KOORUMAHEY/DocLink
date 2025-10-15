@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, Search, Eye, Clock, CheckCircle, XCircle, AlertCircle, Plus, Trash2, RefreshCw, User, Phone, Mail, Stethoscope, FileText } from 'lucide-react';
 import AdminPageHeader from '@/components/admin/AdminPageHeader';
+import dynamic from 'next/dynamic';
 import {
   Dialog,
   DialogContent,
@@ -86,7 +87,13 @@ export default function AdminAppointmentsPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [appointmentToDelete, setAppointmentToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
+
+  // Ensure component is mounted (client-side only)
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Fetch appointments
   const fetchAppointments = async () => {
@@ -299,27 +306,66 @@ export default function AdminAppointmentsPage() {
                 />
               </div>
             </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-36 h-9 sm:h-10 text-sm bg-slate-700 border-slate-600 text-white">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent className="!bg-slate-700 !border-slate-600 !text-white" style={{backgroundColor: 'rgb(51 65 85)', color: 'white'}}>
-                <SelectItem value="all" className="!text-white !bg-slate-700 hover:!bg-slate-600 focus:!bg-slate-600 focus:!text-white cursor-pointer">All Status</SelectItem>
-                <SelectItem value="scheduled" className="!text-white !bg-slate-700 hover:!bg-slate-600 focus:!bg-slate-600 focus:!text-white cursor-pointer">Scheduled</SelectItem>
-                <SelectItem value="completed" className="!text-white !bg-slate-700 hover:!bg-slate-600 focus:!bg-slate-600 focus:!text-white cursor-pointer">Completed</SelectItem>
-                <SelectItem value="cancelled" className="!text-white !bg-slate-700 hover:!bg-slate-600 focus:!bg-slate-600 focus:!text-white cursor-pointer">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full sm:w-32 h-9 sm:h-10 text-sm bg-slate-700 border-slate-600 text-white">
-                <SelectValue placeholder="Sort" />
-              </SelectTrigger>
-              <SelectContent className="!bg-slate-700 !border-slate-600 !text-white" style={{backgroundColor: 'rgb(51 65 85)', color: 'white'}}>
-                <SelectItem value="date" className="!text-white !bg-slate-700 hover:!bg-slate-600 focus:!bg-slate-600 focus:!text-white cursor-pointer">Date</SelectItem>
-                <SelectItem value="patient" className="!text-white !bg-slate-700 hover:!bg-slate-600 focus:!bg-slate-600 focus:!text-white cursor-pointer">Patient</SelectItem>
-                <SelectItem value="doctor" className="!text-white !bg-slate-700 hover:!bg-slate-600 focus:!bg-slate-600 focus:!text-white cursor-pointer">Doctor</SelectItem>
-              </SelectContent>
-            </Select>
+            {isMounted && (
+              <>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-full sm:w-36 h-9 sm:h-10 text-sm bg-slate-600 border-slate-600 text-white hover:bg-slate-600 hover:border-slate-500">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-700 border-slate-600">
+                    <SelectItem value="all" className="text-white data-[state=checked]:bg-slate-600">
+                      <span className="flex items-center gap-2">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        All Status
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="scheduled" className="text-white data-[state=checked]:bg-blue-600">
+                      <span className="flex items-center gap-2">
+                        <Clock className="w-3.5 h-3.5 text-blue-400" />
+                        Scheduled
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="completed" className="text-white data-[state=checked]:bg-green-600">
+                      <span className="flex items-center gap-2">
+                        <CheckCircle className="w-3.5 h-3.5 text-green-400" />
+                        Completed
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="cancelled" className="text-white data-[state=checked]:bg-red-600">
+                      <span className="flex items-center gap-2">
+                        <XCircle className="w-3.5 h-3.5 text-red-400" />
+                        Cancelled
+                      </span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={sortBy} onValueChange={setSortBy}>
+                  <SelectTrigger className="w-full sm:w-32 h-9 sm:h-10 text-sm bg-slate-700 border-slate-600 text-white hover:bg-slate-600 hover:border-slate-500">
+                    <SelectValue placeholder="Sort" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-700 border-slate-600">
+                    <SelectItem value="date" className="text-white data-[state=checked]:bg-slate-600">
+                      <span className="flex items-center gap-2">
+                        <Calendar className="w-3.5 h-3.5 text-purple-400" />
+                        Date
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="patient" className="text-white data-[state=checked]:bg-slate-600">
+                      <span className="flex items-center gap-2">
+                        <User className="w-3.5 h-3.5 text-blue-400" />
+                        Patient
+                      </span>
+                    </SelectItem>
+                    <SelectItem value="doctor" className="text-white data-[state=checked]:bg-slate-600">
+                      <span className="flex items-center gap-2">
+                        <Stethoscope className="w-3.5 h-3.5 text-green-400" />
+                        Doctor
+                      </span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -55,10 +55,6 @@ export default function AdvancedTemplateDesigner({ doctorId, onFormConfigChange 
     primaryColor: 'blue'
   });
 
-  useEffect(() => {
-    loadFormConfig();
-  }, [doctorId]);
-
   const loadFormConfig = async () => {
     try {
       const config = await getDynamicFormConfig(doctorId);
@@ -82,6 +78,11 @@ export default function AdvancedTemplateDesigner({ doctorId, onFormConfigChange 
       setCustomSections([...formTemplates.common.sections]);
     }
   };
+
+  useEffect(() => {
+    loadFormConfig();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doctorId]);
 
   const handleTemplateSelect = (template) => {
     setSelectedTemplate(template);

@@ -81,12 +81,6 @@ export default function DoctorProfilePage() {
     consultationFee: ''
   });
 
-  useEffect(() => {
-    if (doctorId) {
-      fetchDoctorData();
-    }
-  }, [doctorId]);
-
   const fetchDoctorData = async () => {
     setLoading(true);
     try {
@@ -117,6 +111,13 @@ export default function DoctorProfilePage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (doctorId) {
+      fetchDoctorData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doctorId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

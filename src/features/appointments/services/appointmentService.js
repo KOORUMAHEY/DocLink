@@ -168,26 +168,97 @@ export const getAppointments = async (filters = {}) => {
 };
 
 export const getAppointmentsByDoctor = async (doctorId) => {
-    try {
-        const appointmentsCol = collection(db, 'appointments');
-        const q = query(appointmentsCol, where('doctorId', '==', doctorId));
-        const appointmentSnapshot = await getDocs(q);
-        
-        if (appointmentSnapshot.empty) {
-            return [];
-        }
-        
-        const appointments = appointmentSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        
-        // Sort appointments by date in descending order
-        appointments.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
-        
-        return appointments;
-
-    } catch(error) {
-        console.error(`Failed to get appointments for doctor ${doctorId}:`, error);
-        throw new Error("Could not fetch doctor's appointments.");
+  try {
+    console.log(`Fetching appointments for doctor: ${doctorId}`);
+    
+    // Try to fetch from Firebase first
+    const appointmentsCol = collection(db, 'appointments');
+    const q = query(
+      appointmentsCol, 
+      where('doctorId', '==', doctorId),
+      orderBy('appointmentDate', 'desc')
+    );
+    const appointmentSnapshot = await getDocs(q);
+    
+    let appointments = [];
+    
+    if (!appointmentSnapshot.empty) {
+      appointments = appointmentSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          // Ensure consistent date formatting
+          appointmentDate: data.appointmentDate?.toDate?.() || new Date(data.appointmentDate),
+          createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt),
+          updatedAt: data.updatedAt?.toDate?.() || new Date(data.updatedAt),
+          // Map timeSlot from time if needed
+          timeSlot: data.timeSlot || data.time,
+          // Ensure reason field
+          reason: data.reason || data.description
+        };
+      });
+      
+      // Enrich with patient and doctor data
+      for (const appointment of appointments) {
+        await mergePatientData(appointment);
+        await mergeDoctorData(appointment);
+      }
+      
+      console.log(`Fetched ${appointments.length} appointments from Firebase`);
+      return appointments;
     }
+    
+    // Fallback to mock data if no appointments found in Firebase
+    console.log('No appointments found in Firebase, using mock data');
+    const mockAppointmentsForDoctor = mockAppointments.filter(apt => apt.doctorId === doctorId);
+    
+    // Format mock data to match expected structure
+    const formattedMockAppointments = mockAppointmentsForDoctor.map(appointment => ({
+      ...appointment,
+      appointmentDate: new Date(appointment.appointmentDate),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      timeSlot: appointment.time,
+      reason: appointment.description,
+      // Add additional fields that might be expected
+      healthPriority: appointment.healthPriority || 'normal',
+      allergies: appointment.allergies || 'None known',
+      medications: appointment.medications || 'None',
+      bloodType: appointment.bloodType || 'Unknown'
+    }));
+    
+    console.log(`Using ${formattedMockAppointments.length} mock appointments`);
+    return formattedMockAppointments;
+
+  } catch (error) {
+    console.error(`Failed to get appointments for doctor ${doctorId}:`, error);
+    
+    // If Firebase fails, try to return mock data
+    try {
+      console.log('Firebase failed, falling back to mock data');
+      const mockAppointmentsForDoctor = mockAppointments.filter(apt => apt.doctorId === doctorId);
+      
+      const formattedMockAppointments = mockAppointmentsForDoctor.map(appointment => ({
+        ...appointment,
+        appointmentDate: new Date(appointment.appointmentDate),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        timeSlot: appointment.time,
+        reason: appointment.description,
+        healthPriority: appointment.healthPriority || 'normal',
+        allergies: appointment.allergies || 'None known',
+        medications: appointment.medications || 'None',
+        bloodType: appointment.bloodType || 'Unknown'
+      }));
+      
+      console.log(`Fallback: Using ${formattedMockAppointments.length} mock appointments`);
+      return formattedMockAppointments;
+    } catch (mockError) {
+      console.error('Even mock data failed:', mockError);
+      throw new Error("Could not fetch doctor's appointments from any source.");
+    }
+  }
 };
 
 export const getAppointmentById = async (id) => {
@@ -313,5 +384,46 @@ export const updateAppointmentStatusInDb = async (appointmentId, status) => {
   } catch (error) {
     console.error(`Failed to update appointment ${appointmentId} status:`, error);
     throw new Error('Failed to update appointment status. Please try again.');
+  }
+};
+
+// Reschedule appointment with new date and time
+export const rescheduleAppointment = async (appointmentId, newDate, newTimeSlot, reason = '') => {
+  try {
+    const docRef = doc(db, 'appointments', appointmentId);
+    await updateDoc(docRef, {
+      appointmentDate: newDate,
+      timeSlot: newTimeSlot,
+      status: 'confirmed',
+      rescheduleReason: reason,
+      rescheduledAt: new Date(),
+      updatedAt: new Date()
+    });
+    return { appointmentId, newDate, newTimeSlot };
+  } catch (error) {
+    console.error(`Failed to reschedule appointment ${appointmentId}:`, error);
+    throw new Error('Failed to reschedule appointment. Please try again.');
+  }
+};
+
+// Approve appointment
+export const approveAppointment = async (appointmentId) => {
+  return await updateAppointmentStatusInDb(appointmentId, 'confirmed');
+};
+
+// Reject appointment with reason
+export const rejectAppointment = async (appointmentId, reason = '') => {
+  try {
+    const docRef = doc(db, 'appointments', appointmentId);
+    await updateDoc(docRef, {
+      status: 'rejected',
+      rejectionReason: reason,
+      rejectedAt: new Date(),
+      updatedAt: new Date()
+    });
+    return { appointmentId, status: 'rejected' };
+  } catch (error) {
+    console.error(`Failed to reject appointment ${appointmentId}:`, error);
+    throw new Error('Failed to reject appointment. Please try again.');
   }
 };

@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { 
-  Bell, 
   Stethoscope, 
   Home, 
   Calendar, 
@@ -12,16 +11,12 @@ import {
   LogOut, 
   X, 
   ChevronRight,
-  Shield,
-  Activity,
-  Moon,
-  Sun
+  Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '@/context/auth';
 
@@ -68,8 +63,6 @@ export default function AdminSidebar({ isOpen, onClose }) {
   const pathname = usePathname();
   const router = useRouter();
   const { logout, user } = useAuth();
-  const [notifications] = useState(3);
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -227,41 +220,8 @@ export default function AdminSidebar({ isOpen, onClose }) {
             })}
           </nav>
 
-          {/* Stats Section */}
+          {/* Bottom Section - Logout Only */}
           <div className="px-4 py-4 border-t border-white/10">
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-lg p-3 border border-green-500/20">
-                <div className="flex items-center gap-2 mb-1">
-                  <Activity className="h-3.5 w-3.5 text-green-400" />
-                  <span className="text-xs text-slate-400">Status</span>
-                </div>
-                <p className="text-sm font-bold text-green-400">Online</p>
-              </div>
-              <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 rounded-lg p-3 border border-blue-500/20">
-                <div className="flex items-center gap-2 mb-1">
-                  <Bell className="h-3.5 w-3.5 text-blue-400" />
-                  <span className="text-xs text-slate-400">Alerts</span>
-                </div>
-                <p className="text-sm font-bold text-blue-400">{notifications}</p>
-              </div>
-            </div>
-
-            {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-slate-300 hover:text-white hover:bg-white/5 mb-2"
-              onClick={() => setIsDarkMode(!isDarkMode)}
-            >
-              {isDarkMode ? (
-                <Sun className="mr-3 h-4 w-4" />
-              ) : (
-                <Moon className="mr-3 h-4 w-4" />
-              )}
-              <span className="text-sm">
-                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-              </span>
-            </Button>
-
             {/* Logout Button */}
             <Button
               onClick={handleLogout}

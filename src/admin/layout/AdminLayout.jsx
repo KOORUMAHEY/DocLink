@@ -15,18 +15,18 @@ export default function AdminLayout({ children }) {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-slate-900">
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-        <h1 className="text-lg font-semibold text-gray-900">Admin Dashboard</h1>
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between">
+        <h1 className="text-lg font-semibold text-white">Admin Dashboard</h1>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          className="p-2 rounded-lg hover:bg-slate-700 transition-colors"
         >
           {sidebarOpen ? (
-            <X className="w-5 h-5 text-gray-600" />
+            <X className="w-5 h-5 text-slate-300" />
           ) : (
-            <Menu className="w-5 h-5 text-gray-600" />
+            <Menu className="w-5 h-5 text-slate-300" />
           )}
         </button>
       </div>
@@ -44,8 +44,10 @@ export default function AdminLayout({ children }) {
 
       {/* Main Content */}
       <div className="lg:pl-[280px]">
-        <main className="pt-16 lg:pt-0">
-          {children}
+        <main className="pt-16 lg:pt-0 min-h-screen bg-slate-900">
+          <div className="p-4 sm:p-6 lg:p-8">
+            {children}
+          </div>
         </main>
       </div>
     </div>

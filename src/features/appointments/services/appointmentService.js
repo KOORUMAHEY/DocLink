@@ -53,11 +53,52 @@ export const getAppointments = async (filters = {}) => {
         }
     }
     
+    // Fetch patient and doctor details for each appointment
+    const enrichedAppointments = await Promise.all(
+      appointmentList.map(async (appointment) => {
+        const enriched = { ...appointment };
+        
+        // Fetch patient details if patientId exists and patientName is missing
+        if (appointment.patientId && !appointment.patientName) {
+          try {
+            const patientData = await getPatientByHospitalId(appointment.patientId);
+            if (patientData) {
+              enriched.patientName = patientData.name || patientData.patientName;
+              enriched.patientPhone = patientData.phone || appointment.patientPhone;
+              enriched.patientEmail = patientData.email || appointment.patientEmail;
+              enriched.age = patientData.age;
+              enriched.gender = patientData.gender;
+              enriched.hospitalId = patientData.hospitalId || appointment.patientId;
+            }
+          } catch (patientError) {
+            console.warn('Could not fetch patient details for appointment:', appointment.id, patientError);
+          }
+        }
+        
+        // Fetch doctor details if doctorId exists and doctorName is missing
+        if (appointment.doctorId && !appointment.doctorName) {
+          try {
+            const doctorData = await getDoctorById(appointment.doctorId);
+            if (doctorData) {
+              enriched.doctorName = doctorData.name || appointment.doctorName;
+              enriched.specialization = doctorData.specialty || doctorData.specialization;
+              enriched.doctorEmail = doctorData.email;
+              enriched.doctorPhone = doctorData.phone;
+            }
+          } catch (doctorError) {
+            console.warn('Could not fetch doctor details for appointment:', appointment.id, doctorError);
+          }
+        }
+        
+        return enriched;
+      })
+    );
+    
     // Sort all results by date
-    appointmentList.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+    enrichedAppointments.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
     
     // If no appointments found in Firestore, use mock data for testing
-    if (appointmentList.length === 0) {
+    if (enrichedAppointments.length === 0) {
       console.log('No appointments found in Firestore, using mock data');
       if (filters.searchQuery) {
         appointmentList = mockAppointments.filter(appointment => 
@@ -67,9 +108,10 @@ export const getAppointments = async (filters = {}) => {
       } else {
         appointmentList = mockAppointments;
       }
+      return appointmentList;
     }
     
-    return appointmentList;
+    return enrichedAppointments;
   } catch (error) {
     console.error("Failed to fetch appointments from Firestore:", error);
     console.error("Error details:", {

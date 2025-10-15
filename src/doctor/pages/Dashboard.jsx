@@ -22,8 +22,7 @@ import {
   UserCheck,
   Heart,
   RefreshCw,
-  ChevronRight,
-  TrendingUp
+  ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +36,30 @@ import { getDoctorById } from '@/features/doctors';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from '@/context/theme';
+import { cn } from '@/lib/utils';
+
+function getAppointmentBadgeStyles(status) {
+  switch (status) {
+    case 'confirmed':
+      return 'bg-green-100 text-green-800 border-green-300';
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+    default:
+      return 'bg-gray-100 text-gray-800 border-gray-300';
+  }
+}
+
+function getAppointmentBadgeOutlineStyles(status) {
+  switch (status) {
+    case 'confirmed':
+      return 'bg-green-50 text-green-700 border-green-200';
+    case 'pending':
+      return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+    default:
+      return 'bg-blue-50 text-blue-700 border-blue-200';
+  }
+}
 
 export default function DoctorDashboard() {
   const searchParams = useSearchParams();
@@ -46,6 +69,7 @@ export default function DoctorDashboard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { toast } = useToast();
+  const { isDark } = useTheme();
 
   useEffect(() => {
     const loadData = async () => {
@@ -87,13 +111,27 @@ export default function DoctorDashboard() {
   // Show error if no doctorId
   if (!doctorId && !loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+      <div className={cn(
+        "min-h-screen flex items-center justify-center",
+        isDark 
+          ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" 
+          : "bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20"
+      )}>
         <div className="text-center p-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-100 mb-6">
+          <div className={cn(
+            "inline-flex items-center justify-center w-20 h-20 rounded-full mb-6",
+            isDark ? "bg-red-500/20" : "bg-red-100"
+          )}>
             <AlertCircle className="w-10 h-10 text-red-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Doctor ID Required</h2>
-          <p className="text-gray-600 mb-6">Please log in to access your dashboard.</p>
+          <h2 className={cn(
+            "text-2xl font-bold mb-2",
+            isDark ? "text-white" : "text-gray-900"
+          )}>Doctor ID Required</h2>
+          <p className={cn(
+            "mb-6",
+            isDark ? "text-slate-400" : "text-gray-600"
+          )}>Please log in to access your dashboard.</p>
           <Link href="/login">
             <Button className="bg-gradient-to-r from-blue-500 to-cyan-500">
               Go to Login
@@ -137,7 +175,12 @@ export default function DoctorDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+      <div className={cn(
+        "min-h-screen",
+        isDark 
+          ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" 
+          : "bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20"
+      )}>
         <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
           <Skeleton className="h-32 sm:h-36 md:h-40 w-full rounded-xl sm:rounded-2xl" />
           <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
@@ -500,11 +543,7 @@ export default function DoctorDashboard() {
                               <Badge 
                                 variant="outline" 
                                 className={`text-[10px] sm:text-xs flex-shrink-0 ${
-                                  appointment.status === 'confirmed' 
-                                    ? 'bg-green-50 text-green-700 border-green-200' 
-                                    : appointment.status === 'pending'
-                                    ? 'bg-yellow-50 text-yellow-700 border-yellow-200'
-                                    : 'bg-blue-50 text-blue-700 border-blue-200'
+                                  getAppointmentBadgeOutlineStyles(appointment.status)
                                 }`}
                               >
                                 {appointment.status || 'scheduled'}

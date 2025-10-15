@@ -19,7 +19,8 @@ import {
   Bell,
   Moon,
   Sun,
-  Briefcase
+  Briefcase,
+  Clock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -60,6 +61,14 @@ export function DoctorSidebar({ doctor, isOpen, onClose }) {
       icon: Users,
       description: 'Patient Records',
       gradient: 'from-purple-500 to-pink-500'
+    },
+   
+    {
+      href: `/doctor/appointments/form?id=${doctorId}`,
+      label: 'Form Designer',
+      icon: FileText,
+      description: 'Custom Forms',
+      gradient: 'from-teal-500 to-cyan-500'
     },
     {
       href: `/doctor/profile?id=${doctorId}`,

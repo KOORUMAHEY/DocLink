@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { I18nProvider } from '@/context/i18n';
 import { AuthProvider } from '@/context/auth';
+import { ThemeProvider } from '@/context/theme';
 import ConditionalLayout from '@/components/layout/ConditionalLayout';
 import { Inter } from 'next/font/google';
 
@@ -25,14 +26,16 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body className={cn('min-h-screen bg-background font-body antialiased')}>
-        <AuthProvider>
-          <I18nProvider>
-            <ConditionalLayout>
-              {children}
-            </ConditionalLayout>
-            <Toaster />
-          </I18nProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <I18nProvider>
+              <ConditionalLayout>
+                {children}
+              </ConditionalLayout>
+              <Toaster />
+            </I18nProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

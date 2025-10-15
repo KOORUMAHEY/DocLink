@@ -8,11 +8,12 @@ import { Footer } from '@/components/layout/footer';
 export default function ConditionalLayout({ children }) {
   const pathname = usePathname();
   
-  // Check if we're on an admin route
+  // Check if we're on an admin or doctor route
   const isAdminRoute = pathname?.startsWith('/admin');
+  const isDoctorRoute = pathname?.startsWith('/doctor');
   
-  // For admin routes, don't show Navbar and Footer
-  if (isAdminRoute) {
+  // For admin and doctor routes, don't show Navbar and Footer
+  if (isAdminRoute || isDoctorRoute) {
     return <>{children}</>;
   }
   

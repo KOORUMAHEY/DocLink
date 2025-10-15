@@ -82,97 +82,102 @@ export default function AdminPatientsPage() {
                 <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white">Actions</TableHead>
               </TableRow>
             </TableHeader>
-  const [formData, setFormData] = useState({
-    hospitalId: '',
-    name: '',
-    email: '',
-    phone: '',
-    age: '',
-    gender: '',
-    bloodGroup: '',
-    address: '',
-    emergencyContact: '',
-    medicalHistory: '',
-    photoURL: '',
-    isActive: true
-  });
+            <TableBody>
+              {filteredPatients.map((patient, index) => (
+                <TableRow key={patient.hospitalId || patient.id || `patient-${index}`} className="hover:bg-slate-700/50 transition-colors border-slate-700">
+                  {/* Patient Info */}
+                  <TableCell className="py-2 px-2 sm:py-3 sm:px-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <Avatar className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
+                        <AvatarImage src={patient.photoURL} alt={patient.name} />
+                        <AvatarFallback className="bg-blue-600 text-white text-sm font-bold">
+                          {patient.name?.charAt(0) || 'P'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-left min-w-0">
+                        <p className="font-semibold text-white text-xs sm:text-sm truncate">
+                          {patient.name}
+                        </p>
+                        <p className="text-[10px] sm:text-xs text-slate-400 truncate">
+                          {patient.email}
+                        </p>
+                        {/* Mobile: Show hospital ID */}
+                        <p className="text-[10px] text-blue-400 font-medium md:hidden mt-0.5">
+                          {patient.hospitalId}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
 
-  // Fetch patients
-  const fetchPatients = async () => {
-    setLoading(true);
-    try {
-      const data = await getUniquePatients();
-      setPatients(data);
-    } catch (error) {
-      console.error('Error fetching patients:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load patients. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+                  {/* Hospital ID - Hidden on mobile */}
+                  <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden md:table-cell">
+                    <span className="text-xs sm:text-sm font-medium text-blue-400">
+                      {patient.hospitalId}
+                    </span>
+                  </TableCell>
 
-  useEffect(() => {
-    fetchPatients();
-  }, []);
+                  {/* Contact - Hidden on tablet and mobile */}
+                  <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden lg:table-cell">
+                    <div className="space-y-1 text-xs text-slate-300">
+                      <p>{patient.phone}</p>
+                      <p className="text-slate-500">{patient.age}y • {patient.gender}</p>
+                    </div>
+                  </TableCell>
 
-  // Filter patients
-  const filteredPatients = useMemo(() => {
-    let filtered = [...patients];
+                  {/* Status - Hidden on mobile */}
+                  <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden sm:table-cell">
+                    <Badge variant={patient.isActive !== false ? "default" : "secondary"} className={patient.isActive !== false ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}>
+                      {patient.isActive !== false ? "Active" : "Inactive"}
+                    </Badge>
+                  </TableCell>
 
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(patient => 
-        patient.name?.toLowerCase().includes(query) ||
-        patient.email?.toLowerCase().includes(query) ||
-        patient.phone?.includes(query) ||
-        patient.hospitalId?.toLowerCase().includes(query)
+                  {/* Actions */}
+                  <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center">
+                    <div className="flex items-center justify-center gap-1 sm:gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewPatient(patient)}
+                        className="h-8 w-8 p-0 border-slate-600 hover:bg-slate-700 text-slate-300"
+                        title="View Details"
+                      >
+                        <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditClick(patient)}
+                        className="h-8 w-8 p-0 border-slate-600 hover:bg-slate-700 text-slate-300"
+                        title="Edit Patient"
+                      >
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeletePatient(patient)}
+                        className="h-8 w-8 p-0 border-slate-600 hover:bg-red-900/20 text-red-400 hover:text-red-300"
+                        title="Delete Patient"
+                      >
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       );
     }
 
-    // Status filter
-    if (filterStatus !== 'all') {
-      filtered = filtered.filter(patient => {
-        if (filterStatus === 'active') return patient.isActive !== false;
-        if (filterStatus === 'inactive') return patient.isActive === false;
-        return true;
-      });
-    }
-
-    return filtered;
-  }, [patients, searchQuery, filterStatus]);
-
-  // Reset form
-  const resetForm = () => {
-    setFormData({
-      hospitalId: '',
-      name: '',
-      email: '',
-      phone: '',
-      age: '',
-      gender: '',
-      bloodGroup: '',
-      address: '',
-      emergencyContact: '',
-      medicalHistory: '',
-      photoURL: '',
-      isActive: true
-    });
+    return (
+      <div className="p-8 text-center">
+        <Users className="h-12 w-12 mx-auto text-slate-500 mb-3" />
+        <p className="text-sm text-slate-400">No patients found</p>
+      </div>
+    );
   };
-
-  // Generate hospital ID
-  const generateHospitalId = () => {
-    const prefix = 'PT';
-    const timestamp = Date.now().toString().slice(-6);
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-    return `${prefix}${timestamp}${random}`;
-  };
-
-  // Handle add patient
   const handleAddPatient = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -435,146 +440,6 @@ export default function AdminPatientsPage() {
       <Card className="shadow-sm border-0 bg-slate-800 border-slate-700">
         <CardContent className="p-0">
           {renderTableContent()}
-        </CardContent>
-                <TableBody>
-                  {filteredPatients.map((patient, index) => (
-                    <TableRow key={patient.hospitalId || patient.id || `patient-${index}`} className="hover:bg-slate-700/50 transition-colors border-slate-700">
-                      {/* Patient Info */}
-                      <TableCell className="py-2 px-2 sm:py-3 sm:px-4">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <Avatar className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
-                            <AvatarImage src={patient.photoURL} alt={patient.name} />
-                            <AvatarFallback className="bg-blue-600 text-white text-sm font-bold">
-                              {patient.name?.charAt(0) || 'P'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="text-left min-w-0">
-                            <p className="font-semibold text-white text-xs sm:text-sm truncate">
-                              {patient.name}
-                            </p>
-                            <p className="text-[10px] sm:text-xs text-slate-400 truncate">
-                              {patient.email}
-                            </p>
-                            {/* Mobile: Show hospital ID */}
-                            <p className="text-[10px] text-blue-400 font-medium md:hidden mt-0.5">
-                              {patient.hospitalId}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-
-                      {/* Hospital ID - Hidden on mobile */}
-                      <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden md:table-cell">
-                        <span className="text-xs sm:text-sm font-medium text-blue-400">
-                          {patient.hospitalId}
-                        </span>
-                      </TableCell>
-
-                      {/* Contact - Hidden on tablet and mobile */}
-                      <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden lg:table-cell">
-                        <div className="space-y-1 text-xs text-slate-300">
-                          {patient.phone && (
-                            <div className="flex items-center justify-center gap-1.5">
-                              <Phone className="h-3 w-3 text-slate-400" />
-                              <span>{patient.phone}</span>
-                            </div>
-                          )}
-                          {patient.age && (
-                            <div className="flex items-center justify-center gap-1.5">
-                              <Calendar className="h-3 w-3 text-slate-400" />
-                              <span>{patient.age} years</span>
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-
-                      {/* Status - Hidden on mobile */}
-                      <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden sm:table-cell">
-                        <div className="flex justify-center">
-                          <Badge 
-                            variant={patient.isActive !== false ? 'default' : 'secondary'}
-                            className={`text-[10px] sm:text-xs ${
-                              patient.isActive !== false ? 'bg-green-500' : 'bg-gray-400'
-                            }`}
-                          >
-                            {patient.isActive !== false ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </div>
-                      </TableCell>
-
-                      {/* Actions */}
-                      <TableCell className="py-2 px-2 sm:py-3 sm:px-4">
-                        <div className="flex items-center justify-center gap-1 sm:gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleViewPatient(patient)}
-                            className="h-7 px-2 sm:h-8 sm:px-3 text-xs hover:bg-blue-600 hover:border-blue-500 hover:text-white border-slate-600 text-slate-300"
-                          >
-                            <Eye className="h-3 w-3 sm:mr-1" />
-                            <span className="hidden sm:inline">View</span>
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditClick(patient)}
-                            className="h-7 px-2 sm:h-8 sm:px-3 text-xs hover:bg-indigo-600 hover:border-indigo-500 hover:text-white border-slate-600 text-slate-300"
-                          >
-                            <Edit className="h-3 w-3 sm:mr-1" />
-                            <span className="hidden sm:inline">Edit</span>
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteClick(patient)}
-                            className="h-7 px-2 sm:h-8 sm:px-2 text-xs hover:bg-red-600 hover:border-red-500 hover:text-white border-slate-600 text-slate-300"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ) : (
-                            </TableBody>
-              </Table>
-            </div>
-          );
-    }
-
-    // Empty state
-    return (
-      <div className="p-12 text-center space-y-4">
-        <div className="mx-auto w-20 h-20 bg-blue-900/30 rounded-full flex items-center justify-center">
-          <Users className="h-10 w-10 text-blue-400" />
-        </div>
-        <h3 className="text-xl font-bold text-white">
-          {searchQuery || filterStatus !== 'all' ? 'No patients found' : 'No Patients Yet'}
-        </h3>
-        <p className="text-slate-400 max-w-md mx-auto text-sm">
-          {searchQuery || filterStatus !== 'all' 
-            ? 'Try adjusting your search or filters'
-            : 'Get started by adding your first patient to the system.'}
-        </p>
-        {!searchQuery && filterStatus === 'all' && (
-          <Button 
-            onClick={() => setIsAddDialogOpen(true)}
-            size="sm"
-            className="bg-blue-600 hover:bg-blue-700 mt-4"
-          >
-            <Plus className="mr-2 h-4 w-4" />
-            Add Your First Patient
-          </Button>
-        )}
-      </div>
-    );
-  };
-
-  // Form state for add/edit
-          )}
         </CardContent>
       </Card>
 

@@ -1,0 +1,46 @@
+[debug] [2025-10-15T11:22:53.842Z] [Firebase Plugin] Activating Firebase extension.
+[debug] [2025-10-15T11:22:57.821Z] [Firebase Plugin] requireAuthWrapper
+[debug] [2025-10-15T11:22:57.822Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-15T11:22:57.822Z] > authorizing via signed-in user (maheshraj2610@gmail.com)
+[debug] [2025-10-15T11:22:57.823Z] Checked if tokens are valid: false, expires at: 1760450214143
+[debug] [2025-10-15T11:22:57.823Z] Checked if tokens are valid: false, expires at: 1760450214143
+[debug] [2025-10-15T11:22:57.823Z] > refreshing access token with scopes: []
+[debug] [2025-10-15T11:22:57.824Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-10-15T11:22:57.824Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-10-15T11:22:57.827Z] [Firebase Plugin] VSCode notification server listening on port 40001
+[info] [Firebase Plugin] Starting Data Connect toolkit (version 2.14.0) on port 50001
+[debug] [2025-10-15T11:22:59.743Z] I1015 16:52:59.727616    1171 control.go:94] [/emulator/doclink 52c3] UpdateResources(): done
+Main schema: sources: schema/schema.gql [1992B] 
+Connector "example": sources: example/mutations.gql [1243B] example/queries.gql [1801B] 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1015 16:52:59.727616    1171 control.go:94] [/emulator/doclink 52c3] UpdateResources(): done\nMain schema: sources: schema/schema.gql [1992B] \nConnector \"example\": sources: example/mutations.gql [1243B] example/queries.gql [1801B] \n"}}
+[debug] [2025-10-15T11:22:59.743Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2025-10-15T11:22:59.743Z] Ignoring unsupported arg: port {"metadata":{"emulator":{"name":"dataconnect"},"message":"Ignoring unsupported arg: port"}}
+[debug] [2025-10-15T11:22:59.743Z] Starting Data Connect Emulator with command {"binary":"/Users/mahesh/.cache/firebase/emulators/dataconnect-emulator-2.14.0","args":["--logtostderr","-v=2","dev","--listen=localhost:50001","--config_dir=/Users/mahesh/Project/DocLink/dataconnect","--enable_output_schema_extensions=true","--enable_output_generated_sdk=true"],"optionalArgs":["listen","config_dir","enable_output_schema_extensions","enable_output_generated_sdk"],"joinArgs":true,"shell":false,"port":9399} {"metadata":{"emulator":{"name":"dataconnect"},"message":"Starting Data Connect Emulator with command {\"binary\":\"/Users/mahesh/.cache/firebase/emulators/dataconnect-emulator-2.14.0\",\"args\":[\"--logtostderr\",\"-v=2\",\"dev\",\"--listen=localhost:50001\",\"--config_dir=/Users/mahesh/Project/DocLink/dataconnect\",\"--enable_output_schema_extensions=true\",\"--enable_output_generated_sdk=true\"],\"optionalArgs\":[\"listen\",\"config_dir\",\"enable_output_schema_extensions\",\"enable_output_generated_sdk\"],\"joinArgs\":true,\"shell\":false,\"port\":9399}"}}
+[info] i  dataconnect: Data Connect Emulator logging to dataconnect-debug.log {"metadata":{"emulator":{"name":"dataconnect"},"message":"Data Connect Emulator logging to dataconnect-debug.log"}}
+[debug] [2025-10-15T11:23:00.144Z] I1015 16:53:00.005162    1174 load.go:31] Reloading schema and connectors...
+I1015 16:53:00.124459    1174 control.go:94] [/emulator/doclink 6173] UpdateResources(): done
+Main schema: sources: schema/schema.gql [1992B] 
+Connector "example": sources: example/mutations.gql [1243B] example/queries.gql [1801B] 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1015 16:53:00.005162    1174 load.go:31] Reloading schema and connectors...\nI1015 16:53:00.124459    1174 control.go:94] [/emulator/doclink 6173] UpdateResources(): done\nMain schema: sources: schema/schema.gql [1992B] \nConnector \"example\": sources: example/mutations.gql [1243B] example/queries.gql [1801B] \n"}}
+[debug] [2025-10-15T11:23:00.156Z] I1015 16:53:00.154798    1174 codegen.go:82] [connector "example" javascriptSdk] Generating sources into "/Users/mahesh/Project/DocLink/src/dataconnect-generated"
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1015 16:53:00.154798    1174 codegen.go:82] [connector \"example\" javascriptSdk] Generating sources into \"/Users/mahesh/Project/DocLink/src/dataconnect-generated\"\n"}}
+[debug] [2025-10-15T11:23:00.200Z] I1015 16:53:00.192615    1174 collector.go:107] schema extensions wrote into "/Users/mahesh/Project/DocLink/dataconnect/.dataconnect/schema"
+Generated sources: main/mutation.gql [13679B] main/implicit.gql [1261B] prelude.gql [73219B] main/input.gql [28173B] main/relation.gql [13746B] main/query.gql [5099B] 
+I1015 16:53:00.197566    1174 collector.go:107] connector "example" javascriptSdk wrote into "/Users/mahesh/Project/DocLink/src/dataconnect-generated"
+Generated sources: .guides/setup.md [1682B] index.d.ts [8025B] esm/package.json [17B] package.json [863B] README.md [40931B] react/index.d.ts [3961B] react/package.json [460B] react/esm/package.json [17B] react/index.cjs.js [3439B] esm/index.esm.js [3557B] index.cjs.js [4047B] react/esm/index.esm.js [3269B] react/README.md [48299B] .guides/usage.md [3489B] 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1015 16:53:00.192615    1174 collector.go:107] schema extensions wrote into \"/Users/mahesh/Project/DocLink/dataconnect/.dataconnect/schema\"\nGenerated sources: main/mutation.gql [13679B] main/implicit.gql [1261B] prelude.gql [73219B] main/input.gql [28173B] main/relation.gql [13746B] main/query.gql [5099B] \nI1015 16:53:00.197566    1174 collector.go:107] connector \"example\" javascriptSdk wrote into \"/Users/mahesh/Project/DocLink/src/dataconnect-generated\"\nGenerated sources: .guides/setup.md [1682B] index.d.ts [8025B] esm/package.json [17B] package.json [863B] README.md [40931B] react/index.d.ts [3961B] react/package.json [460B] react/esm/package.json [17B] react/index.cjs.js [3439B] esm/index.esm.js [3557B] index.cjs.js [4047B] react/esm/index.esm.js [3269B] react/README.md [48299B] .guides/usage.md [3489B] \n"}}
+[debug] [2025-10-15T11:23:00.212Z] I1015 16:53:00.210102    1174 installsdk.go:55] Package @dataconnect/generated is already installed. Skipping installation
+I1015 16:53:00.210245    1174 load.go:109] Finished reloading
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1015 16:53:00.210102    1174 installsdk.go:55] Package @dataconnect/generated is already installed. Skipping installation\nI1015 16:53:00.210245    1174 load.go:109] Finished reloading\n"}}
+[debug] [2025-10-15T11:23:00.251Z] I1015 16:53:00.249156    1174 dev.go:102] Listening on address (HTTP + gRPC): 127.0.0.1:50001
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1015 16:53:00.249156    1174 dev.go:102] Listening on address (HTTP + gRPC): 127.0.0.1:50001\n"}}
+[debug] [2025-10-15T11:23:00.593Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-10-15T11:23:00.593Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-10-15T11:23:00.603Z] [Firebase Plugin] User found:  maheshraj2610@gmail.com
+[info] [Firebase Plugin] (Core:Project) New user detected, fetching projects
+[debug] [2025-10-15T11:23:00.603Z] Checked if tokens are valid: true, expires at: 1760530979593
+[debug] [2025-10-15T11:23:00.603Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=1000
+[debug] [2025-10-15T11:23:00.640Z] I1015 16:53:00.630812    1174 engine.go:169] [/emulator/doclink 6173] ExecuteGraphqlRead IntrospectionQuery: succeeded. 
+ {"metadata":{"emulator":{"name":"dataconnect"},"message":"I1015 16:53:00.630812    1174 engine.go:169] [/emulator/doclink 6173] ExecuteGraphqlRead IntrospectionQuery: succeeded. \n"}}
+[debug] [2025-10-15T11:23:01.969Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2025-10-15T11:23:01.969Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]

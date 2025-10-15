@@ -58,32 +58,9 @@ export default function AdminDoctorsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
-  // Render table content based on state
-  const renderTableContent = () => {
-    if (loading) {
-      return (
-        <div className="p-8 text-center">
-          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-purple-400 mb-3" />
-          <p className="text-sm text-slate-300">Loading doctors...</p>
-        </div>
-      );
-    }
-
-    if (filteredDoctors.length > 0) {
-      return (
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-slate-700 hover:bg-slate-700 border-slate-600">
-                <TableHead className="text-left py-3 px-2 sm:px-4 font-semibold text-white">Doctor</TableHead>
-                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden md:table-cell">Specialization</TableHead>
-                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden lg:table-cell">Contact</TableHead>
-                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden sm:table-cell">Status</TableHead>
-                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredDoctors.map((doctor) => (
+  // Filter doctors
+  const filteredDoctors = useMemo(() => {
+    let filtered = [...doctors];
 
     // Search filter
     if (searchQuery) {
@@ -120,6 +97,28 @@ export default function AdminDoctorsPage() {
       address: ''
     });
   };
+
+  // Fetch doctors
+  const fetchDoctors = async () => {
+    setLoading(true);
+    try {
+      const data = await getDoctors();
+      setDoctors(data);
+    } catch (error) {
+      console.error('Error fetching doctors:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load doctors. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
 
   // Handle add doctor
   const handleAddDoctor = async (e) => {
@@ -245,6 +244,118 @@ export default function AdminDoctorsPage() {
     active: doctors.filter(d => d.status === 'active').length,
     inactive: doctors.filter(d => d.status === 'inactive').length,
   }), [doctors]);
+
+  // Render table content based on state
+  const renderTableContent = () => {
+    if (loading) {
+      return (
+        <div className="p-8 text-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-purple-400 mb-3" />
+          <p className="text-sm text-slate-300">Loading doctors...</p>
+        </div>
+      );
+    }
+
+    if (filteredDoctors.length > 0) {
+      return (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-700 hover:bg-slate-700 border-slate-600">
+                <TableHead className="text-left py-3 px-2 sm:px-4 font-semibold text-white">Doctor</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden md:table-cell">Specialization</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden lg:table-cell">Contact</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden sm:table-cell">Status</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredDoctors.map((doctor) => (
+                <TableRow key={doctor.id} className="hover:bg-slate-700/50 transition-colors border-slate-700">
+                  <TableCell className="py-2 px-2 sm:py-3 sm:px-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <Avatar className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
+                        <AvatarImage src={doctor.imageUrl} alt={doctor.name} />
+                        <AvatarFallback className="bg-purple-600 text-white text-sm font-bold">
+                          {doctor.name?.charAt(0) || 'D'}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-left min-w-0">
+                        <p className="font-semibold text-white text-xs sm:text-sm truncate">
+                          {doctor.name}
+                        </p>
+                        <p className="text-[10px] sm:text-xs text-slate-400 truncate">
+                          {doctor.email}
+                        </p>
+                        {/* Mobile: Show specialization */}
+                        <p className="text-[10px] text-purple-400 font-medium md:hidden mt-0.5">
+                          {doctor.specialization}
+                        </p>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden md:table-cell">
+                    <span className="text-xs sm:text-sm font-medium text-purple-400">
+                      {doctor.specialization}
+                    </span>
+                  </TableCell>
+                  <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden lg:table-cell">
+                    <div className="space-y-1 text-xs text-slate-300">
+                      <p>{doctor.phone}</p>
+                      <p className="text-slate-500">{doctor.experience}y exp</p>
+                    </div>
+                  </TableCell>
+                  <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden sm:table-cell">
+                    <Badge variant={doctor.status === 'active' ? "default" : "secondary"} className={doctor.status === 'active' ? "bg-green-600 hover:bg-green-700" : "bg-gray-600"}>
+                      {doctor.status === 'active' ? "Active" : "Inactive"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center">
+                    <div className="flex items-center justify-center gap-1 sm:gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewDoctor(doctor)}
+                        className="h-8 w-8 p-0 border-slate-600 hover:bg-slate-700 text-slate-300"
+                        title="View Details"
+                      >
+                        <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleEditClick(doctor)}
+                        className="h-8 w-8 p-0 border-slate-600 hover:bg-slate-700 text-slate-300"
+                        title="Edit Doctor"
+                      >
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteClick(doctor)}
+                        className="h-8 w-8 p-0 border-slate-600 hover:bg-red-900/20 text-red-400 hover:text-red-300"
+                        title="Delete Doctor"
+                      >
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      );
+    }
+
+    return (
+      <div className="p-8 text-center">
+        <Stethoscope className="h-12 w-12 mx-auto text-slate-500 mb-3" />
+        <p className="text-sm text-slate-400">No doctors found</p>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-4 sm:space-y-6">

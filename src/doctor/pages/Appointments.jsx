@@ -46,7 +46,7 @@ export default function Appointments({ doctorId }) {
             hospitalId: "P001",
             appointmentDate: new Date(),
             timeSlot: "10:00 AM",
-            status: "pending",
+            status: "pending", // Set as pending for doctor approval
             reason: "Regular checkup",
             healthPriority: "normal",
             allergies: "None",
@@ -63,12 +63,29 @@ export default function Appointments({ doctorId }) {
             hospitalId: "P002",
             appointmentDate: new Date(Date.now() + 86400000), // Tomorrow
             timeSlot: "2:30 PM",
-            status: "confirmed",
+            status: "pending", // Set as pending for doctor approval
             reason: "Follow-up consultation",
             healthPriority: "urgent",
             allergies: "Penicillin",
             medications: "None",
             bloodType: "A+"
+          },
+          {
+            id: "sample3",
+            patientName: "Robert Johnson",
+            patientEmail: "robert@example.com",
+            patientPhone: "+1234567892",
+            age: 42,
+            gender: "male",
+            hospitalId: "P003",
+            appointmentDate: new Date(Date.now() + 172800000), // Day after tomorrow
+            timeSlot: "9:15 AM",
+            status: "confirmed", // Already approved
+            reason: "Cardiac screening",
+            healthPriority: "normal",
+            allergies: "None known",
+            medications: "Blood pressure medication",
+            bloodType: "B+"
           }
         ]);
       } finally {
@@ -192,6 +209,13 @@ export default function Appointments({ doctorId }) {
                 size="sm"
               >
                 Completed
+              </Button>
+              <Button
+                variant={filterStatus === 'rejected' ? 'default' : 'outline'}
+                onClick={() => setFilterStatus('rejected')}
+                size="sm"
+              >
+                Rejected
               </Button>
             </div>
           </div>

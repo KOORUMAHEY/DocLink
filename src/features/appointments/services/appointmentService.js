@@ -338,7 +338,7 @@ export const createAppointment = async (data) => {
       ...data,
       appointmentDate: appointmentDate,
       createdAt: new Date(),
-      status: 'scheduled',
+      status: 'pending', // Initially set to pending for doctor approval
       patientId: patientRef.id,
       lastUpdated: new Date()
     };

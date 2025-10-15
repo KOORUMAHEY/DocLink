@@ -187,10 +187,11 @@ export const getAppointmentsByDoctor = async (doctorId) => {
         return {
           id: doc.id,
           ...data,
-          // Ensure consistent date formatting
-          appointmentDate: data.appointmentDate?.toDate?.() || new Date(data.appointmentDate),
-          createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt),
-          updatedAt: data.updatedAt?.toDate?.() || new Date(data.updatedAt),
+          // Ensure consistent date formatting - convert to Date objects, not ISO strings
+          appointmentDate: data.appointmentDate?.toDate?.() || (data.appointmentDate instanceof Date ? data.appointmentDate : new Date(data.appointmentDate)),
+          createdAt: data.createdAt?.toDate?.() || (data.createdAt instanceof Date ? data.createdAt : new Date(data.createdAt || Date.now())),
+          updatedAt: data.updatedAt?.toDate?.() || (data.updatedAt instanceof Date ? data.updatedAt : new Date(data.updatedAt || Date.now())),
+          lastUpdated: data.lastUpdated?.toDate?.() || (data.lastUpdated instanceof Date ? data.lastUpdated : new Date(data.lastUpdated || Date.now())),
           // Map timeSlot from time if needed
           timeSlot: data.timeSlot || data.time,
           // Ensure reason field

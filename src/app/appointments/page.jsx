@@ -1,4 +1,5 @@
 import { getAppointments } from '@/features/appointments/services/appointmentService';
+import { serializeAppointments } from '@/lib/firestore-serializer';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,12 +23,7 @@ export default async function AppointmentsPage({ searchParams }) {
   }
 
   // Convert Firestore Timestamps to plain objects for client components
-  const serializedAppointments = appointments.map(appointment => ({
-    ...appointment,
-    appointmentDate: appointment.appointmentDate?.toDate?.() || appointment.appointmentDate,
-    createdAt: appointment.createdAt?.toDate?.() || appointment.createdAt,
-    lastUpdated: appointment.lastUpdated?.toDate?.() || appointment.lastUpdated,
-  }));
+  const serializedAppointments = serializeAppointments(appointments);
 
   return (
     <div className="space-y-6 lg:space-y-8">

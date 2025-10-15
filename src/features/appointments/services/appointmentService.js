@@ -175,8 +175,7 @@ export const getAppointmentsByDoctor = async (doctorId) => {
     const appointmentsCol = collection(db, 'appointments');
     const q = query(
       appointmentsCol, 
-      where('doctorId', '==', doctorId),
-      orderBy('appointmentDate', 'desc')
+      where('doctorId', '==', doctorId)
     );
     const appointmentSnapshot = await getDocs(q);
     
@@ -198,6 +197,9 @@ export const getAppointmentsByDoctor = async (doctorId) => {
           reason: data.reason || data.description
         };
       });
+      
+      // Sort by date (newest first)
+      appointments.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
       
       // Enrich with patient and doctor data
       for (const appointment of appointments) {

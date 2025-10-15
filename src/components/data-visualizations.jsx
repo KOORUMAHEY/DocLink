@@ -6,57 +6,50 @@ import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { Calendar, Users, Activity, TrendingUp, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { getAppointmentTrends } from '@/features/admin';
-
-const topDoctorsData = [
-  { name: 'Dr. Smith', appointments: 45 },
-  { name: 'Dr. Johnson', appointments: 38 },
-  { name: 'Dr. Williams', appointments: 35 },
-  { name: 'Dr. Brown', appointments: 32 },
-  { name: 'Dr. Davis', appointments: 28 },
-];
-
-const patientDemographicsData = [
-  { name: '18-30', value: 120, color: '#8884d8' },
-  { name: '31-50', value: 200, color: '#82ca9d' },
-  { name: '51-70', value: 150, color: '#ffc658' },
-  { name: '70+', value: 80, color: '#ff7300' },
-];
-
-const genderData = [
-  { name: 'Male', value: 275, color: '#3b82f6' },
-  { name: 'Female', value: 275, color: '#ec4899' },
-];
+import { getAppointmentTrends, getPatientDemographics, getTopDoctors } from '@/features/admin';
 
 export default function DataVisualizations() {
   const [appointmentsData, setAppointmentsData] = useState([]);
+  const [patientDemographicsData, setPatientDemographicsData] = useState([]);
+  const [topDoctorsData, setTopDoctorsData] = useState([]);
   const [period, setPeriod] = useState('daily');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const loadAppointmentTrends = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const days = period === 'daily' ? 7 : period === 'weekly' ? 28 : 90;
-        const data = await getAppointmentTrends(period, days);
-        setAppointmentsData(data);
-      } catch (err) {
-        console.error('Error loading appointment trends:', err);
-        setError('Failed to load appointment data');
-      } finally {
-        setLoading(false);
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      let days;
+      if (period === 'daily') {
+        days = 7;
+      } else if (period === 'weekly') {
+        days = 28;
+      } else {
+        days = 90;
       }
-    };
+      const [appointmentData, demographicsData, doctorsData] = await Promise.all([
+        getAppointmentTrends(period, days),
+        getPatientDemographics(),
+        getTopDoctors()
+      ]);
+      setAppointmentsData(appointmentData);
+      setPatientDemographicsData(demographicsData);
+      setTopDoctorsData(doctorsData);
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    loadAppointmentTrends();
-  }, [period]);
-
-  return (
+  useEffect(() => {
+    loadData();
+  }, [period]);  return (
     <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
       {/* Appointments Over Time */}
-      <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden xl:col-span-2">
+      <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden xl:col-span-3">
         <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-b border-gray-200 p-4 sm:p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -110,10 +103,17 @@ export default function DataVisualizations() {
                   variant="outline" 
                   size="sm" 
                   className="mt-4"
-                  onClick={() => setPeriod(period)}
+                  onClick={loadData}
                 >
                   Retry
                 </Button>
+              </div>
+            </div>
+          ) : appointmentsData.length === 0 ? (
+            <div className="h-64 flex items-center justify-center">
+              <div className="text-center">
+                <Calendar className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">No appointment data available for the selected period</p>
               </div>
             </div>
           ) : (
@@ -183,7 +183,7 @@ export default function DataVisualizations() {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {patientDemographicsData.map((entry, index) => (
+                  {patientDemographicsData.length > 0 && patientDemographicsData.map((entry, index) => (
                     <Cell key={`cell-${entry.name}`} fill={entry.color} />
                   ))}
                 </Pie>
@@ -192,11 +192,70 @@ export default function DataVisualizations() {
             </ResponsiveContainer>
           </div>
           <div className="flex flex-wrap gap-2 mt-4">
-            {patientDemographicsData.map((item) => (
+            {patientDemographicsData.length > 0 ? patientDemographicsData.map((item) => (
               <Badge key={item.name} variant="secondary" className="text-xs">
                 {item.name}: {item.value}
               </Badge>
-            ))}
+            )) : (
+              <p className="text-sm text-gray-500">No patient data available</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Top Doctors */}
+      <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-green-50 to-green-100/50 border-b border-gray-200 p-4 sm:p-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg">
+              <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+            </div>
+            <div>
+              <CardTitle className="text-lg sm:text-xl font-bold text-gray-900">Top Doctors</CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">By appointment count</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 sm:p-6">
+          <div className="h-64">
+            {topDoctorsData.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={topDoctorsData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200" />
+                  <XAxis 
+                    dataKey="name" 
+                    tick={{ fill: '#6b7280' }} 
+                    tickLine={{ stroke: '#6b7280' }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis 
+                    tick={{ fill: '#6b7280' }} 
+                    tickLine={{ stroke: '#6b7280' }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '0.5rem',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                    labelStyle={{ color: '#374151', fontWeight: 600 }}
+                    itemStyle={{ color: '#10b981' }}
+                  />
+                  <Bar 
+                    dataKey="appointments" 
+                    fill="#10b981" 
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <p className="text-sm text-gray-500">No doctor data available</p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

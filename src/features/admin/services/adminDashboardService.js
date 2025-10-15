@@ -212,28 +212,39 @@ export const getUpcomingAppointments = async (limitCount = 5) => {
 export const getAppointmentTrends = async (period = 'daily', days = 7) => {
   try {
     const appointmentsRef = collection(db, 'appointments');
+    const snapshot = await getDocs(appointmentsRef);
+    const allAppointments = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    // Filter appointments by date range manually (avoiding Firestore range query issues)
     const now = new Date();
     const startDate = new Date();
     startDate.setDate(now.getDate() - days);
-    
-    const q = query(
-      appointmentsRef,
-      where('date', '>=', Timestamp.fromDate(startDate)),
-      where('date', '<=', Timestamp.fromDate(now)),
-      orderBy('date', 'asc')
-    );
+    const endDate = new Date();
+    endDate.setDate(now.getDate() + 30); // Include future appointments up to 30 days
 
-    const snapshot = await getDocs(q);
-    const appointments = snapshot.docs.map(doc => ({
-      ...doc.data(),
-      date: doc.data().date?.toDate?.() || new Date(doc.data().date)
-    }));
+    const appointments = allAppointments.filter(appointment => {
+      if (!appointment.appointmentDate) return false;
+
+      let appointmentDate;
+      if (appointment.appointmentDate instanceof Timestamp) {
+        appointmentDate = appointment.appointmentDate.toDate();
+      } else if (typeof appointment.appointmentDate === 'string') {
+        appointmentDate = new Date(appointment.appointmentDate);
+      } else {
+        appointmentDate = new Date(appointment.appointmentDate);
+      }
+
+      return appointmentDate >= startDate && appointmentDate <= endDate;
+    });
 
     // Initialize date buckets
     const dateBuckets = new Map();
     let current = new Date(startDate);
     
-    while (current <= now) {
+    while (current <= endDate) {
       let key;
       if (period === 'daily') {
         key = current.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -255,12 +266,18 @@ export const getAppointmentTrends = async (period = 'daily', days = 7) => {
       } else {
         current.setMonth(current.getMonth() + 1);
       }
-    }
-
-    // Count appointments in each bucket
+    }    // Count appointments in each bucket
     appointments.forEach(appointment => {
-      const date = appointment.date;
-      if (!date) return;
+      if (!appointment.appointmentDate) return;
+
+      let date;
+      if (appointment.appointmentDate instanceof Timestamp) {
+        date = appointment.appointmentDate.toDate();
+      } else if (typeof appointment.appointmentDate === 'string') {
+        date = new Date(appointment.appointmentDate);
+      } else {
+        date = new Date(appointment.appointmentDate);
+      }
 
       let key;
       if (period === 'daily') {
@@ -287,6 +304,124 @@ export const getAppointmentTrends = async (period = 'daily', days = 7) => {
     return chartData;
   } catch (error) {
     console.error('Error fetching appointment trends:', error);
+    return [];
+  }
+};
+
+export const getPatientDemographics = async () => {
+  try {
+    const patientsRef = collection(db, 'patients');
+    const snapshot = await getDocs(patientsRef);
+    const patients = snapshot.docs.map(doc => doc.data());
+
+    // Calculate age groups
+    const ageGroups = {
+      '18-30': 0,
+      '31-50': 0,
+      '51-70': 0,
+      '70+': 0
+    };
+
+    const colors = {
+      '18-30': '#8884d8',
+      '31-50': '#82ca9d',
+      '51-70': '#ffc658',
+      '70+': '#ff7300'
+    };
+
+    patients.forEach(patient => {
+      const age = patient.age;
+      if (age && typeof age === 'number') {
+        if (age >= 18 && age <= 30) {
+          ageGroups['18-30']++;
+        } else if (age >= 31 && age <= 50) {
+          ageGroups['31-50']++;
+        } else if (age >= 51 && age <= 70) {
+          ageGroups['51-70']++;
+        } else if (age > 70) {
+          ageGroups['70+']++;
+        }
+      }
+    });
+
+    // Check if we have any data
+    const hasData = Object.values(ageGroups).some(count => count > 0);
+    
+    if (!hasData) {
+      return [
+        { name: '18-30', value: 0, color: '#8884d8' },
+        { name: '31-50', value: 0, color: '#82ca9d' },
+        { name: '51-70', value: 0, color: '#ffc658' },
+        { name: '70+', value: 0, color: '#ff7300' },
+      ];
+    }
+
+    // Convert to chart format
+    const chartData = Object.entries(ageGroups).map(([name, value]) => ({
+      name,
+      value,
+      color: colors[name]
+    }));
+
+    return chartData;
+  } catch (error) {
+    console.error('Error fetching patient demographics:', error);
+    return [
+      { name: '18-30', value: 0, color: '#8884d8' },
+      { name: '31-50', value: 0, color: '#82ca9d' },
+      { name: '51-70', value: 0, color: '#ffc658' },
+      { name: '70+', value: 0, color: '#ff7300' },
+    ];
+  }
+};
+
+/**
+ * Get top doctors by appointment count
+ * @returns {Promise<Array>} Top doctors data for charts
+ */
+export const getTopDoctors = async () => {
+  try {
+    const appointmentsRef = collection(db, 'appointments');
+    const doctorsRef = collection(db, 'doctors');
+
+    const [appointmentsSnap, doctorsSnap] = await Promise.all([
+      getDocs(appointmentsRef),
+      getDocs(doctorsRef)
+    ]);
+
+    const appointments = appointmentsSnap.docs.map(doc => doc.data());
+    const doctors = doctorsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    console.log('Fetched appointments for top doctors:', appointments.length);
+    console.log('Fetched doctors:', doctors.length);
+
+    // Count appointments per doctor
+    const doctorCounts = {};
+    appointments.forEach(appointment => {
+      if (appointment.doctorId) {
+        doctorCounts[appointment.doctorId] = (doctorCounts[appointment.doctorId] || 0) + 1;
+      }
+    });
+
+    console.log('Doctor appointment counts:', doctorCounts);
+
+    // Get top 5 doctors
+    const topDoctors = Object.entries(doctorCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([doctorId, count]) => {
+        const doctor = doctors.find(d => d.id === doctorId);
+        return {
+          name: doctor ? doctor.name : 'Unknown Doctor',
+          appointments: count
+        };
+      });
+
+    console.log('Top doctors data:', topDoctors);
+
+    return topDoctors;
+  } catch (error) {
+    console.error('Error fetching top doctors:', error);
     return [];
   }
 };

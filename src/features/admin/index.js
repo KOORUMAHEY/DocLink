@@ -4,7 +4,9 @@ export {
   getRecentActivities,
   getSystemLogs,
   getUpcomingAppointments,
-  getAppointmentTrends
+  getAppointmentTrends,
+  getPatientDemographics,
+  getTopDoctors
 } from './services/adminDashboardService';
 
 // Constants exports

@@ -17,7 +17,7 @@ import {
   orderBy,
   Timestamp 
 } from 'firebase/firestore';
-import { getPatientByHospitalId } from '@/features/patients';
+import { getPatientByHospitalId, createOrUpdatePatient } from '@/features/patients';
 import { getDoctorById } from '@/features/doctors';
 import { appointments as mockAppointments } from '@/lib/mock-data';
 

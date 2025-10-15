@@ -1,23 +1,141 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense, useMemo, memo } from 'react';
 import { getAppointmentsByDoctor, rescheduleAppointment as rescheduleAppointmentService, approveAppointment as approveAppointmentService, rejectAppointment as rejectAppointmentService } from '@/features/appointments/services/appointmentService';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Calendar, Clock, Users, Phone, Mail, Search, XCircle, User2, Stethoscope, FileText, CalendarDays, RotateCcw, Heart } from 'lucide-react';
+import { Calendar, Clock, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 // Removed duplicate import
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+
+// Lazy load heavy components
+const LazyCalendar = lazy(() => import('@/components/ui/calendar'));
+const LazyPopover = lazy(() => import('@/components/ui/popover'));
+const LazyAppointmentDetailsPanel = lazy(() => import('@/doctor/components/AppointmentDetailsPanel'));
+
+// Memoized Appointment Card Component
+const AppointmentCard = memo(({ 
+  appointment, 
+  isSelected, 
+  onSelect, 
+  getStatusColor, 
+  getPriorityColor 
+}) => (
+  <Card 
+    className={cn(
+      "cursor-pointer transition-all duration-200 hover:shadow-md",
+      isSelected 
+        ? "ring-2 ring-blue-500 shadow-md" 
+        : "hover:shadow-sm"
+    )}
+    onClick={() => onSelect(appointment)}
+  >
+    <CardContent className="p-4">
+      <div className="flex items-center gap-3">
+        <Avatar className="w-10 h-10">
+          <AvatarImage src={appointment.patientAvatar} />
+          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+            {appointment.patientName?.charAt(0) || 'P'}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-900 truncate">
+            {appointment.patientName}
+          </h3>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Calendar className="w-3 h-3" />
+            {new Date(appointment.appointmentDate).toLocaleDateString()}
+            <Clock className="w-3 h-3 ml-2" />
+            {appointment.timeSlot}
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <Badge className={getStatusColor(appointment.status)} size="sm">
+            {appointment.status}
+          </Badge>
+          {appointment.healthPriority && (
+            <Badge className={getPriorityColor(appointment.healthPriority)} size="sm">
+              {appointment.healthPriority}
+            </Badge>
+          )}
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+));
+
+AppointmentCard.displayName = 'AppointmentCard';
+const AppointmentsLoadingSkeleton = () => (
+  <div className="h-screen flex flex-col bg-gray-50">
+    {/* Header Skeleton */}
+    <div className="flex-shrink-0 bg-white border-b border-gray-200 p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <Skeleton className="h-9 w-48 mb-2" />
+          <Skeleton className="h-4 w-64 mb-1" />
+          <Skeleton className="h-3 w-32" />
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <Skeleton className="h-10 w-full sm:w-48" />
+          <Skeleton className="h-10 w-full sm:w-32" />
+          <Skeleton className="h-10 w-full sm:w-32" />
+        </div>
+      </div>
+    </div>
+
+    {/* Main Content Skeleton */}
+    <div className="flex-1 flex overflow-hidden">
+      {/* Left Panel Skeleton */}
+      <div className="w-1/2 bg-white border-r border-gray-200 overflow-hidden flex flex-col">
+        <div className="flex-shrink-0 bg-gray-50 border-b border-gray-200 p-4">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Skeleton className="h-10 flex-1" />
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="space-y-4">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white border border-gray-200 rounded-lg p-4">
+                <div className="flex items-start gap-4">
+                  <Skeleton className="w-12 h-12 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <div className="flex gap-2 mt-2">
+                      <Skeleton className="h-6 w-16" />
+                      <Skeleton className="h-6 w-20" />
+                    </div>
+                  </div>
+                  <Skeleton className="w-20 h-8" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel Skeleton */}
+      <div className="w-1/2 bg-gray-50 overflow-hidden flex flex-col">
+        <div className="flex-1 flex items-center justify-center p-6">
+          <div className="text-center">
+            <Skeleton className="w-16 h-16 mx-auto mb-4" />
+            <Skeleton className="h-6 w-48 mx-auto mb-2" />
+            <Skeleton className="h-4 w-64 mx-auto" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 export default function Appointments({ doctorId }) {
   const { toast } = useToast();
@@ -254,51 +372,44 @@ export default function Appointments({ doctorId }) {
   };  
 
   // New: time-based filter logic
-  const filteredAppointments = appointments.filter(appointment => {
-    const matchesSearch = 
-      appointment.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      appointment.patientEmail?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesFilter = filterStatus === 'all' || appointment.status === filterStatus;
+  const filteredAppointments = useMemo(() => {
+    return appointments.filter(appointment => {
+      const matchesSearch = 
+        appointment.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        appointment.patientEmail?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter = filterStatus === 'all' || appointment.status === filterStatus;
 
-    // Time filter logic
-    let matchesTime = true;
-    if (timeFilter !== 'all') {
-      const apptDate = new Date(appointment.appointmentDate);
-      const now = new Date();
-      if (timeFilter === 'today') {
-        matchesTime =
-          apptDate.getDate() === now.getDate() &&
-          apptDate.getMonth() === now.getMonth() &&
-          apptDate.getFullYear() === now.getFullYear();
-      } else if (timeFilter === 'weekly') {
-        // Get start/end of current week (Monday-Sunday)
-        const startOfWeek = new Date(now);
-        startOfWeek.setDate(now.getDate() - now.getDay() + 1);
-        startOfWeek.setHours(0,0,0,0);
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-        endOfWeek.setHours(23,59,59,999);
-        matchesTime = apptDate >= startOfWeek && apptDate <= endOfWeek;
-      } else if (timeFilter === 'monthly') {
-        matchesTime =
-          apptDate.getMonth() === now.getMonth() &&
-          apptDate.getFullYear() === now.getFullYear();
+      // Time filter logic
+      let matchesTime = true;
+      if (timeFilter !== 'all') {
+        const apptDate = new Date(appointment.appointmentDate);
+        const now = new Date();
+        if (timeFilter === 'today') {
+          matchesTime =
+            apptDate.getDate() === now.getDate() &&
+            apptDate.getMonth() === now.getMonth() &&
+            apptDate.getFullYear() === now.getFullYear();
+        } else if (timeFilter === 'weekly') {
+          // Get start/end of current week (Monday-Sunday)
+          const startOfWeek = new Date(now);
+          startOfWeek.setDate(now.getDate() - now.getDay() + 1);
+          startOfWeek.setHours(0,0,0,0);
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6);
+          endOfWeek.setHours(23,59,59,999);
+          matchesTime = apptDate >= startOfWeek && apptDate <= endOfWeek;
+        } else if (timeFilter === 'monthly') {
+          matchesTime =
+            apptDate.getMonth() === now.getMonth() &&
+            apptDate.getFullYear() === now.getFullYear();
+        }
       }
-    }
-    return matchesSearch && matchesFilter && matchesTime;
-  });
+      return matchesSearch && matchesFilter && matchesTime;
+    });
+  }, [appointments, searchQuery, filterStatus, timeFilter]);
 
   if (loading) {
-    return (
-      <div className="p-6 space-y-6">
-        <Skeleton className="h-20 w-full" />
-        <div className="grid gap-4">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className="h-32 w-full" />
-          ))}
-        </div>
-      </div>
-    );
+    return <AppointmentsLoadingSkeleton />;
   }
 
   return (
@@ -438,48 +549,14 @@ export default function Appointments({ doctorId }) {
             )}
             {!loading && filteredAppointments.length > 0 && (
               filteredAppointments.map((appointment) => (
-                <Card 
-                  key={appointment.id} 
-                  className={cn(
-                    "cursor-pointer transition-all duration-200 hover:shadow-md",
-                    selectedAppointment?.id === appointment.id 
-                      ? "ring-2 ring-blue-500 shadow-md" 
-                      : "hover:shadow-sm"
-                  )}
-                  onClick={() => handleSelectAppointment(appointment)}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarImage src={appointment.patientAvatar} />
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-                          {appointment.patientName?.charAt(0) || 'P'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 truncate">
-                          {appointment.patientName}
-                        </h3>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Calendar className="w-3 h-3" />
-                          {new Date(appointment.appointmentDate).toLocaleDateString()}
-                          <Clock className="w-3 h-3 ml-2" />
-                          {appointment.timeSlot}
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-1">
-                        <Badge className={getStatusColor(appointment.status)} size="sm">
-                          {appointment.status}
-                        </Badge>
-                        {appointment.healthPriority && (
-                          <Badge className={getPriorityColor(appointment.healthPriority)} size="sm">
-                            {appointment.healthPriority}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <AppointmentCard
+                  key={appointment.id}
+                  appointment={appointment}
+                  isSelected={selectedAppointment?.id === appointment.id}
+                  onSelect={handleSelectAppointment}
+                  getStatusColor={getStatusColor}
+                  getPriorityColor={getPriorityColor}
+                />
               ))
             )}
           </div>
@@ -487,316 +564,38 @@ export default function Appointments({ doctorId }) {
 
         {/* Right Panel - Patient Details */}
         <div className="w-1/2 bg-gray-50 overflow-hidden flex flex-col">
-          {selectedAppointment ? (
-            <>
-              {/* Patient Details Content */}
-              <div className="flex-1 overflow-y-auto">
-                <div className="p-6 space-y-6">
-                  {/* Patient Basic Info */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <User2 className="w-5 h-5" />
-                        Patient Information
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center gap-4">
-                        <Avatar className="w-16 h-16">
-                          <AvatarImage src={selectedAppointment.patientAvatar} />
-                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-lg">
-                            {selectedAppointment.patientName?.charAt(0) || 'P'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h3 className="text-xl font-semibold">{selectedAppointment.patientName || 'N/A'}</h3>
-                          <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
-                            {selectedAppointment.age && (
-                              <span>{selectedAppointment.age} years old</span>
-                            )}
-                            {selectedAppointment.gender && (
-                              <Badge variant="outline">{selectedAppointment.gender}</Badge>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-1 gap-3">
-                        <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4 text-muted-foreground" />
-                          <span>{selectedAppointment.patientPhone || 'Not provided'}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Mail className="w-4 h-4 text-muted-foreground" />
-                          <span>{selectedAppointment.patientEmail || 'Not provided'}</span>
-                        </div>
-                        {selectedAppointment.hospitalId && (
-                          <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4 text-muted-foreground" />
-                            <span>ID: {selectedAppointment.hospitalId}</span>
-                          </div>
-                        )}
-                        {selectedAppointment.bloodType && (
-                          <div className="flex items-center gap-2">
-                            <Heart className="w-4 h-4 text-muted-foreground" />
-                            <span>Blood Type: {selectedAppointment.bloodType}</span>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Health Information */}
-                  {(selectedAppointment.healthPriority || selectedAppointment.allergies || selectedAppointment.medications) && (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <Stethoscope className="w-5 h-5" />
-                          Health Information
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        {selectedAppointment.healthPriority && (
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">Priority:</span>
-                            <Badge className={getPriorityColor(selectedAppointment.healthPriority)}>
-                              {selectedAppointment.healthPriority.charAt(0).toUpperCase() + selectedAppointment.healthPriority.slice(1)}
-                            </Badge>
-                          </div>
-                        )}
-                        {selectedAppointment.allergies && (
-                          <div>
-                            <span className="font-medium">Allergies:</span>
-                            <p className="text-sm text-muted-foreground mt-1">{selectedAppointment.allergies}</p>
-                          </div>
-                        )}
-                        {selectedAppointment.medications && (
-                          <div>
-                            <span className="font-medium">Current Medications:</span>
-                            <p className="text-sm text-muted-foreground mt-1">{selectedAppointment.medications}</p>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {/* Appointment Details */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <CalendarDays className="w-5 h-5" />
-                        Appointment Details
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-1 gap-3">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-muted-foreground" />
-                          <span>{new Date(selectedAppointment.appointmentDate).toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-muted-foreground" />
-                          <span>{selectedAppointment.timeSlot}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">Status:</span>
-                          <Badge className={getStatusColor(selectedAppointment.status)}>
-                            {selectedAppointment.status?.charAt(0).toUpperCase() + selectedAppointment.status?.slice(1)}
-                          </Badge>
-                        </div>
-                        {selectedAppointment.createdAt && (
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">Booked:</span>
-                            <span className="text-sm text-muted-foreground">
-                              {new Date(selectedAppointment.createdAt.toDate?.() || selectedAppointment.createdAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Reason for Visit */}
-                  {selectedAppointment.reason && (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <FileText className="w-5 h-5" />
-                          Reason for Visit
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm">{selectedAppointment.reason}</p>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {/* Reschedule Form */}
-                  {rescheduleMode && (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <RotateCcw className="w-5 h-5" />
-                          Reschedule Appointment
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <div>
-                            <Label htmlFor="reschedule-date">Select New Date</Label>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn(
-                                    "w-full justify-start text-left font-normal",
-                                    !selectedDate && "text-muted-foreground"
-                                  )}
-                                >
-                                  <Calendar className="mr-2 h-4 w-4" />
-                                  {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
-                                </Button>
-                              </PopoverTrigger>
-                              <PopoverContent className="w-auto p-0">
-                                <CalendarComponent
-                                  mode="single"
-                                  selected={selectedDate}
-                                  onSelect={setSelectedDate}
-                                  disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                          </div>
-                          <div>
-                            <Label htmlFor="reschedule-time">Select New Time</Label>
-                            <Select value={selectedTime} onValueChange={setSelectedTime}>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select time slot" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {availableTimeSlots.map((slot) => (
-                                  <SelectItem key={slot} value={slot}>
-                                    {slot}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {/* Rejection Form */}
-                  {showRejectionForm && (
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                          <XCircle className="w-5 h-5" />
-                          Reject Appointment
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div>
-                          <Label htmlFor="rejection-reason">Reason for Rejection (Optional)</Label>
-                          <Textarea
-                            id="rejection-reason"
-                            placeholder="Provide a reason for rejecting this appointment..."
-                            value={rejectionReason}
-                            onChange={(e) => setRejectionReason(e.target.value)}
-                            rows={3}
-                          />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              </div>
-
-              {/* Fixed Action Buttons at Bottom */}
-              {selectedAppointment.status === 'pending' && (
-                <div className="flex-shrink-0 bg-white border-t border-gray-200 p-4">
-                  <div className="flex flex-col gap-3">
-                    {!rescheduleMode && !showRejectionForm && (
-                      <div className="flex gap-3">
-                        <Button 
-                          onClick={handleApprove} 
-                          disabled={actionLoading} 
-                          className="flex-1 bg-green-600 hover:bg-green-700"
-                        >
-                          {actionLoading ? 'Approving...' : 'Approve'}
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => setRescheduleMode(true)}
-                          className="flex-1"
-                        >
-                          Reschedule
-                        </Button>
-                        <Button 
-                          variant="destructive" 
-                          onClick={() => setShowRejectionForm(true)}
-                          className="flex-1"
-                        >
-                          Reject
-                        </Button>
-                      </div>
-                    )}
-
-                    {rescheduleMode && (
-                      <div className="flex gap-3">
-                        <Button 
-                          onClick={handleReschedule} 
-                          disabled={actionLoading || !selectedDate || !selectedTime}
-                          className="flex-1"
-                        >
-                          {actionLoading ? 'Rescheduling...' : 'Confirm Reschedule'}
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => setRescheduleMode(false)}
-                          className="flex-1"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    )}
-
-                    {showRejectionForm && (
-                      <div className="flex gap-3">
-                        <Button 
-                          variant="destructive" 
-                          onClick={handleReject} 
-                          disabled={actionLoading}
-                          className="flex-1"
-                        >
-                          {actionLoading ? 'Rejecting...' : 'Confirm Rejection'}
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => setShowRejectionForm(false)}
-                          className="flex-1"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </>
-          ) : (
+          <Suspense fallback={
             <div className="flex-1 flex items-center justify-center p-6">
               <div className="text-center">
-                <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Select an Appointment</h3>
-                <p className="text-muted-foreground">
-                  Choose an appointment from the list to view patient details and manage the appointment
-                </p>
+                <Skeleton className="w-16 h-16 mx-auto mb-4" />
+                <Skeleton className="h-6 w-48 mx-auto mb-2" />
+                <Skeleton className="h-4 w-64 mx-auto" />
               </div>
             </div>
-          )}
+          }>
+            <LazyAppointmentDetailsPanel
+              selectedAppointment={selectedAppointment}
+              rescheduleMode={rescheduleMode}
+              setRescheduleMode={setRescheduleMode}
+              showRejectionForm={showRejectionForm}
+              setShowRejectionForm={setShowRejectionForm}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              selectedTime={selectedTime}
+              setSelectedTime={setSelectedTime}
+              rejectionReason={rejectionReason}
+              setRejectionReason={setRejectionReason}
+              actionLoading={actionLoading}
+              handleApprove={handleApprove}
+              handleReschedule={handleReschedule}
+              handleReject={handleReject}
+              availableTimeSlots={availableTimeSlots}
+              getPriorityColor={getPriorityColor}
+              getStatusColor={getStatusColor}
+              LazyPopover={LazyPopover}
+              LazyCalendar={LazyCalendar}
+            />
+          </Suspense>
         </div>
       </div>
     </div>

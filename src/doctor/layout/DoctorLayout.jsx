@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { DoctorSidebar } from '@/features/doctors';
 import { Menu, X } from 'lucide-react';
@@ -17,19 +17,35 @@ export default function DoctorLayout({ children }) {
   const searchParams = useSearchParams();
   const { isDark } = useTheme();
   
+  // Cache for doctor data to prevent unnecessary refetches
+  const doctorCache = useRef(new Map());
+  
   const doctorId = searchParams.get('id');
 
-  // Fetch doctor data
+  // Fetch doctor data with caching
   useEffect(() => {
     const fetchDoctor = async () => {
       if (doctorId) {
+        // Check cache first
+        if (doctorCache.current.has(doctorId)) {
+          setDoctor(doctorCache.current.get(doctorId));
+          setLoadingDoctor(false);
+          return;
+        }
+
         try {
           setLoadingDoctor(true);
           const doctorData = await getDoctorById(doctorId);
-          setDoctor(doctorData || {});
+          const doctorInfo = doctorData || {};
+          
+          // Cache the result
+          doctorCache.current.set(doctorId, doctorInfo);
+          setDoctor(doctorInfo);
         } catch (error) {
           console.error('Failed to fetch doctor data:', error);
-          setDoctor({});
+          const fallbackData = {};
+          doctorCache.current.set(doctorId, fallbackData);
+          setDoctor(fallbackData);
         } finally {
           setLoadingDoctor(false);
         }

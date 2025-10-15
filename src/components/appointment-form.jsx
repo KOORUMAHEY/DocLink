@@ -58,7 +58,7 @@ const generateFormSchema = (formConfig) => {
             validation = z.coerce.number().optional();
             break;
           case 'email':
-            validation = z.string().email("Please enter a valid email address.").optional().or(z.literal(''));
+            validation = z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, { message: "Please enter a valid email address." }).optional().or(z.literal(''));
             break;
           case 'date':
             validation = z.string().optional();
@@ -87,7 +87,7 @@ const generateFormSchema = (formConfig) => {
     const standardFields = [
       { name: 'patientName', validation: z.string().min(2, "Name must be at least 2 characters.").optional() },
       { name: 'patientPhone', validation: z.string().min(10, "Please enter a valid phone number.").optional() },
-      { name: 'patientEmail', validation: z.string().email("Please enter a valid email address.").optional().or(z.literal('')) },
+      { name: 'patientEmail', validation: z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please enter a valid email address.").optional().or(z.literal('')) },
       { name: 'age', validation: z.coerce.number().optional() },
       { name: 'gender', validation: z.enum(["male", "female", "other"], { required_error: "Please select a gender."}).optional() },
       { name: 'healthPriority', validation: z.enum(["critical", "urgent", "normal", "routine"], { required_error: "Please select a health priority."}).optional() },
@@ -114,7 +114,7 @@ const generateFormSchema = (formConfig) => {
           validation = z.coerce.number().optional();
           break;
         case 'email':
-          validation = z.string().email("Please enter a valid email address.").optional().or(z.literal(''));
+          validation = z.string().regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please enter a valid email address.").optional().or(z.literal(''));
           break;
         case 'date':
           validation = z.string().optional();
@@ -387,6 +387,99 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
       });
     };
 
+    // Helper functions to reduce cognitive complexity
+    const validateRequiredFields = (data) => {
+        if (!selectedDoctorId) {
+            throw new Error(t('forms.appointment.doctor_required'));
+        }
+        if (!data.appointmentDate) {
+            throw new Error(t('forms.appointment.date_required'));
+        }
+        if (!data.timeSlot) {
+            throw new Error(t('forms.appointment.time_required'));
+        }
+    };
+
+    const parseAppointmentDateTime = (data) => {
+        const [time, period] = data.timeSlot.split(' ');
+        let [hours, minutes] = time.split(':').map(Number);
+        if (period === 'PM' && hours !== 12) {
+            hours += 12;
+        }
+        if (period === 'AM' && hours === 12) {
+            hours = 0;
+        }
+
+        const appointmentDateTime = new Date(data.appointmentDate);
+        appointmentDateTime.setHours(hours, minutes);
+
+        if (appointmentDateTime < new Date()) {
+            throw new Error(t('forms.appointment.date_past_error'));
+        }
+
+        return appointmentDateTime;
+    };
+
+    const extractCustomFields = (data) => {
+        const customFieldsData = {};
+
+        // Handle template-based sections
+        if (formConfig?.customSections) {
+            formConfig.customSections.forEach(section => {
+                section.fields.forEach(field => {
+                    if (data[field.id] !== undefined && data[field.id] !== '') {
+                        customFieldsData[field.id] = data[field.id];
+                    }
+                });
+            });
+        }
+
+        // Handle legacy custom fields
+        formConfig?.customFields?.forEach(field => {
+            if (data[field.id] !== undefined && data[field.id] !== '') {
+                customFieldsData[field.id] = data[field.id];
+            }
+        });
+
+        return customFieldsData;
+    };
+
+    const prepareAppointmentData = (data, appointmentDateTime, customFieldsData) => {
+        const cleanAppointmentData = {
+            patientType: data.patientType,
+            hospitalId: data.hospitalId,
+            doctorId: data.doctorId,
+            appointmentDate: appointmentDateTime.toISOString(),
+            timeSlot: data.timeSlot,
+            customFields: customFieldsData,
+        };
+
+        // Add optional fields only if they have values
+        if (data.patientName?.trim()) {
+            cleanAppointmentData.patientName = data.patientName.trim();
+        }
+        if (data.patientPhone?.trim()) {
+            cleanAppointmentData.patientPhone = data.patientPhone.trim();
+        }
+        if (data.patientEmail?.trim()) {
+            cleanAppointmentData.patientEmail = data.patientEmail.trim();
+        }
+        if (data.age !== undefined && data.age !== null && data.age !== '') {
+            cleanAppointmentData.age = Number(data.age);
+        }
+        if (data.gender?.trim()) {
+            cleanAppointmentData.gender = data.gender.trim();
+        }
+        if (data.healthPriority?.trim()) {
+            cleanAppointmentData.healthPriority = data.healthPriority.trim();
+        }
+        if (data.description?.trim()) {
+            cleanAppointmentData.description = data.description.trim();
+        }
+
+        return cleanAppointmentData;
+    };
+
     const onSubmit = async (data) => {
         // Prevent submission in preview mode
         if (previewMode) {
@@ -400,90 +493,21 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
 
         setIsFetching(true);
         setFormError(null);
-        
+
         try {
-            if (!selectedDoctorId) {
-                throw new Error(t('forms.appointment.doctor_required'));
-            }
+            // Validate required fields
+            validateRequiredFields(data);
 
-            if (!data.appointmentDate) {
-                throw new Error(t('forms.appointment.date_required'));
-            }
+            // Parse and validate date/time
+            const appointmentDateTime = parseAppointmentDateTime(data);
 
-            if (!data.timeSlot) {
-                throw new Error(t('forms.appointment.time_required'));
-            }            // Combine date and time
-            const [time, period] = data.timeSlot.split(' ');
-            let [hours, minutes] = time.split(':').map(Number);
-            if (period === 'PM' && hours !== 12) {
-                hours += 12;
-            }
-            if (period === 'AM' && hours === 12) {
-                hours = 0;
-            }
+            // Extract custom fields
+            const customFieldsData = extractCustomFields(data);
 
-            const appointmentDateTime = new Date(data.appointmentDate);
-            appointmentDateTime.setHours(hours, minutes);
+            // Prepare clean appointment data
+            const cleanAppointmentData = prepareAppointmentData(data, appointmentDateTime, customFieldsData);
 
-            // Validate date is not in the past
-            if (appointmentDateTime < new Date()) {
-                throw new Error(t('forms.appointment.date_past_error'));
-            }
-
-            // Extract custom fields from template sections and legacy fields
-            const customFieldsData = {};
-
-            // Handle template-based sections
-            if (formConfig?.customSections) {
-                formConfig.customSections.forEach(section => {
-                    section.fields.forEach(field => {
-                        if (data[field.id] !== undefined && data[field.id] !== '') {
-                            customFieldsData[field.id] = data[field.id];
-                        }
-                    });
-                });
-            }
-
-            // Handle legacy custom fields
-            formConfig?.customFields?.forEach(field => {
-                if (data[field.id] !== undefined && data[field.id] !== '') {
-                    customFieldsData[field.id] = data[field.id];
-                }
-            });
-
-            // Prepare clean appointment data (exclude undefined and empty values)
-            const cleanAppointmentData = {
-                patientType: data.patientType,
-                hospitalId: data.hospitalId,
-                doctorId: data.doctorId,
-                appointmentDate: appointmentDateTime.toISOString(),
-                timeSlot: data.timeSlot,
-                customFields: customFieldsData,
-            };
-
-            // Add optional fields only if they have values
-            if (data.patientName?.trim()) {
-                cleanAppointmentData.patientName = data.patientName.trim();
-            }
-            if (data.patientPhone?.trim()) {
-                cleanAppointmentData.patientPhone = data.patientPhone.trim();
-            }
-            if (data.patientEmail?.trim()) {
-                cleanAppointmentData.patientEmail = data.patientEmail.trim();
-            }
-            if (data.age !== undefined && data.age !== null && data.age !== '') {
-                cleanAppointmentData.age = Number(data.age);
-            }
-            if (data.gender?.trim()) {
-                cleanAppointmentData.gender = data.gender.trim();
-            }
-            if (data.healthPriority?.trim()) {
-                cleanAppointmentData.healthPriority = data.healthPriority.trim();
-            }
-            if (data.description?.trim()) {
-                cleanAppointmentData.description = data.description.trim();
-            }
-
+            // Create appointment
             const result = await createAppointment(cleanAppointmentData);
 
             if (result.success && result.appointmentId) {
@@ -509,72 +533,35 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
         }
     };
 
-    // Render field based on type
-    const renderField = (fieldConfig, fieldName) => {
-      switch (fieldConfig.type) {
-        case 'textarea':
-          return (
-            <Textarea placeholder={fieldConfig.placeholder || ''} {...form.register(fieldName)} />
-          );
-        case 'number':
-          return (
-            <Input type="number" placeholder={fieldConfig.placeholder || ''} {...form.register(fieldName, { valueAsNumber: true })} />
-          );
-        case 'email':
-          return (
-            <Input type="email" placeholder={fieldConfig.placeholder || ''} {...form.register(fieldName)} />
-          );
-        case 'date':
-          return (
-            <Input type="date" {...form.register(fieldName)} />
-          );
-        case 'select':
-          return (
-            <Select onValueChange={(value) => form.setValue(fieldName, value)} value={form.watch(fieldName)}>
-              <SelectTrigger>
-                <SelectValue placeholder={fieldConfig.placeholder || 'Select an option'} />
-              </SelectTrigger>
-              <SelectContent>
-                {fieldConfig.options?.map(option => (
-                  <SelectItem key={option} value={option}>
-                    {option}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          );
-        case 'radio':
-          return (
-            <RadioGroup
-              onValueChange={(value) => form.setValue(fieldName, value)}
-              value={form.watch(fieldName)}
-              className="flex flex-col space-y-2 sm:space-y-3"
-            >
-              {fieldConfig.options?.map(option => (
-                <div key={option} className="flex items-center space-x-2 sm:space-x-3">
-                  <RadioGroupItem value={option} id={`${fieldName}-${option}`} />
-                  <Label htmlFor={`${fieldName}-${option}`}>{option}</Label>
-                </div>
-              ))}
-            </RadioGroup>
-          );
-        case 'checkbox':
-          return (
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <UICheckbox
-                id={fieldName}
-                checked={form.watch(fieldName)}
-                onCheckedChange={(checked) => form.setValue(fieldName, checked)}
-              />
-              <Label htmlFor={fieldName}>{fieldConfig.label}</Label>
+    // Helper function to render checkbox group to reduce nesting
+    const renderCheckboxGroup = (fieldConfig, formField) => {
+        const currentValue = Array.isArray(formField.value) ? formField.value : [];
+
+        return (
+            <div className="space-y-2 sm:space-y-3">
+                {fieldConfig.options?.map(option => {
+                    const isChecked = currentValue.includes(option);
+                    const handleToggle = (checked) => {
+                        formField.onChange(
+                            checked
+                                ? [...currentValue, option]
+                                : currentValue.filter(v => v !== option)
+                        );
+                    };
+
+                    return (
+                        <div key={option} className="flex items-center space-x-2 sm:space-x-3">
+                            <UICheckbox
+                                id={`${fieldConfig.id}-${option}`}
+                                checked={isChecked}
+                                onCheckedChange={handleToggle}
+                            />
+                            <Label htmlFor={`${fieldConfig.id}-${option}`}>{option}</Label>
+                        </div>
+                    );
+                })}
             </div>
-          );
-        case 'text':
-        default:
-          return (
-            <Input placeholder={fieldConfig.placeholder || ''} {...form.register(fieldName)} />
-          );
-      }
+        );
     };
 
     // Unified field renderer
@@ -582,7 +569,13 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
         // Ensure the field has a defined value to prevent controlled/uncontrolled issues
         let fieldValue = formField.value;
         if (fieldValue === undefined) {
-            fieldValue = fieldConfig.type === 'checkbox-group' ? [] : fieldConfig.type === 'checkbox' ? false : "";
+            if (fieldConfig.type === 'checkbox-group') {
+                fieldValue = [];
+            } else if (fieldConfig.type === 'checkbox') {
+                fieldValue = false;
+            } else {
+                fieldValue = "";
+            }
         }
 
         const fieldProps = {
@@ -673,32 +666,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                     </div>
                 );
             case 'checkbox-group':
-                return (
-                    <div className="space-y-2 sm:space-y-3">
-                        {fieldConfig.options?.map(option => {
-                            const isChecked = Array.isArray(fieldProps.value) && fieldProps.value.includes(option);
-                            const handleCheckboxChange = (checked) => {
-                                const currentValue = Array.isArray(fieldProps.value) ? fieldProps.value : [];
-                                if (checked) {
-                                    formField.onChange([...currentValue, option]);
-                                } else {
-                                    formField.onChange(currentValue.filter(v => v !== option));
-                                }
-                            };
-
-                            return (
-                                <div key={option} className="flex items-center space-x-2 sm:space-x-3">
-                                    <UICheckbox
-                                        id={`${fieldConfig.id}-${option}`}
-                                        checked={isChecked}
-                                        onCheckedChange={handleCheckboxChange}
-                                    />
-                                    <Label htmlFor={`${fieldConfig.id}-${option}`}>{option}</Label>
-                                </div>
-                            );
-                        })}
-                    </div>
-                );
+                return renderCheckboxGroup(fieldConfig, formField);
             default:
                 return (
                     <Input
@@ -1122,3 +1090,19 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
         </div>
     );
 }
+
+AppointmentForm.propTypes = {
+    doctors: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            specialization: PropTypes.string,
+            email: PropTypes.string,
+            phone: PropTypes.string,
+        })
+    ),
+    preselectedDoctorId: PropTypes.string,
+    formConfig: PropTypes.object,
+    doctor: PropTypes.object,
+    previewMode: PropTypes.bool,
+};

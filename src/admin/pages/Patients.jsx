@@ -58,7 +58,30 @@ export default function AdminPatientsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
-  // Form state for add/edit
+  // Render table content based on state
+  const renderTableContent = () => {
+    if (loading) {
+      return (
+        <div className="p-8 text-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-blue-400 mb-3" />
+          <p className="text-sm text-slate-300">Loading patients...</p>
+        </div>
+      );
+    }
+
+    if (filteredPatients.length > 0) {
+      return (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-700 hover:bg-slate-700 border-slate-600">
+                <TableHead className="text-left py-3 px-2 sm:px-4 font-semibold text-white">Patient</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden md:table-cell">Hospital ID</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden lg:table-cell">Contact</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden sm:table-cell">Status</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
   const [formData, setFormData] = useState({
     hospitalId: '',
     name: '',
@@ -411,23 +434,8 @@ export default function AdminPatientsPage() {
       {/* Patients Table */}
       <Card className="shadow-sm border-0 bg-slate-800 border-slate-700">
         <CardContent className="p-0">
-          {loading ? (
-            <div className="p-8 text-center">
-              <RefreshCw className="h-8 w-8 animate-spin mx-auto text-blue-400 mb-3" />
-              <p className="text-sm text-slate-300">Loading patients...</p>
-            </div>
-          ) : filteredPatients.length > 0 ? (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-slate-700 hover:bg-slate-700 border-slate-600">
-                    <TableHead className="text-left py-3 px-2 sm:px-4 font-semibold text-white">Patient</TableHead>
-                    <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden md:table-cell">Hospital ID</TableHead>
-                    <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden lg:table-cell">Contact</TableHead>
-                    <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden sm:table-cell">Status</TableHead>
-                    <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
+          {renderTableContent()}
+        </CardContent>
                 <TableBody>
                   {filteredPatients.map((patient, index) => (
                     <TableRow key={patient.hospitalId || patient.id || `patient-${index}`} className="hover:bg-slate-700/50 transition-colors border-slate-700">
@@ -531,29 +539,41 @@ export default function AdminPatientsPage() {
               </Table>
             </div>
           ) : (
-            <div className="p-12 text-center space-y-4">
-              <div className="mx-auto w-20 h-20 bg-blue-900/30 rounded-full flex items-center justify-center">
-                <Users className="h-10 w-10 text-blue-400" />
-              </div>
-              <h3 className="text-xl font-bold text-white">
-                {searchQuery || filterStatus !== 'all' ? 'No patients found' : 'No Patients Yet'}
-              </h3>
-              <p className="text-slate-400 max-w-md mx-auto text-sm">
-                {searchQuery || filterStatus !== 'all' 
-                  ? 'Try adjusting your search or filters'
-                  : 'Get started by adding your first patient to the system.'}
-              </p>
-              {!searchQuery && filterStatus === 'all' && (
-                <Button 
-                  onClick={() => setIsAddDialogOpen(true)}
-                  size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 mt-4"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Your First Patient
-                </Button>
-              )}
+                            </TableBody>
+              </Table>
             </div>
+          );
+    }
+
+    // Empty state
+    return (
+      <div className="p-12 text-center space-y-4">
+        <div className="mx-auto w-20 h-20 bg-blue-900/30 rounded-full flex items-center justify-center">
+          <Users className="h-10 w-10 text-blue-400" />
+        </div>
+        <h3 className="text-xl font-bold text-white">
+          {searchQuery || filterStatus !== 'all' ? 'No patients found' : 'No Patients Yet'}
+        </h3>
+        <p className="text-slate-400 max-w-md mx-auto text-sm">
+          {searchQuery || filterStatus !== 'all' 
+            ? 'Try adjusting your search or filters'
+            : 'Get started by adding your first patient to the system.'}
+        </p>
+        {!searchQuery && filterStatus === 'all' && (
+          <Button 
+            onClick={() => setIsAddDialogOpen(true)}
+            size="sm"
+            className="bg-blue-600 hover:bg-blue-700 mt-4"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Your First Patient
+          </Button>
+        )}
+      </div>
+    );
+  };
+
+  // Form state for add/edit
           )}
         </CardContent>
       </Card>

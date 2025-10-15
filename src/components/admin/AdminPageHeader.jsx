@@ -75,7 +75,7 @@ export default function AdminPageHeader({
                 </Button>
               )}
               {actions?.map((action, index) => (
-                <div key={`action-${index}`}>
+                <div key={`action-${index}-${title}`}>
                   {action}
                 </div>
               ))}

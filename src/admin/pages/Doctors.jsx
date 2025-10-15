@@ -58,46 +58,32 @@ export default function AdminDoctorsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
-  // Form state for add/edit
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    specialization: '',
-    bio: '',
-    imageUrl: '',
-    status: 'active',
-    licenseNumber: '',
-    experience: '',
-    education: '',
-    address: ''
-  });
-
-  // Fetch doctors
-  const fetchDoctors = async () => {
-    setLoading(true);
-    try {
-      const data = await getDoctors();
-      setDoctors(data);
-    } catch (error) {
-      console.error('Error fetching doctors:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load doctors. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+  // Render table content based on state
+  const renderTableContent = () => {
+    if (loading) {
+      return (
+        <div className="p-8 text-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto text-purple-400 mb-3" />
+          <p className="text-sm text-slate-300">Loading doctors...</p>
+        </div>
+      );
     }
-  };
 
-  useEffect(() => {
-    fetchDoctors();
-  }, []);
-
-  // Filter doctors
-  const filteredDoctors = useMemo(() => {
-    let filtered = [...doctors];
+    if (filteredDoctors.length > 0) {
+      return (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-700 hover:bg-slate-700 border-slate-600">
+                <TableHead className="text-left py-3 px-2 sm:px-4 font-semibold text-white">Doctor</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden md:table-cell">Specialization</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden lg:table-cell">Contact</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden sm:table-cell">Status</TableHead>
+                <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredDoctors.map((doctor) => (
 
     // Search filter
     if (searchQuery) {
@@ -349,154 +335,7 @@ export default function AdminDoctorsPage() {
       {/* Doctors Table */}
       <Card className="shadow-sm border-0 bg-slate-800 border-slate-700">
         <CardContent className="p-0">
-          {loading ? (
-            <div className="p-8 text-center">
-              <RefreshCw className="h-8 w-8 animate-spin mx-auto text-purple-400 mb-3" />
-              <p className="text-sm text-slate-300">Loading doctors...</p>
-            </div>
-          ) : filteredDoctors.length > 0 ? (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-slate-700 hover:bg-slate-700 border-slate-600">
-                    <TableHead className="text-left py-3 px-2 sm:px-4 font-semibold text-white">Doctor</TableHead>
-                    <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden md:table-cell">Specialization</TableHead>
-                    <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden lg:table-cell">Contact</TableHead>
-                    <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white hidden sm:table-cell">Status</TableHead>
-                    <TableHead className="text-center py-3 px-2 sm:px-4 font-semibold text-white">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredDoctors.map((doctor) => (
-                    <TableRow key={doctor.id} className="hover:bg-slate-700/50 transition-colors border-slate-700">
-                      {/* Doctor Info */}
-                      <TableCell className="py-2 px-2 sm:py-3 sm:px-4">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <Avatar className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
-                            <AvatarImage src={doctor.imageUrl} alt={doctor.name} />
-                            <AvatarFallback className="bg-purple-600 text-white text-sm font-bold">
-                              {doctor.name?.charAt(0) || 'D'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="text-left min-w-0">
-                            <p className="font-semibold text-gray-900 text-xs sm:text-sm truncate">
-                              {doctor.name}
-                            </p>
-                            <p className="text-[10px] sm:text-xs text-slate-400 truncate">
-                              {doctor.email}
-                            </p>
-                            {/* Mobile: Show specialization */}
-                            <p className="text-[10px] text-purple-400 font-medium md:hidden flex items-center gap-1 mt-0.5">
-                              <Stethoscope className="h-3 w-3" />
-                              {doctor.specialization}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-
-                      {/* Specialization - Hidden on mobile */}
-                      <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden md:table-cell">
-                        <div className="flex items-center justify-center gap-1.5">
-                          <Stethoscope className="h-4 w-4 text-purple-400 flex-shrink-0" />
-                          <span className="text-xs sm:text-sm font-medium text-purple-400 truncate">
-                            {doctor.specialization}
-                          </span>
-                        </div>
-                      </TableCell>
-
-                      {/* Contact - Hidden on tablet and mobile */}
-                      <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden lg:table-cell">
-                        <div className="space-y-1 text-xs text-slate-300">
-                          {doctor.phone && (
-                            <div className="flex items-center justify-center gap-1.5">
-                              <Phone className="h-3 w-3 text-gray-400" />
-                              <span className="text-gray-600">{doctor.phone}</span>
-                            </div>
-                          )}
-                          {doctor.licenseNumber && (
-                            <div className="flex items-center justify-center gap-1.5">
-                              <Award className="h-3 w-3 text-gray-400" />
-                              <span className="text-gray-600">{doctor.licenseNumber}</span>
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-
-                      {/* Status - Hidden on mobile */}
-                      <TableCell className="py-2 px-2 sm:py-3 sm:px-4 text-center hidden sm:table-cell">
-                        <div className="flex justify-center">
-                          <Badge 
-                            variant={doctor.status === 'active' ? 'default' : 'secondary'}
-                            className={`text-[10px] sm:text-xs ${
-                              doctor.status === 'active' ? 'bg-green-500' : 'bg-gray-400'
-                            }`}
-                          >
-                            {doctor.status === 'active' ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </div>
-                      </TableCell>
-
-                      {/* Actions */}
-                      <TableCell className="py-2 px-2 sm:py-3 sm:px-4">
-                        <div className="flex items-center justify-center gap-1 sm:gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleViewDoctor(doctor)}
-                            className="h-7 px-2 sm:h-8 sm:px-3 text-xs hover:bg-blue-600 hover:border-blue-500 hover:text-white border-slate-600 text-slate-300"
-                          >
-                            <Eye className="h-3 w-3 sm:mr-1" />
-                            <span className="hidden sm:inline">View</span>
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditClick(doctor)}
-                            className="h-7 px-2 sm:h-8 sm:px-3 text-xs hover:bg-purple-600 hover:border-purple-500 hover:text-white border-slate-600 text-slate-300"
-                          >
-                            <Edit className="h-3 w-3 sm:mr-1" />
-                            <span className="hidden sm:inline">Edit</span>
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDeleteClick(doctor)}
-                            className="h-7 px-2 sm:h-8 sm:px-2 text-xs hover:bg-red-600 hover:border-red-500 hover:text-white border-slate-600 text-slate-300"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ) : (
-            <div className="p-12 text-center space-y-4">
-              <div className="mx-auto w-20 h-20 bg-purple-900/30 rounded-full flex items-center justify-center">
-                <Stethoscope className="h-10 w-10 text-purple-400" />
-              </div>
-              <h3 className="text-xl font-bold text-white">
-                {searchQuery || filterStatus !== 'all' ? 'No doctors found' : 'No Doctors Yet'}
-              </h3>
-              <p className="text-slate-400 max-w-md mx-auto text-sm">
-                {searchQuery || filterStatus !== 'all' 
-                  ? 'Try adjusting your search or filters'
-                  : 'Get started by adding your first healthcare professional to the system.'}
-              </p>
-              {!searchQuery && filterStatus === 'all' && (
-                <Button 
-                  onClick={() => setIsAddDialogOpen(true)}
-                  size="sm"
-                  className="bg-purple-600 hover:bg-purple-700 mt-4"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Your First Doctor
-                </Button>
-              )}
-            </div>
-          )}
+          {renderTableContent()}
         </CardContent>
       </Card>
 

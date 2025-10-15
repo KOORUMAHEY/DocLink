@@ -1,5 +1,6 @@
 'use client';
 
+import PropTypes from 'prop-types';
 import { usePathname } from 'next/navigation';
 import { Navbar } from '@/components/layout/navbar';
 import { Footer } from '@/components/layout/footer';
@@ -24,3 +25,7 @@ export default function ConditionalLayout({ children }) {
     </div>
   );
 }
+
+ConditionalLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};

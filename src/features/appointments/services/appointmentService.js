@@ -11,15 +11,53 @@ import {
   getDocs, 
   addDoc, 
   updateDoc, 
-  deleteDoc, 
   query, 
   where,
-  orderBy,
-  Timestamp 
+  orderBy
 } from 'firebase/firestore';
 import { getPatientByHospitalId, createOrUpdatePatient } from '@/features/patients';
 import { getDoctorById } from '@/features/doctors';
 import { appointments as mockAppointments } from '@/lib/mock-data';
+
+// Helper function to merge patient data into appointment
+const mergePatientData = async (appointmentData) => {
+  if (!appointmentData.patientId) return appointmentData;
+
+  try {
+    const patientData = await getPatientByHospitalId(appointmentData.patientId);
+    if (patientData) {
+      appointmentData.patientName = patientData.name || patientData.patientName;
+      appointmentData.patientPhone = patientData.phone || patientData.patientPhone;
+      appointmentData.patientEmail = patientData.email || patientData.patientEmail;
+      appointmentData.age = patientData.age;
+      appointmentData.gender = patientData.gender;
+      appointmentData.hospitalId = patientData.hospitalId || appointmentData.patientId;
+    }
+  } catch (patientError) {
+    console.warn('Could not fetch patient details for appointment:', patientError);
+  }
+
+  return appointmentData;
+};
+
+// Helper function to merge doctor data into appointment
+const mergeDoctorData = async (appointmentData) => {
+  if (!appointmentData.doctorId) return appointmentData;
+
+  try {
+    const doctorData = await getDoctorById(appointmentData.doctorId);
+    if (doctorData) {
+      appointmentData.doctorName = doctorData.name || doctorData.doctorName;
+      appointmentData.specialty = doctorData.specialty || doctorData.specialization;
+      appointmentData.doctorEmail = doctorData.email;
+      appointmentData.doctorPhone = doctorData.phone;
+    }
+  } catch (doctorError) {
+    console.warn('Could not fetch doctor details for appointment:', doctorError);
+  }
+
+  return appointmentData;
+};
 
 export const getAppointments = async (filters = {}) => {
   try {
@@ -121,7 +159,7 @@ export const getAppointments = async (filters = {}) => {
     });
     
     // Check if it's a Firebase configuration error
-    if (error.message && error.message.includes('Firebase')) {
+    if (error.message?.includes('Firebase')) {
       throw new Error("Firebase is not configured properly. Please check your environment variables.");
     }
     
@@ -156,50 +194,22 @@ export const getAppointmentById = async (id) => {
   try {
     const docRef = doc(db, 'appointments', id);
     const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const appointmentData = { id: docSnap.id, ...docSnap.data() };
-      console.log('Retrieved appointment data:', appointmentData);
-      console.log('Appointment date from Firestore:', appointmentData.appointmentDate);
-      console.log('Appointment date type:', typeof appointmentData.appointmentDate);
-      
-      // Fetch patient details if patientId exists
-      if (appointmentData.patientId) {
-        try {
-          const patientData = await getPatientByHospitalId(appointmentData.patientId);
-          if (patientData) {
-            // Merge patient data into appointment
-            appointmentData.patientName = patientData.name || patientData.patientName;
-            appointmentData.patientPhone = patientData.phone || patientData.patientPhone;
-            appointmentData.patientEmail = patientData.email || patientData.patientEmail;
-            appointmentData.age = patientData.age;
-            appointmentData.gender = patientData.gender;
-            appointmentData.hospitalId = patientData.hospitalId || appointmentData.patientId;
-          }
-        } catch (patientError) {
-          console.warn('Could not fetch patient details for appointment:', patientError);
-        }
-      }
-      
-      // Fetch doctor details if doctorId exists
-      if (appointmentData.doctorId) {
-        try {
-          const doctorData = await getDoctorById(appointmentData.doctorId);
-          if (doctorData) {
-            // Merge doctor data into appointment
-            appointmentData.doctorName = doctorData.name || doctorData.doctorName;
-            appointmentData.specialty = doctorData.specialty || doctorData.specialization;
-            appointmentData.doctorEmail = doctorData.email;
-            appointmentData.doctorPhone = doctorData.phone;
-          }
-        } catch (doctorError) {
-          console.warn('Could not fetch doctor details for appointment:', doctorError);
-        }
-      }
-      return appointmentData;
-    } else {
-        console.log(`Appointment ${id} not found in Firestore.`);
-        return null;
+
+    if (!docSnap.exists()) {
+      console.log(`Appointment ${id} not found in Firestore.`);
+      return null;
     }
+
+    const appointmentData = { id: docSnap.id, ...docSnap.data() };
+    console.log('Retrieved appointment data:', appointmentData);
+    console.log('Appointment date from Firestore:', appointmentData.appointmentDate);
+    console.log('Appointment date type:', typeof appointmentData.appointmentDate);
+
+    // Merge patient and doctor data
+    await mergePatientData(appointmentData);
+    await mergeDoctorData(appointmentData);
+
+    return appointmentData;
   } catch(error) {
     console.error(`Failed to fetch appointment ${id}:`, error);
     throw new Error("Could not fetch appointment details.");
@@ -291,9 +301,17 @@ export const createAppointment = async (data) => {
     }
     throw new Error(error.message || 'Failed to create appointment. Please try again.');
   }
-};// Stub for updateAppointmentStatusInDb
+};// Update appointment status in database
 export const updateAppointmentStatusInDb = async (appointmentId, status) => {
-  // TODO: Implement actual update logic
-  console.log(`Stub: update status for appointment ${appointmentId} to ${status}`);
-  return { appointmentId, status };
+  try {
+    const docRef = doc(db, 'appointments', appointmentId);
+    await updateDoc(docRef, {
+      status: status,
+      updatedAt: new Date()
+    });
+    return { appointmentId, status };
+  } catch (error) {
+    console.error(`Failed to update appointment ${appointmentId} status:`, error);
+    throw new Error('Failed to update appointment status. Please try again.');
+  }
 };

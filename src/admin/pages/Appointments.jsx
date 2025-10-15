@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { getAppointments, getAppointmentById } from '@/features/appointments/services/appointmentService';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -96,7 +96,7 @@ export default function AdminAppointmentsPage() {
   }, []);
 
   // Fetch appointments
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getAppointments();
@@ -118,11 +118,11 @@ export default function AdminAppointmentsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchAppointments();
-  }, []);
+  }, [fetchAppointments]);
 
   // Filter and sort appointments
   const filteredAppointments = useMemo(() => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { getUniquePatients, createOrUpdatePatient, updatePatient, deletePatient } from '@/features/patients/services/patientService';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -72,7 +72,7 @@ export default function AdminPatientsPage() {
   const { toast } = useToast();
 
   // Fetch patients
-  const fetchPatients = async () => {
+  const fetchPatients = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getUniquePatients();
@@ -87,11 +87,11 @@ export default function AdminPatientsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchPatients();
-  }, []);
+  }, [fetchPatients]);
 
   // Render table content based on state
   const renderTableContent = () => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { getDoctors, createDoctor, updateDoctor, deleteDoctor } from '@/features/doctors/services/doctorService';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -112,7 +112,7 @@ export default function AdminDoctorsPage() {
   };
 
   // Fetch doctors
-  const fetchDoctors = async () => {
+  const fetchDoctors = useCallback(async () => {
     setLoading(true);
     try {
       const data = await getDoctors();
@@ -127,11 +127,11 @@ export default function AdminDoctorsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     fetchDoctors();
-  }, []);
+  }, [fetchDoctors]);
 
   // Handle add doctor
   const handleAddDoctor = async (e) => {

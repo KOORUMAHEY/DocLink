@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 import { Calendar, Users, Activity, TrendingUp, Loader2 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getAppointmentTrends, getPatientDemographics, getTopDoctors } from '@/features/admin';
 
 export default function DataVisualizations() {
@@ -16,7 +16,7 @@ export default function DataVisualizations() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -42,11 +42,11 @@ export default function DataVisualizations() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [period]);
 
   useEffect(() => {
     loadData();
-  }, [period]);  return (
+  }, [loadData]);  return (
     <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
       {/* Appointments Over Time */}
       <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden xl:col-span-3">

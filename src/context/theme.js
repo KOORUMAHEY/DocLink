@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
 const ThemeContext = createContext(null);
@@ -24,7 +24,7 @@ export function ThemeProvider({ children }) {
   }, []);
 
   // Toggle theme
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('doclink_theme', newTheme);
@@ -34,7 +34,7 @@ export function ThemeProvider({ children }) {
     } else {
       document.documentElement.classList.remove('dark');
     }
-  };
+  }, [theme]);
 
   // Set specific theme
   const setThemeMode = (mode) => {
@@ -59,7 +59,7 @@ export function ThemeProvider({ children }) {
       setTheme: setThemeMode,
       mounted,
     }),
-    [theme, mounted]
+    [theme, toggleTheme, mounted]
   );
 
   // Prevent flash of wrong theme

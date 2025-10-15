@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -99,17 +99,13 @@ export default function AdminSettingsPage() {
   });
 
   // Load admins
-  useEffect(() => {
-    loadAdmins();
-  }, []);
-
-  const loadAdmins = async () => {
+  const loadAdmins = useCallback(async () => {
     try {
       setLoading(true);
-      
+
       // Initialize super admin if needed
       await initializeSuperAdmin();
-      
+
       const adminsList = await getAllAdmins();
       setAdmins(adminsList);
     } catch (error) {
@@ -122,7 +118,11 @@ export default function AdminSettingsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    loadAdmins();
+  }, [loadAdmins]);
 
   const handleAddAdmin = async () => {
     try {

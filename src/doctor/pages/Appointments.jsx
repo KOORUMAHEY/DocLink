@@ -1,12 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getAppointmentsByDoctor } from '@/features/appointments/services/appointmentService';
+import { getAppointmentsByDoctor, rescheduleAppointment as rescheduleAppointmentService, approveAppointment as approveAppointmentService, rejectAppointment as rejectAppointmentService } from '@/features/appointments/services/appointmentService';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Calendar, Clock, Users, Phone, Mail, Search, Filter, Eye, CheckCircle, XCircle, User2, Stethoscope, FileText, CalendarDays, RotateCcw, Heart, AlertTriangle } from 'lucide-react';
+import { Calendar, Clock, Users, Phone, Mail, Search, XCircle, User2, Stethoscope, FileText, CalendarDays, RotateCcw, Heart } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Label } from '@/components/ui/label';
@@ -15,11 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  rescheduleAppointment as rescheduleAppointmentService, 
-  approveAppointment as approveAppointmentService, 
-  rejectAppointment as rejectAppointmentService 
-} from '@/features/appointments/services/appointmentService';
+// Removed duplicate import
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
@@ -29,6 +25,7 @@ export default function Appointments({ doctorId }) {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [timeFilter, setTimeFilter] = useState('all'); // New: time filter state
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [rescheduleMode, setRescheduleMode] = useState(false);
@@ -254,14 +251,41 @@ export default function Appointments({ doctorId }) {
         return appointment;
       })
     );
-  };
+  };  
 
+  // New: time-based filter logic
   const filteredAppointments = appointments.filter(appointment => {
     const matchesSearch = 
       appointment.patientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       appointment.patientEmail?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = filterStatus === 'all' || appointment.status === filterStatus;
-    return matchesSearch && matchesFilter;
+
+    // Time filter logic
+    let matchesTime = true;
+    if (timeFilter !== 'all') {
+      const apptDate = new Date(appointment.appointmentDate);
+      const now = new Date();
+      if (timeFilter === 'today') {
+        matchesTime =
+          apptDate.getDate() === now.getDate() &&
+          apptDate.getMonth() === now.getMonth() &&
+          apptDate.getFullYear() === now.getFullYear();
+      } else if (timeFilter === 'weekly') {
+        // Get start/end of current week (Monday-Sunday)
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay() + 1);
+        startOfWeek.setHours(0,0,0,0);
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23,59,59,999);
+        matchesTime = apptDate >= startOfWeek && apptDate <= endOfWeek;
+      } else if (timeFilter === 'monthly') {
+        matchesTime =
+          apptDate.getMonth() === now.getMonth() &&
+          apptDate.getFullYear() === now.getFullYear();
+      }
+    }
+    return matchesSearch && matchesFilter && matchesTime;
   });
 
   if (loading) {
@@ -348,6 +372,40 @@ export default function Appointments({ doctorId }) {
               </Button>
             </div>
           </div>
+
+          {/* New: Time Filters */}
+          <div className="mt-4">
+            <div className="flex gap-2">
+              <Button
+                variant={timeFilter === 'all' ? 'default' : 'outline'}
+                onClick={() => setTimeFilter('all')}
+                size="sm"
+              >
+                All Time
+              </Button>
+              <Button
+                variant={timeFilter === 'today' ? 'default' : 'outline'}
+                onClick={() => setTimeFilter('today')}
+                size="sm"
+              >
+                Today
+              </Button>
+              <Button
+                variant={timeFilter === 'weekly' ? 'default' : 'outline'}
+                onClick={() => setTimeFilter('weekly')}
+                size="sm"
+              >
+                Weekly
+              </Button>
+              <Button
+                variant={timeFilter === 'monthly' ? 'default' : 'outline'}
+                onClick={() => setTimeFilter('monthly')}
+                size="sm"
+              >
+                Monthly
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -360,13 +418,14 @@ export default function Appointments({ doctorId }) {
           </div>
           
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {loading ? (
+            {loading && (
               <div className="space-y-3">
-                {[...Array(8)].map((_, i) => (
-                  <Skeleton key={i} className="h-24 w-full" />
+                {[...Array(8)].map((_, idx) => (
+                  <Skeleton key={`skeleton-${idx}`} className="h-24 w-full" />
                 ))}
               </div>
-            ) : filteredAppointments.length === 0 ? (
+            )}
+            {!loading && filteredAppointments.length === 0 && (
               <div className="flex flex-col items-center justify-center py-12">
                 <Calendar className="w-16 h-16 text-gray-300 mb-4" />
                 <h3 className="text-lg font-semibold text-gray-700 mb-2">No Appointments Found</h3>
@@ -376,7 +435,8 @@ export default function Appointments({ doctorId }) {
                     : 'No appointments scheduled yet'}
                 </p>
               </div>
-            ) : (
+            )}
+            {!loading && filteredAppointments.length > 0 && (
               filteredAppointments.map((appointment) => (
                 <Card 
                   key={appointment.id} 

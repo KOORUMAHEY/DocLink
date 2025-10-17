@@ -296,8 +296,8 @@ export const createAppointment = async (data) => {
     const appointmentDate = new Date(data.appointmentDate);
     console.log('Original appointmentDate string:', data.appointmentDate);
     console.log('Parsed appointmentDate:', appointmentDate);
-    if (isNaN(appointmentDate.getTime())) {
-      throw new Error('Invalid appointment date');
+    if (Number.isNaN(appointmentDate.getTime())) {
+      throw new TypeError('Invalid appointment date');
     }
 
     const timeSlot = data.timeSlot.split('-')[0].trim(); // Get start time
@@ -308,8 +308,8 @@ export const createAppointment = async (data) => {
       throw new Error('Invalid time slot format');
     }
     
-    let hours = parseInt(timeMatch[1]);
-    const minutes = parseInt(timeMatch[2]);
+    let hours = Number.parseInt(timeMatch[1]);
+    const minutes = Number.parseInt(timeMatch[2]);
     const ampm = timeMatch[3].toUpperCase();
     
     if (ampm === 'PM' && hours !== 12) {

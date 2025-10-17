@@ -217,85 +217,146 @@ export function DoctorSidebar({ doctor, isOpen, onClose }) {
             </div>
           </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href.split('?')[0];
-              const gradientStyle = isActive 
-                ? { backgroundImage: `linear-gradient(135deg, ${getGradientColors(item.gradient)})` }
-                : {};
-              
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onClose}
-                  className={cn(
-                    'group relative flex items-center gap-3 px-3 py-3.5 rounded-xl text-sm font-medium transition-all duration-300',
-                    'hover:translate-x-1',
-                    isActive
-                      ? 'bg-gradient-to-r text-white shadow-lg'
-                      : isDark
-                        ? 'text-slate-300 hover:text-white hover:bg-white/5'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                  )}
-                  style={gradientStyle}
-                >
-                  {/* Active indicator line */}
-                  {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
-                  )}
+          {/* Navigation - Table Format */}
+          <nav className="flex-1 overflow-y-auto custom-scrollbar">
+            {/* Table Header */}
+            <div className={cn(
+              "sticky top-0 px-4 py-3 border-b",
+              isDark 
+                ? "bg-slate-800/50 border-white/10 backdrop-blur-sm" 
+                : "bg-gray-100/50 border-gray-200 backdrop-blur-sm"
+            )}>
+              <div className="flex items-center justify-between">
+                <p className={cn(
+                  "text-xs font-semibold uppercase tracking-wider",
+                  isDark ? "text-slate-400" : "text-gray-600"
+                )}>
+                  Navigation
+                </p>
+                <p className={cn(
+                  "text-xs font-semibold uppercase tracking-wider",
+                  isDark ? "text-slate-400" : "text-gray-600"
+                )}>
+                  {navItems.filter(item => pathname === item.href.split('?')[0]).length > 0 ? 'Active' : ''}
+                </p>
+              </div>
+            </div>
 
-                  {/* Icon container */}
-                  <div
+            {/* Navigation Items - Table Rows */}
+            <div className={cn(
+              "divide-y",
+              isDark ? "divide-white/5" : "divide-gray-200"
+            )}>
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href.split('?')[0];
+                
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onClose}
                     className={cn(
-                      'flex items-center justify-center h-9 w-9 rounded-lg transition-all duration-300',
+                      'group relative block px-4 py-4 transition-all duration-200',
                       isActive
-                        ? 'bg-white/20 shadow-inner'
-                        : 'bg-white/5 group-hover:bg-white/10'
+                        ? isDark
+                          ? 'bg-white/5 border-l-4 border-l-cyan-500'
+                          : 'bg-gray-50 border-l-4 border-l-cyan-500'
+                        : isDark
+                          ? 'hover:bg-white/[0.02]'
+                          : 'hover:bg-gray-50/50'
                     )}
                   >
-                    <Icon className="h-4 w-4" />
-                  </div>
-
-                  {/* Text content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className={cn(
-                        'truncate transition-all',
-                        isActive ? 'font-semibold' : 'font-medium'
-                      )}>
-                        {item.label}
-                      </span>
-                      {item.badge && (
-                        <Badge 
-                          variant="secondary" 
-                          className="text-xs h-5 px-1.5 bg-white/20 text-white border-0"
-                        >
-                          {item.badge}
-                        </Badge>
+                    {/* Gradient Accent Bar */}
+                    <div 
+                      className={cn(
+                        "absolute inset-y-0 left-0 w-1 rounded-r-full transition-all duration-300 opacity-0 group-hover:opacity-100",
+                        isActive ? "opacity-100" : ""
                       )}
-                    </div>
-                    <p className={cn(
-                      "text-xs mt-0.5 truncate transition-all",
-                      isActive 
-                        ? "text-white/80" 
-                        : isDark 
-                          ? "text-slate-500 group-hover:text-slate-400"
-                          : "text-gray-500 group-hover:text-gray-600"
-                    )}>
-                      {item.description}
-                    </p>
-                  </div>
+                      style={{
+                        backgroundImage: `linear-gradient(135deg, ${getGradientColors(item.gradient)})`
+                      }}
+                    />
 
-                  {/* Arrow indicator for active */}
-                  {isActive && (
-                    <ChevronRight className="h-4 w-4 text-white/80 animate-pulse" />
-                  )}
-                </Link>
-              );
-            })}
+                    <div className="flex items-center gap-3 ml-2">
+                      {/* Icon */}
+                      <div className={cn(
+                        'flex items-center justify-center h-10 w-10 rounded-lg flex-shrink-0 transition-all duration-300',
+                        isActive
+                          ? 'bg-gradient-to-br shadow-lg'
+                          : isDark
+                            ? 'bg-slate-700/50 group-hover:bg-slate-600/50'
+                            : 'bg-gray-200/50 group-hover:bg-gray-300/50'
+                      )}
+                      style={isActive ? {
+                        backgroundImage: `linear-gradient(135deg, ${getGradientColors(item.gradient)})`
+                      } : {}}
+                      >
+                        <Icon className={cn(
+                          'h-5 w-5 transition-colors',
+                          isActive 
+                            ? 'text-white' 
+                            : isDark
+                              ? 'text-slate-300 group-hover:text-white'
+                              : 'text-gray-600 group-hover:text-gray-900'
+                        )} />
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <p className={cn(
+                            'text-sm font-semibold transition-colors truncate',
+                            isActive 
+                              ? isDark
+                                ? 'text-white'
+                                : 'text-gray-900'
+                              : isDark
+                                ? 'text-slate-200 group-hover:text-white'
+                                : 'text-gray-700 group-hover:text-gray-900'
+                          )}>
+                            {item.label}
+                          </p>
+                          {item.badge && (
+                            <span className={cn(
+                              'inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-bold flex-shrink-0',
+                              'bg-gradient-to-r from-orange-500 to-red-500 text-white'
+                            )}>
+                              {item.badge}
+                            </span>
+                          )}
+                        </div>
+                        <p className={cn(
+                          'text-xs transition-colors truncate',
+                          isActive 
+                            ? isDark
+                              ? 'text-slate-300'
+                              : 'text-gray-600'
+                            : isDark
+                              ? 'text-slate-500 group-hover:text-slate-400'
+                              : 'text-gray-500 group-hover:text-gray-600'
+                        )}>
+                          {item.description}
+                        </p>
+                      </div>
+
+                      {/* Arrow */}
+                      <ChevronRight className={cn(
+                        'h-4 w-4 transition-all duration-300 flex-shrink-0',
+                        isActive
+                          ? isDark
+                            ? 'text-cyan-400'
+                            : 'text-cyan-600'
+                          : isDark
+                            ? 'text-slate-500 group-hover:text-slate-300'
+                            : 'text-gray-400 group-hover:text-gray-600',
+                        'group-hover:translate-x-1'
+                      )} />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
           </nav>
 
           {/* Footer Section */}

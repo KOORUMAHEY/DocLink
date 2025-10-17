@@ -409,24 +409,136 @@ export const rescheduleAppointment = async (appointmentId, newDate, newTimeSlot,
   }
 };
 
-// Approve appointment
-export const approveAppointment = async (appointmentId) => {
-  return await updateAppointmentStatusInDb(appointmentId, 'confirmed');
+// Approve appointment (simple wrapper - use backend action for full features)
+export const approveAppointment = async (appointmentId, doctorId = null, notes = '') => {
+  try {
+    // Try to use the enhanced backend action first
+    try {
+      const { approveAppointmentAction } = await import('@/app/api/appointments/actions/route');
+      return await approveAppointmentAction(appointmentId, doctorId, notes);
+    } catch (importError) {
+      // Fallback to basic database update
+      console.log('Backend action unavailable, using fallback...', importError);
+      return await updateAppointmentStatusInDb(appointmentId, 'confirmed');
+    }
+  } catch (error) {
+    console.error(`Failed to approve appointment ${appointmentId}:`, error);
+    throw new Error('Failed to approve appointment. Please try again.');
+  }
 };
 
-// Reject appointment with reason
-export const rejectAppointment = async (appointmentId, reason = '') => {
+// Reject appointment with reason (simple wrapper - use backend action for full features)
+export const rejectAppointment = async (appointmentId, doctorId = null, reason = '', notes = '') => {
   try {
-    const docRef = doc(db, 'appointments', appointmentId);
-    await updateDoc(docRef, {
-      status: 'rejected',
-      rejectionReason: reason,
-      rejectedAt: new Date(),
-      updatedAt: new Date()
-    });
-    return { appointmentId, status: 'rejected' };
+    // Try to use the enhanced backend action first
+    try {
+      const { rejectAppointmentAction } = await import('@/app/api/appointments/actions/route');
+      return await rejectAppointmentAction(appointmentId, doctorId, reason, notes);
+    } catch (importError) {
+      // Fallback to basic database update
+      console.log('Backend action unavailable, using fallback...', importError);
+      const docRef = doc(db, 'appointments', appointmentId);
+      await updateDoc(docRef, {
+        status: 'rejected',
+        rejectionReason: reason,
+        rejectedAt: new Date(),
+        updatedAt: new Date()
+      });
+      return { appointmentId, status: 'rejected' };
+    }
   } catch (error) {
     console.error(`Failed to reject appointment ${appointmentId}:`, error);
     throw new Error('Failed to reject appointment. Please try again.');
+  }
+};
+
+/**
+ * COMPLETE APPOINTMENT ACTION
+ */
+export const completeAppointment = async (appointmentId, doctorId, summary = '', notes = '') => {
+  try {
+    const { completeAppointmentAction } = await import('@/app/api/appointments/actions/route');
+    return await completeAppointmentAction(appointmentId, doctorId, summary, notes);
+  } catch (error) {
+    console.error(`Failed to complete appointment ${appointmentId}:`, error);
+    throw new Error('Failed to complete appointment. Please try again.');
+  }
+};
+
+/**
+ * CANCEL APPOINTMENT ACTION
+ */
+export const cancelAppointment = async (appointmentId, cancelledBy, reason = '', notes = '') => {
+  try {
+    const { cancelAppointmentAction } = await import('@/app/api/appointments/actions/route');
+    return await cancelAppointmentAction(appointmentId, cancelledBy, reason, notes);
+  } catch (error) {
+    console.error(`Failed to cancel appointment ${appointmentId}:`, error);
+    throw new Error('Failed to cancel appointment. Please try again.');
+  }
+};
+
+/**
+ * RESCHEDULE APPOINTMENT ACTION
+ */
+export const rescheduleAppointmentWithDetails = async (appointmentId, newDate, newTimeSlot, reason = '', notes = '') => {
+  try {
+    const { rescheduleAppointmentAction } = await import('@/app/api/appointments/actions/route');
+    return await rescheduleAppointmentAction(appointmentId, newDate, newTimeSlot, reason, notes);
+  } catch (error) {
+    console.error(`Failed to reschedule appointment ${appointmentId}:`, error);
+    throw new Error('Failed to reschedule appointment. Please try again.');
+  }
+};
+
+/**
+ * MARK NO-SHOW ACTION
+ */
+export const markNoShow = async (appointmentId, doctorId, reason = '', notes = '') => {
+  try {
+    const { markNoShowAction } = await import('@/app/api/appointments/actions/route');
+    return await markNoShowAction(appointmentId, doctorId, reason, notes);
+  } catch (error) {
+    console.error(`Failed to mark no-show for appointment ${appointmentId}:`, error);
+    throw new Error('Failed to mark no-show. Please try again.');
+  }
+};
+
+/**
+ * GET APPOINTMENT HISTORY/AUDIT LOG
+ */
+export const getAppointmentAuditLog = async (appointmentId) => {
+  try {
+    const { getAppointmentHistory } = await import('@/app/api/appointments/actions/route');
+    return await getAppointmentHistory(appointmentId);
+  } catch (error) {
+    console.error(`Failed to fetch appointment history for ${appointmentId}:`, error);
+    throw new Error('Failed to fetch appointment history.');
+  }
+};
+
+/**
+ * UPDATE APPOINTMENT DOCTOR NOTES
+ */
+export const updateDoctorNotes = async (appointmentId, doctorId, notes = '') => {
+  try {
+    const { updateAppointmentNotes } = await import('@/app/api/appointments/actions/route');
+    return await updateAppointmentNotes(appointmentId, doctorId, notes);
+  } catch (error) {
+    console.error(`Failed to update notes for appointment ${appointmentId}:`, error);
+    throw new Error('Failed to update appointment notes.');
+  }
+};
+
+/**
+ * GET APPOINTMENT STATISTICS
+ */
+export const getDoctorAppointmentStats = async (doctorId, startDate = null, endDate = null) => {
+  try {
+    const { getAppointmentStats } = await import('@/app/api/appointments/actions/route');
+    return await getAppointmentStats(doctorId, startDate, endDate);
+  } catch (error) {
+    console.error(`Failed to fetch stats for doctor ${doctorId}:`, error);
+    throw new Error('Failed to fetch appointment statistics.');
   }
 };

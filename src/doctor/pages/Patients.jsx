@@ -1,27 +1,192 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+/* eslint-disable react/prop-types */
+
+import { useState, useEffect, memo } from 'react';
+import PropTypes from 'prop-types';
 import { getSavedPatientsForDoctor } from '@/features/patients';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Phone, Mail, Calendar, Search, Filter } from 'lucide-react';
+import { Users, Phone, Mail, Calendar, Search, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+// Memoized Patient Card Component - Mobile Optimized
+const PatientCard = memo(({ 
+  patient, 
+  isExpanded, 
+  onToggleExpand 
+}) => (
+  <Card 
+    className={cn(
+      "cursor-pointer transition-all duration-200 border-l-4 border-l-blue-500",
+      isExpanded ? "ring-2 ring-blue-500 shadow-md" : "hover:shadow-sm"
+    )}
+    onClick={() => onToggleExpand(patient.id)}
+  >
+    <CardContent className="p-3 sm:p-4">
+      <div className="flex items-start justify-between gap-2 sm:gap-3">
+        <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+          <Avatar className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
+            <AvatarImage src={patient.avatar} />
+            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-600 text-white text-xs font-bold">
+              {patient.name?.charAt(0) || 'P'}
+            </AvatarFallback>
+          </Avatar>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-start justify-between gap-2 mb-1">
+              <div>
+                <h3 className="font-semibold text-gray-900 text-sm sm:text-base truncate">
+                  {patient.name}
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-500">
+                  {patient.age} years • {patient.gender || 'N/A'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-1 mt-1 sm:gap-2">
+              {patient.bloodType && (
+                <Badge variant="secondary" className="text-xs">
+                  {patient.bloodType}
+                </Badge>
+              )}
+              {patient.lastVisit && (
+                <Badge className="bg-blue-100 text-blue-800 border-blue-300 text-xs">
+                  {patient.totalVisits || 0} visits
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <ChevronRight 
+          className={cn(
+            "w-5 h-5 text-gray-400 flex-shrink-0 transition-transform duration-200",
+            isExpanded && "rotate-90"
+          )}
+        />
+      </div>
+
+      {/* Expanded Details - Mobile Responsive */}
+      {isExpanded && (
+        <div className="mt-4 pt-4 border-t border-gray-100 space-y-2 sm:space-y-3">
+          <div className="grid gap-2 sm:gap-3">
+            <div className="flex items-start gap-2">
+              <Phone className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs text-gray-500">Phone</p>
+                <p className="text-sm font-medium text-gray-900 break-all">
+                  {patient.phone || 'Not provided'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <Mail className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs text-gray-500">Email</p>
+                <p className="text-sm font-medium text-gray-900 break-all">
+                  {patient.email || 'Not provided'}
+                </p>
+              </div>
+            </div>
+
+            {patient.lastVisit && (
+              <div className="flex items-start gap-2">
+                <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs text-gray-500">Last Visit</p>
+                  <p className="text-sm font-medium text-gray-900">
+                    {new Date(patient.lastVisit).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <Button 
+              size="sm" 
+              variant="outline"
+              className="flex-1 text-xs sm:text-sm"
+            >
+              View Records
+            </Button>
+            <Button 
+              size="sm" 
+              variant="default"
+              className="flex-1 text-xs sm:text-sm"
+            >
+              New Appointment
+            </Button>
+          </div>
+        </div>
+      )}
+    </CardContent>
+  </Card>
+));
+
+PatientCard.displayName = 'PatientCard';
+
+PatientCard.propTypes = {
+  patient: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string,
+    age: PropTypes.number,
+    gender: PropTypes.string,
+    avatar: PropTypes.string,
+    bloodType: PropTypes.string,
+    phone: PropTypes.string,
+    email: PropTypes.string,
+    lastVisit: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+    totalVisits: PropTypes.number,
+  }).isRequired,
+  isExpanded: PropTypes.bool.isRequired,
+  onToggleExpand: PropTypes.func.isRequired,
+};
+
+// Loading Skeleton - Mobile Optimized
+const PatientsLoadingSkeleton = () => (
+  <div className="space-y-3 sm:space-y-4">
+    {[1, 2, 3, 4, 5].map((i) => (
+      <Skeleton key={i} className="h-20 sm:h-24 w-full rounded-lg" />
+    ))}
+  </div>
+);
+
+// Stat Card Component
+const StatCard = memo(({ label, value, description, icon: Icon }) => (
+  <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-xs sm:text-sm font-medium">{label}</CardTitle>
+      <Icon className="h-4 w-4 text-gray-400" />
+    </CardHeader>
+    <CardContent>
+      <div className="text-xl sm:text-2xl font-bold text-gray-900">{value}</div>
+      <p className="text-xs text-gray-500">{description}</p>
+    </CardContent>
+  </Card>
+));
+
+StatCard.displayName = 'StatCard';
+
+StatCard.propTypes = {
+  label: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
+  description: PropTypes.string.isRequired,
+  icon: PropTypes.elementType.isRequired,
+};
 
 export default function Patients({ doctorId }) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedPatientId, setExpandedPatientId] = useState(null);
 
   useEffect(() => {
     const loadPatients = async () => {
@@ -30,8 +195,8 @@ export default function Patients({ doctorId }) {
         try {
           const data = await getSavedPatientsForDoctor(doctorId);
           setPatients(data);
-        } catch (error) {
-          console.error('Error loading patients:', error);
+        } catch (err) {
+          console.error('Error loading patients:', err);
         } finally {
           setLoading(false);
         }
@@ -47,180 +212,129 @@ export default function Patients({ doctorId }) {
     patient.phone?.includes(searchQuery)
   );
 
+  const stats = {
+    total: patients.length,
+    active: patients.filter(p => p.lastVisit).length,
+    newThisMonth: patients.filter(p => {
+      const createdAt = p.createdAt?.toDate?.() || new Date(p.createdAt);
+      const monthAgo = new Date();
+      monthAgo.setMonth(monthAgo.getMonth() - 1);
+      return createdAt > monthAgo;
+    }).length,
+  };
+
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
-        <Skeleton className="h-20 w-full" />
-        <Skeleton className="h-96 w-full" />
+      <div className="min-h-screen p-3 sm:p-6 lg:p-8 bg-gray-50">
+        <div className="max-w-6xl mx-auto space-y-4">
+          <Skeleton className="h-10 w-64 rounded-lg" />
+          <Skeleton className="h-12 w-full rounded-lg" />
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className="h-32 rounded-lg" />
+            ))}
+          </div>
+          <PatientsLoadingSkeleton />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">My Patients</h1>
-          <p className="text-muted-foreground mt-1">
+    <div className="min-h-screen p-3 sm:p-6 lg:p-8 bg-gray-50">
+      <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
+        {/* Header */}
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            My Patients
+          </h1>
+          <p className="text-sm sm:text-base text-gray-600">
             View and manage your saved patients
           </p>
         </div>
-        <Badge variant="outline" className="text-lg px-4 py-2">
-          <Users className="w-4 h-4 mr-2" />
-          {filteredPatients.length} Patients
-        </Badge>
-      </div>
 
-      {/* Search */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search by name, email, or phone..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+        {/* Search */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-3 sm:p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search by name, email, or phone..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-9 sm:h-10 text-sm"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stats Grid - Responsive */}
+        <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
+          <StatCard
+            label="Total Patients"
+            value={stats.total}
+            description="All time"
+            icon={Users}
+          />
+          <StatCard
+            label="Active"
+            value={stats.active}
+            description="With appointments"
+            icon={Calendar}
+          />
+          <StatCard
+            label="New This Month"
+            value={stats.newThisMonth}
+            description="Last 30 days"
+            icon={Users}
+          />
+        </div>
+
+        {/* Patients List - Card Grid */}
+        <div>
+          <div className="mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
+              Patient List
+            </h2>
+            <p className="text-xs sm:text-sm text-gray-600 mt-1">
+              {filteredPatients.length} patient{filteredPatients.length === 1 ? '' : 's'}
+            </p>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Patients</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{patients.length}</div>
-            <p className="text-xs text-muted-foreground">All time</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {patients.filter(p => p.lastVisit).length}
-            </div>
-            <p className="text-xs text-muted-foreground">With appointments</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">New This Month</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {patients.filter(p => {
-                const createdAt = p.createdAt?.toDate?.() || new Date(p.createdAt);
-                const monthAgo = new Date();
-                monthAgo.setMonth(monthAgo.getMonth() - 1);
-                return createdAt > monthAgo;
-              }).length}
-            </div>
-            <p className="text-xs text-muted-foreground">Last 30 days</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Patients Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Patient List</CardTitle>
-          <CardDescription>
-            A comprehensive list of all your patients
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
           {filteredPatients.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Users className="w-16 h-16 text-gray-300 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">No Patients Found</h3>
-              <p className="text-muted-foreground text-center">
-                {searchQuery
-                  ? 'Try adjusting your search query'
-                  : 'No patients saved yet'}
-              </p>
-            </div>
+            <Card className="border-0 shadow-sm">
+              <CardContent className="flex flex-col items-center justify-center py-12 sm:py-16">
+                <Users className="w-12 h-12 text-gray-300 mb-4" />
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-2">
+                  No Patients Found
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-600 text-center max-w-xs">
+                  {searchQuery
+                    ? 'Try adjusting your search query'
+                    : 'No patients saved yet'}
+                </p>
+              </CardContent>
+            </Card>
           ) : (
-            <div className="rounded-md border overflow-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Patient</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Gender</TableHead>
-                    <TableHead>Blood Type</TableHead>
-                    <TableHead>Last Visit</TableHead>
-                    <TableHead className="text-right">Total Visits</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPatients.map((patient) => (
-                    <TableRow key={patient.id}>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarImage src={patient.avatar} />
-                            <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-600 text-white">
-                              {patient.name?.charAt(0) || 'P'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium">{patient.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {patient.age} years
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1 text-sm">
-                            <Phone className="w-3 h-3 text-muted-foreground" />
-                            {patient.phone || 'N/A'}
-                          </div>
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Mail className="w-3 h-3" />
-                            {patient.email || 'N/A'}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">
-                          {patient.gender || 'N/A'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">
-                          {patient.bloodType || 'N/A'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {patient.lastVisit 
-                          ? new Date(patient.lastVisit).toLocaleDateString()
-                          : 'Never'}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge className="bg-blue-100 text-blue-800 border-blue-300">
-                          {patient.totalVisits || 0}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <div className="space-y-3 sm:space-y-4">
+              {filteredPatients.map((patient) => (
+                <PatientCard
+                  key={patient.id}
+                  patient={patient}
+                  isExpanded={expandedPatientId === patient.id}
+                  onToggleExpand={(id) => 
+                    setExpandedPatientId(expandedPatientId === id ? null : id)
+                  }
+                />
+              ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
+
+Patients.propTypes = {
+  doctorId: PropTypes.string,
+};

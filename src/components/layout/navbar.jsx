@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
   Menu, 
-  User, 
   Languages, 
   Calendar, 
   Stethoscope, 
@@ -15,8 +14,8 @@ import {
   Shield, 
   ChevronDown,
   Phone,
-  Settings,
-  Activity
+  Activity,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/context/i18n';
@@ -27,22 +26,13 @@ const navLinks = [
 		href: '/', 
 		label: 'home', 
 		icon: Heart, 
-		description: 'Healthcare Hub',
 		color: 'text-red-500'
 	},
 	{ 
 		href: '/appointments', 
 		label: 'appointments', 
 		icon: Calendar,
-		description: 'Book & Manage',
 		color: 'text-blue-500'
-	},
-	{ 
-		href: '/doctors', 
-		label: 'doctors', 
-		icon: Stethoscope,
-		description: 'Find Specialists',
-		color: 'text-green-500'
 	},
 ];
 
@@ -103,22 +93,17 @@ export function Navbar() {
 									key={link.href}
 									href={link.href}
 									className={cn(
-										'group relative flex flex-col items-center px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-gray-50',
+										'group relative flex items-center space-x-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 hover:bg-gray-50',
 										isActive
 											? 'bg-blue-50/80 text-blue-700'
 											: 'text-gray-600 hover:text-gray-900'
 									)}
 								>
-									<div className="flex items-center space-x-2">
-										<Icon className={cn(
-											'h-5 w-5 transition-all duration-300',
-											isActive ? link.color : 'text-gray-500 group-hover:text-gray-700'
-										)} />
-										<span className="font-semibold">{t(`navbar.${link.label}`)}</span>
-									</div>
-									<span className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-										{link.description}
-									</span>
+									<Icon className={cn(
+										'h-5 w-5 transition-all duration-300',
+										isActive ? link.color : 'text-gray-500 group-hover:text-gray-700'
+									)} />
+									<span className="font-semibold">{t(`navbar.${link.label}`)}</span>
 									{isActive && (
 										<div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
 									)}
@@ -172,76 +157,33 @@ export function Navbar() {
 							</DropdownMenuContent>
 						</DropdownMenu>
 
-						{/* Quick Actions for Patients */}
-						<div className="flex items-center space-x-2">
-							<Button asChild variant="outline" size="sm" className="border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 rounded-xl px-4 py-2 transition-all duration-300">
-								<Link href="/appointments" className="flex items-center space-x-2">
-									<Activity className="h-4 w-4 text-blue-600" />
-									<span className="font-medium text-gray-700">My Health</span>
-								</Link>
-							</Button>
+						{/* My Health Button */}
+						<Button asChild variant="outline" size="sm" className="border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 rounded-xl px-4 py-2 transition-all duration-300">
+							<Link href="/appointments" className="flex items-center space-x-2">
+								<Activity className="h-4 w-4 text-blue-600" />
+								<span className="font-medium text-gray-700">My Health</span>
+							</Link>
+						</Button>
 
-							{/* Primary CTA - Enhanced */}
-							<Button asChild size="sm" className="relative bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 overflow-hidden group">
-								<Link href="/appointments/book" className="flex items-center space-x-2 relative z-10">
-									<Calendar className="h-4 w-4" />
-									<span>Book Now</span>
-									<div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
-								</Link>
-							</Button>
-						</div>
+						{/* Book Appointment Button */}
+						<Button asChild size="sm" className="relative bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border-0 overflow-hidden group">
+							<Link href="/appointments/book" className="flex items-center space-x-2 relative z-10">
+								<Calendar className="h-4 w-4" />
+								<span>Book Now</span>
+								<div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+							</Link>
+						</Button>
 
-						{/* Professional Access Menu */}
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant="ghost" size="sm" className="flex items-center space-x-2 hover:bg-gray-100 rounded-xl px-3 py-2">
-									<div className="h-8 w-8 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 flex items-center justify-center">
-										<User className="h-4 w-4 text-green-600" />
-									</div>
-									<span className="hidden xl:inline font-medium text-gray-700">Account</span>
-									<ChevronDown className="h-3 w-3 text-gray-500" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="w-56 p-2 rounded-xl shadow-lg border border-gray-200">
-								<div className="px-3 py-2 border-b border-gray-100 mb-2">
-									<p className="text-sm font-medium text-gray-900">Access Portal</p>
-									<p className="text-xs text-gray-500">Choose your role</p>
+						{/* Doctor/Admin Profile Login */}
+						<Button asChild variant="ghost" size="sm" className="flex items-center justify-center rounded-full w-10 h-10 hover:bg-blue-100 transition-all duration-300 group">
+							<Link href="/login" className="flex items-center justify-center" title="Doctor/Admin Login">
+								<div className="relative flex items-center justify-center w-6 h-6">
+									<div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 opacity-0 group-hover:opacity-20 transition-opacity blur-sm"></div>
+									<Shield className="h-5 w-5 text-blue-600 group-hover:text-blue-700 transition-colors drop-shadow-sm" />
 								</div>
-								
-								<DropdownMenuItem asChild className="rounded-lg cursor-pointer">
-									<Link href="/login" className="flex items-center space-x-3 p-2">
-										<div className="h-8 w-8 rounded-lg bg-blue-100 flex items-center justify-center">
-											<Stethoscope className="h-4 w-4 text-blue-600" />
-										</div>
-										<div>
-											<div className="font-medium text-gray-900">Healthcare Provider</div>
-											<div className="text-xs text-gray-500">Doctor Dashboard</div>
-										</div>
-									</Link>
-								</DropdownMenuItem>
-								
-								<DropdownMenuItem asChild className="rounded-lg cursor-pointer">
-									<Link href="/appointments" className="flex items-center space-x-3 p-2">
-										<div className="h-8 w-8 rounded-lg bg-green-100 flex items-center justify-center">
-											<Heart className="h-4 w-4 text-green-600" />
-										</div>
-										<div>
-											<div className="font-medium text-gray-900">Patient Portal</div>
-											<div className="text-xs text-gray-500">Manage appointments</div>
-										</div>
-									</Link>
-								</DropdownMenuItem>
-								
-								<DropdownMenuSeparator className="my-2" />
-								
-								<DropdownMenuItem asChild className="rounded-lg cursor-pointer">
-									<Link href="/admin" className="flex items-center space-x-3 p-2">
-										<Settings className="h-4 w-4 text-gray-600" />
-										<span className="text-sm">Settings</span>
-									</Link>
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+								<span className="sr-only">Doctor/Admin Login</span>
+							</Link>
+						</Button>
 					</div>
 
 				{/* Mobile Menu */}
@@ -291,6 +233,15 @@ export function Navbar() {
 												<span className="font-medium text-gray-700">My Health Portal</span>
 											</Link>
 										</Button>
+
+										<Button asChild variant="outline" className="w-full border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 rounded-xl py-3 transition-all duration-300">
+											<Link href="/login" className="flex items-center justify-center space-x-3">
+												<div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md">
+													<Shield className="h-4 w-4 text-white" />
+												</div>
+												<span className="font-medium text-gray-700">Doctor/Admin Login</span>
+											</Link>
+										</Button>
 									</div>
 								</div>
 
@@ -319,45 +270,10 @@ export function Navbar() {
 														)}>
 															<Icon className={cn('h-5 w-5', isActive ? 'text-blue-700' : '')} />
 														</div>
-														<div>
-															<div className="font-medium">{t(`navbar.${link.label}`)}</div>
-															<div className="text-xs text-gray-500">{link.description}</div>
-														</div>
+														<span className="font-medium">{t(`navbar.${link.label}`)}</span>
 													</Link>
 												);
 											})}
-										</div>
-									</div>
-
-									{/* Professional Access */}
-									<div className="mb-6">
-										<p className="text-sm font-semibold text-gray-900 mb-3">Professional Access</p>
-										<div className="space-y-2">
-											<Link
-												href="/login"
-												className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-blue-50 transition-all duration-200"
-											>
-												<div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-													<Stethoscope className="h-5 w-5 text-blue-600" />
-												</div>
-												<div>
-													<div className="font-medium text-gray-900">Healthcare Provider</div>
-													<div className="text-xs text-gray-500">Doctor dashboard & tools</div>
-												</div>
-											</Link>
-
-											<Link
-												href="/admin"
-												className="flex items-center space-x-3 px-4 py-3 rounded-xl hover:bg-gray-50 transition-all duration-200"
-											>
-												<div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center">
-													<Settings className="h-5 w-5 text-gray-600" />
-												</div>
-												<div>
-													<div className="font-medium text-gray-900">Settings</div>
-													<div className="text-xs text-gray-500">Account & preferences</div>
-												</div>
-											</Link>
 										</div>
 									</div>
 

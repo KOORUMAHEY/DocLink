@@ -46,17 +46,17 @@ export default function Home() {
               <div className="mb-8 flex">
                 <Badge variant="outline" className="px-4 py-2 text-sm font-medium text-blue-700 border-blue-200 bg-blue-50/80 animate-pulse">
                   <Stethoscope className="mr-2 h-4 w-4" />
-                  🏥 Trusted Healthcare Platform
+                  {t('home.hero.badge')}
                 </Badge>
               </div>
               
               <h1 className="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl lg:text-7xl">
-                Your Health,
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mt-2">Our Priority</span>
+                {t('home.hero.title')}
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 mt-2">{t('home.hero.title_gradient')}</span>
               </h1>
               
               <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600 sm:text-xl">
-                Connect with top healthcare professionals instantly. Book appointments, manage health records, and receive quality care from the comfort of your home.
+                {t('home.hero.subtitle')}
               </p>
 
               {/* Primary CTA */}
@@ -64,7 +64,7 @@ export default function Home() {
                 <Button asChild size="lg" className="w-full sm:w-auto px-8 py-4 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-0 hover:scale-105 group">
                   <Link href={ROUTES.APPOINTMENTS.BOOK} className="flex items-center">
                     <Calendar className="mr-2 h-5 w-5 group-hover:scale-110 transition-transform" />
-                    Book Appointment
+                    {t('home.hero.cta_book')}
                     <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
@@ -72,7 +72,7 @@ export default function Home() {
                 <Button asChild variant="outline" size="lg" className="w-full sm:w-auto px-8 py-4 text-lg font-semibold border-2 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl transition-all duration-300">
                   <Link href={ROUTES.APPOINTMENTS.ROOT} className="flex items-center">
                     <UserCheck className="mr-2 h-5 w-5" />
-                    View Bookings
+                    {t('home.hero.cta_view')}
                   </Link>
                 </Button>
               </div>
@@ -81,11 +81,11 @@ export default function Home() {
               <div className="mt-12 flex items-center gap-8 text-sm">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700 font-medium">1000+ Appointments Monthly</span>
+                  <span className="text-gray-700 font-medium">{t('home.hero.stat_appointments')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700 font-medium">98% Satisfaction Rate</span>
+                  <span className="text-gray-700 font-medium">{t('home.hero.stat_satisfaction')}</span>
                 </div>
               </div>
             </div>
@@ -152,10 +152,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center mb-16">
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-              How DocLink Works
+              {t('home.howitworks.title')}
             </h2>
             <p className="mt-4 text-lg leading-8 text-gray-600">
-              Three simple steps to get quality healthcare
+              {t('home.howitworks.subtitle')}
             </p>
           </div>
           
@@ -171,8 +171,8 @@ export default function Home() {
                   <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-blue-600 text-white font-bold mb-4">
                     1
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Find a Doctor</h3>
-                  <p className="text-gray-600">Browse through our network of verified healthcare professionals. Filter by specialty, experience, and availability.</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('home.howitworks.step1_title')}</h3>
+                  <p className="text-gray-600">{t('home.howitworks.step1_desc')}</p>
                 </div>
               </div>
             </div>
@@ -188,8 +188,8 @@ export default function Home() {
                   <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-indigo-600 text-white font-bold mb-4">
                     2
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Book an Appointment</h3>
-                  <p className="text-gray-600">Select your preferred date and time. Get instant confirmation and appointment reminders via SMS and email.</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('home.howitworks.step2_title')}</h3>
+                  <p className="text-gray-600">{t('home.howitworks.step2_desc')}</p>
                 </div>
               </div>
             </div>
@@ -205,8 +205,8 @@ export default function Home() {
                   <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-purple-600 text-white font-bold mb-4">
                     3
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Get Quality Care</h3>
-                  <p className="text-gray-600">Connect with your healthcare provider. Access your health records and prescription history anytime, anywhere.</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('home.howitworks.step3_title')}</h3>
+                  <p className="text-gray-600">{t('home.howitworks.step3_desc')}</p>
                 </div>
               </div>
             </div>

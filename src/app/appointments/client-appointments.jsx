@@ -1,38 +1,24 @@
-import { getAppointments } from '@/features/appointments/services/appointmentService';
-import { serializeAppointments } from '@/lib/firestore-serializer';
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { AppointmentSearch } from '@/features/appointments/components/AppointmentSearch';
-import { IconBookAppointment } from '@/components/icons/icon-book-appointment';
-import { IconDoctorAccess } from '@/components/icons/icon-doctor-access';
 import { Calendar, Clock, Plus, Search, TrendingUp, Users, CheckCircle2, AlertCircle, Zap, Phone, Stethoscope, Shield } from 'lucide-react';
 import { AppointmentsPageClient } from '@/features/appointments/components/AppointmentsPageClient';
 import { ROUTES } from '@/config/routes';
+import { useI18n } from '@/context/i18n';
 
-export default async function AppointmentsPage({ searchParams }) {
-  const params = await searchParams;
-  const searchQuery = params?.query;
-
-  let appointments = [];
-  let hasSearchQuery = false;
-
-  if (searchQuery) {
-    hasSearchQuery = true;
-    appointments = await getAppointments({ searchQuery });
-  }
-
-  // Convert Firestore Timestamps to plain objects for client components
-  const serializedAppointments = serializeAppointments(appointments);
+export function AppointmentsPageContent({ serializedAppointments, hasSearchQuery }) {
+  const { t } = useI18n();
 
   return (
     <div className="space-y-6 sm:space-y-8 lg:space-y-10">
       {/* Breadcrumb Navigation */}
-      {/* Breadcrumb Navigation */}
       <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
-        <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
+        <Link href="/" className="hover:text-blue-600 transition-colors">{t('appointments.breadcrumb_home')}</Link>
         <span>/</span>
-        <span className="text-gray-900 font-semibold">Appointments</span>
+        <span className="text-gray-900 font-semibold">{t('appointments.breadcrumb_appointments')}</span>
       </div>
 
       {/* Main Header Section */}
@@ -48,17 +34,17 @@ export default async function AppointmentsPage({ searchParams }) {
             <div className="space-y-3 sm:space-y-4">
               <div className="inline-block">
                 <span className="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-semibold backdrop-blur-sm border border-white/30">
-                  ✨ Appointment Management
+                  {t('appointments.hero_badge')}
                 </span>
               </div>
               
               <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white leading-tight">
-                Your Health,
-                <span className="block text-blue-100">Our Commitment</span>
+                {t('appointments.hero_title')}
+                <span className="block text-blue-100">{t('appointments.hero_title_secondary')}</span>
               </h1>
               
               <p className="text-xs sm:text-sm lg:text-base text-blue-100 leading-relaxed max-w-md">
-                Search your existing appointments or book with our healthcare professionals.
+                {t('appointments.hero_description')}
               </p>
 
               {/* Stats Line */}
@@ -68,8 +54,8 @@ export default async function AppointmentsPage({ searchParams }) {
                     <Users className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-white/80 text-xs">Trusted by</p>
-                    <p className="text-white font-bold text-xs sm:text-sm">10,000+</p>
+                    <p className="text-white/80 text-xs">{t('appointments.hero_stat_trusted')}</p>
+                    <p className="text-white font-bold text-xs sm:text-sm">{t('appointments.hero_stat_trusted_count')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -77,8 +63,8 @@ export default async function AppointmentsPage({ searchParams }) {
                     <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-300" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-white/80 text-xs">Success Rate</p>
-                    <p className="text-white font-bold text-xs sm:text-sm">98%</p>
+                    <p className="text-white/80 text-xs">{t('appointments.hero_stat_success')}</p>
+                    <p className="text-white font-bold text-xs sm:text-sm">{t('appointments.hero_stat_success_rate')}</p>
                   </div>
                 </div>
               </div>
@@ -92,8 +78,8 @@ export default async function AppointmentsPage({ searchParams }) {
                 >
                   <Link href={ROUTES.APPOINTMENTS.BOOK} className="flex items-center gap-2">
                     <Plus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Book Appointment</span>
-                    <span className="sm:hidden">Book Now</span>
+                    <span className="hidden sm:inline">{t('appointments.hero_cta_book')}</span>
+                    <span className="sm:hidden">{t('appointments.hero_cta_book_short')}</span>
                   </Link>
                 </Button>
               </div>
@@ -109,8 +95,8 @@ export default async function AppointmentsPage({ searchParams }) {
                       <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-green-300" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-white/80 text-xs">Quick Booking</p>
-                      <p className="text-white font-bold text-xs sm:text-sm truncate">In 5 Minutes</p>
+                      <p className="text-white/80 text-xs">{t('appointments.hero_feature1_title')}</p>
+                      <p className="text-white font-bold text-xs sm:text-sm truncate">{t('appointments.hero_feature1_desc')}</p>
                     </div>
                   </div>
                 </div>
@@ -122,8 +108,8 @@ export default async function AppointmentsPage({ searchParams }) {
                       <Stethoscope className="h-4 w-4 sm:h-5 sm:w-5 text-blue-300" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-white/80 text-xs">Expert Doctors</p>
-                      <p className="text-white font-bold text-xs sm:text-sm truncate">150+ Specialists</p>
+                      <p className="text-white/80 text-xs">{t('appointments.hero_feature2_title')}</p>
+                      <p className="text-white font-bold text-xs sm:text-sm truncate">{t('appointments.hero_feature2_desc')}</p>
                     </div>
                   </div>
                 </div>
@@ -135,8 +121,8 @@ export default async function AppointmentsPage({ searchParams }) {
                       <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-purple-300" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-white/80 text-xs">100% Secure</p>
-                      <p className="text-white font-bold text-xs sm:text-sm truncate">HIPAA Compliant</p>
+                      <p className="text-white/80 text-xs">{t('appointments.hero_feature3_title')}</p>
+                      <p className="text-white font-bold text-xs sm:text-sm truncate">{t('appointments.hero_feature3_desc')}</p>
                     </div>
                   </div>
                 </div>
@@ -162,9 +148,7 @@ export default async function AppointmentsPage({ searchParams }) {
           </div>
 
           {/* Search Form */}
-          {/* <div className="bg-white/30 rounded-xl sm:rounded-2xl sm:p-6 shadow-sm"> */}
-            <AppointmentSearch />
-          {/* </div> */}
+          <AppointmentSearch />
         </div>
       </div>
 
@@ -194,22 +178,6 @@ export default async function AppointmentsPage({ searchParams }) {
                 Use the search form above to find your existing appointments or create a new one.
               </p>
 
-              {/* Stats */}
-              {/* <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 my-8 sm:my-12">
-                <div className="p-3 sm:p-4 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100">
-                  <div className="text-xl sm:text-2xl font-bold text-blue-600 mb-1">1000+</div>
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium">Monthly Appointments</p>
-                </div>
-                <div className="p-3 sm:p-4 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100">
-                  <div className="text-xl sm:text-2xl font-bold text-green-600 mb-1">98%</div>
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium">Patient Satisfaction</p>
-                </div>
-                <div className="p-3 sm:p-4 bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 col-span-2 sm:col-span-1">
-                  <div className="text-xl sm:text-2xl font-bold text-purple-600 mb-1">24/7</div>
-                  <p className="text-xs sm:text-sm text-gray-600 font-medium">Support Available</p>
-                </div>
-              </div> */}
-
               {/* CTA Section */}
               <div className="space-y-4 mb-8">
                 <div className="p-4 sm:p-6 bg-blue-50 border-2 border-blue-200 rounded-xl sm:rounded-2xl">
@@ -232,39 +200,6 @@ export default async function AppointmentsPage({ searchParams }) {
                   </Button>
                 </div>
               </div>
-
-              {/* Features */}
-              {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-left">
-                <div className="flex flex-col items-center sm:items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100">
-                  <div className="p-2 sm:p-3 bg-green-100 rounded-lg">
-                    <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">Quick Booking</p>
-                    <p className="text-xs text-gray-600 mt-0.5 sm:mt-1">Schedule in under 5 minutes</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center sm:items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100">
-                  <div className="p-2 sm:p-3 bg-blue-100 rounded-lg">
-                    <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">Expert Doctors</p>
-                    <p className="text-xs text-gray-600 mt-0.5 sm:mt-1">Verified healthcare professionals</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center sm:items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100">
-                  <div className="p-2 sm:p-3 bg-purple-100 rounded-lg">
-                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm">Instant Confirmation</p>
-                    <p className="text-xs text-gray-600 mt-0.5 sm:mt-1">Get confirmations via SMS & email</p>
-                  </div>
-                </div>
-              </div> */}
             </div>
           </CardContent>
         </Card>

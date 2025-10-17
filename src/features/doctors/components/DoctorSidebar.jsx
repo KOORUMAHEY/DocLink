@@ -15,17 +15,13 @@ import {
   LogOut,
   X,
   ChevronRight,
-  Activity,
-  Bell,
   Moon,
   Sun,
-  Briefcase,
-  Clock
+  Briefcase
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '@/context/auth';
 import { useTheme } from '@/context/theme';
@@ -35,9 +31,12 @@ export function DoctorSidebar({ doctor, isOpen, onClose }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { logout } = useAuth();
-  const { theme, isDark, toggleTheme } = useTheme();
+  const { isDark, toggleTheme } = useTheme();
   const doctorId = searchParams.get('id');
-  const [notifications] = useState(5);
+
+  const handleGoHome = () => {
+    router.push('/');
+  };
 
   const navItems = [
     {
@@ -52,8 +51,7 @@ export function DoctorSidebar({ doctor, isOpen, onClose }) {
       label: 'Appointments',
       icon: Calendar,
       description: 'Manage Bookings',
-      gradient: 'from-green-500 to-emerald-500',
-      badge: notifications > 0 ? notifications : null
+      gradient: 'from-green-500 to-emerald-500'
     },
     {
       href: `/doctor/patients?id=${doctorId}`,
@@ -69,6 +67,13 @@ export function DoctorSidebar({ doctor, isOpen, onClose }) {
       icon: FileText,
       description: 'Custom Forms',
       gradient: 'from-teal-500 to-cyan-500'
+    },
+    {
+      href: `/doctor/appointments/schedule?id=${doctorId}`,
+      label: 'Schedule Manager',
+      icon: Calendar,
+      description: 'Manage Availability',
+      gradient: 'from-emerald-500 to-teal-500'
     },
     {
       href: `/doctor/profile?id=${doctorId}`,
@@ -131,7 +136,12 @@ export function DoctorSidebar({ doctor, isOpen, onClose }) {
             isDark ? "border-white/10" : "border-gray-200"
           )}>
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
+              <button
+                onClick={handleGoHome}
+                className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+                type="button"
+                aria-label="Go to home"
+              >
                 <div className="relative">
                   <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-500 flex items-center justify-center shadow-lg shadow-blue-500/50">
                     <Stethoscope className="h-5 w-5 text-white" />
@@ -151,7 +161,7 @@ export function DoctorSidebar({ doctor, isOpen, onClose }) {
                     isDark ? "text-slate-400" : "text-gray-500"
                   )}>Doctor Portal</p>
                 </div>
-              </div>
+              </button>
               <Button
                 variant="ghost"
                 size="icon"
@@ -317,14 +327,6 @@ export function DoctorSidebar({ doctor, isOpen, onClose }) {
                           )}>
                             {item.label}
                           </p>
-                          {item.badge && (
-                            <span className={cn(
-                              'inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-bold flex-shrink-0',
-                              'bg-gradient-to-r from-orange-500 to-red-500 text-white'
-                            )}>
-                              {item.badge}
-                            </span>
-                          )}
                         </div>
                         <p className={cn(
                           'text-xs transition-colors truncate',

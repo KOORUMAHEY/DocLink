@@ -16,7 +16,7 @@ export const getPatientByHospitalId = async (hospitalId) => {
     const docSnap = await getDoc(patientRef);
     
     if (docSnap.exists()) {
-      return { hospitalId: docSnap.id, ...docSnap.data() };
+      return { id: docSnap.id, hospitalId: docSnap.id, ...docSnap.data() };
     }
     
     // Fallback to appointments for backward compatibility
@@ -31,6 +31,8 @@ export const getPatientByHospitalId = async (hospitalId) => {
     const latest = appointments[0];
     
     return {
+      id: hospitalId,
+      hospitalId: hospitalId,
       name: latest.patientName,
       phone: latest.patientPhone,
       email: latest.patientEmail,

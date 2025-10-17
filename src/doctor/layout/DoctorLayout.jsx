@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { DoctorSidebar } from '@/features/doctors';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Stethoscope } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { useTheme } from '@/context/theme';
 import { cn } from '@/lib/utils';
@@ -15,12 +15,17 @@ export default function DoctorLayout({ children }) {
   const [loadingDoctor, setLoadingDoctor] = useState(true);
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const { isDark } = useTheme();
   
   // Cache for doctor data to prevent unnecessary refetches
   const doctorCache = useRef(new Map());
   
   const doctorId = searchParams.get('id');
+
+  const handleGoHome = () => {
+    router.push('/');
+  };
 
   // Fetch doctor data with caching
   useEffect(() => {
@@ -76,10 +81,20 @@ export default function DoctorLayout({ children }) {
           ? "bg-slate-900 border-white/10" 
           : "bg-white border-gray-200"
       )}>
-        <h1 className={cn(
-          "text-lg font-semibold",
-          isDark ? "text-white" : "text-gray-900"
-        )}>Doctor Portal</h1>
+        <button
+          onClick={handleGoHome}
+          type="button"
+          className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+          aria-label="Go to home"
+        >
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 via-cyan-500 to-teal-500 flex items-center justify-center shadow-md">
+            <Stethoscope className="h-4 w-4 text-white" />
+          </div>
+          <h1 className={cn(
+            "text-base font-bold",
+            isDark ? "text-white" : "text-gray-900"
+          )}>DocLink</h1>
+        </button>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className={cn(
@@ -88,6 +103,8 @@ export default function DoctorLayout({ children }) {
               ? "hover:bg-white/10" 
               : "hover:bg-gray-100"
           )}
+          type="button"
+          aria-label="Toggle sidebar"
         >
           {sidebarOpen ? (
             <X className={cn(

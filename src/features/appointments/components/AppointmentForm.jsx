@@ -40,6 +40,12 @@ const generateFormSchema = (formConfig) => {
     doctorId: z.string({ required_error: "Please select a doctor." }),
     appointmentDate: z.string({ required_error: "Please select a date." }),
     timeSlot: z.string({ required_error: "Please select a time slot." }),
+    // Essential patient fields - always required
+    patientName: z.string().min(2, "Name must be at least 2 characters."),
+    patientPhone: z.string().min(10, "Please enter a valid phone number."),
+    patientEmail: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
+    age: z.coerce.number().min(1, "Age must be at least 1").max(120, "Age must be less than 120"),
+    gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender." }),
   };
 
   // Process template-based sections
@@ -254,20 +260,22 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
         timeSlot: "",
       };
 
-      // Add standard fields
-      const standardDefaults = {
-        patientName: "",
-        patientPhone: "",
-        patientEmail: "",
-        age: "",
-        gender: "",
+      // Essential fields - always included
+      defaults.patientName = "";
+      defaults.patientPhone = "";
+      defaults.patientEmail = "";
+      defaults.age = "";
+      defaults.gender = "";
+
+      // Add additional standard fields based on configuration
+      const additionalDefaults = {
         healthPriority: "normal",
         description: "",
       };
 
-      Object.keys(standardDefaults).forEach(key => {
+      Object.keys(additionalDefaults).forEach(key => {
         if (formConfig?.requiredFields?.includes(key) || formConfig?.optionalFields?.includes(key)) {
-          defaults[key] = standardDefaults[key];
+          defaults[key] = additionalDefaults[key];
         }
       });
 
@@ -324,7 +332,11 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
     const patientType = form.watch("patientType");
 
     const updatePatientField = (fieldName, value) => {
-      if (formConfig?.requiredFields?.includes(fieldName) || formConfig?.optionalFields?.includes(fieldName)) {
+      // Essential fields are always updatable
+      const essentialFields = ['patientName', 'patientPhone', 'patientEmail', 'age', 'gender'];
+      if (essentialFields.includes(fieldName) || 
+          formConfig?.requiredFields?.includes(fieldName) || 
+          formConfig?.optionalFields?.includes(fieldName)) {
         form.setValue(fieldName, value);
       }
     };
@@ -811,64 +823,54 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 )}
                             />
 
+                            {/* Essential Patient Information Fields - Always Visible */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                {/* Dynamic Standard Fields */}
-                                {formConfig?.requiredFields?.includes('patientName') || formConfig?.optionalFields?.includes('patientName') ? (
-                                    <FormField control={form.control} name="patientName" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('forms.appointment.name_label')} {formConfig?.requiredFields?.includes('patientName') ? '*' : ''}</FormLabel>
-                                            <FormControl><Input placeholder={t('forms.appointment.name_placeholder')} {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )} />
-                                ) : null}
+                                <FormField control={form.control} name="patientName" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('forms.appointment.name_label')} *</FormLabel>
+                                        <FormControl><Input placeholder={t('forms.appointment.name_placeholder')} {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
 
-                                {formConfig?.requiredFields?.includes('patientPhone') || formConfig?.optionalFields?.includes('patientPhone') ? (
-                                    <FormField control={form.control} name="patientPhone" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('forms.appointment.phone_label')} {formConfig?.requiredFields?.includes('patientPhone') ? '*' : ''}</FormLabel>
-                                            <FormControl><Input placeholder={t('forms.appointment.phone_placeholder')} {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )} />
-                                ) : null}
+                                <FormField control={form.control} name="patientPhone" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('forms.appointment.phone_label')} *</FormLabel>
+                                        <FormControl><Input placeholder={t('forms.appointment.phone_placeholder')} {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
 
-                                {formConfig?.requiredFields?.includes('patientEmail') || formConfig?.optionalFields?.includes('patientEmail') ? (
-                                    <FormField control={form.control} name="patientEmail" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('forms.appointment.email_label')} {formConfig?.requiredFields?.includes('patientEmail') ? '*' : ''}</FormLabel>
-                                            <FormControl><Input placeholder={t('forms.appointment.email_placeholder')} {...field} /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )} />
-                                ) : null}
+                                <FormField control={form.control} name="patientEmail" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('forms.appointment.email_label')} (Optional)</FormLabel>
+                                        <FormControl><Input placeholder={t('forms.appointment.email_placeholder')} {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
 
-                                {formConfig?.requiredFields?.includes('age') || formConfig?.optionalFields?.includes('age') ? (
-                                    <FormField control={form.control} name="age" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('forms.appointment.age_label')} {formConfig?.requiredFields?.includes('age') ? '*' : ''}</FormLabel>
-                                            <FormControl><Input placeholder={t('forms.appointment.age_placeholder')} {...field} type="number" /></FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )} />
-                                ) : null}
+                                <FormField control={form.control} name="age" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('forms.appointment.age_label')} *</FormLabel>
+                                        <FormControl><Input placeholder={t('forms.appointment.age_placeholder')} {...field} type="number" /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
 
-                                {formConfig?.requiredFields?.includes('gender') || formConfig?.optionalFields?.includes('gender') ? (
-                                    <FormField control={form.control} name="gender" render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{t('forms.appointment.gender_label')} {formConfig?.requiredFields?.includes('gender') ? '*' : ''}</FormLabel>
-                                            <Select onValueChange={field.onChange} value={field.value}>
-                                                <FormControl><SelectTrigger><SelectValue placeholder={t('forms.appointment.gender_placeholder')} /></SelectTrigger></FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="male">{t('forms.appointment.gender_male')}</SelectItem>
-                                                    <SelectItem value="female">{t('forms.appointment.gender_female')}</SelectItem>
-                                                    <SelectItem value="other">{t('forms.appointment.gender_other')}</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )} />
-                                ) : null}
+                                <FormField control={form.control} name="gender" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{t('forms.appointment.gender_label')} *</FormLabel>
+                                        <Select onValueChange={field.onChange} value={field.value}>
+                                            <FormControl><SelectTrigger><SelectValue placeholder={t('forms.appointment.gender_placeholder')} /></SelectTrigger></FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="male">{t('forms.appointment.gender_male')}</SelectItem>
+                                                <SelectItem value="female">{t('forms.appointment.gender_female')}</SelectItem>
+                                                <SelectItem value="other">{t('forms.appointment.gender_other')}</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
 
                                 <FormField control={form.control} name="doctorId" render={({ field }) => (
                                     <FormItem>

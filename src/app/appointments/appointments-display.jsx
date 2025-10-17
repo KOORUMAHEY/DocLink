@@ -79,15 +79,15 @@ function AppointmentsDisplay({ appointments }) {
 
   if (!appointments || appointments.length === 0) {
     return (
-      <Card className="border-0 shadow-lg">
-        <CardContent className="text-center py-16 px-6">
-          <div className="flex flex-col items-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-200 rounded-full flex items-center justify-center mb-6">
-              <Calendar className="h-10 w-10 text-blue-600" />
+      <Card className="border-0 shadow-xl bg-gradient-to-br from-gray-50 via-white to-blue-50 overflow-hidden rounded-2xl">
+        <CardContent className="text-center py-12 sm:py-16 lg:py-20 px-4 sm:px-6">
+          <div className="flex flex-col items-center max-w-2xl mx-auto">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8 shadow-lg">
+              <Calendar className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">No Appointments Found</h3>
-            <p className="text-base text-gray-600 mb-1">We couldn&apos;t find any appointments matching your search.</p>
-            <p className="text-sm text-gray-500">Try adjusting your search criteria or book a new appointment.</p>
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">No Appointments Found</h3>
+            <p className="text-base sm:text-lg text-gray-600 mb-2 leading-relaxed">We couldn&apos;t find any appointments matching your search.</p>
+            <p className="text-sm text-gray-500 mb-8">Try adjusting your search criteria or book a new appointment.</p>
           </div>
         </CardContent>
       </Card>
@@ -392,30 +392,17 @@ function AppointmentsDisplay({ appointments }) {
 
 
       {/* Main Appointments List */}
-      <Card className="border-0 shadow-lg">
-        <CardHeader className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-b">
+      <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm overflow-hidden rounded-2xl">
+        <CardHeader className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border-b border-gray-200 p-6 sm:p-8 lg:p-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <CardTitle className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <Calendar className="h-6 w-6 text-blue-600" />
-                Your Appointments
-              </CardTitle>
-              <CardDescription className="mt-1">
-                {appointments.length} {appointments.length === 1 ? 'appointment' : 'appointments'} scheduled
-              </CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-
-        <Card className="border-0 shadow-xl bg-white/90 backdrop-blur-sm overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 border-b border-gray-200 p-4 sm:p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-lg sm:text-xl font-bold text-gray-900 flex items-center">
-                <Calendar className="mr-2 sm:mr-3 h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
+              <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 flex items-center gap-3">
+                <div className="p-2 sm:p-3 bg-blue-600 rounded-lg">
+                  <Calendar className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+                </div>
                 Appointment Results
               </CardTitle>
-              <CardDescription className="text-sm sm:text-base text-muted-foreground mt-1">
+              <CardDescription className="text-sm sm:text-base mt-2">
                 Found {appointments.length} appointment{appointments.length !== 1 ? 's' : ''} matching your search criteria
               </CardDescription>
             </div>
@@ -424,25 +411,25 @@ function AppointmentsDisplay({ appointments }) {
         <CardContent className="p-0">
           {/* Welcome Card */}
           {appointments.length > 0 && (
-            <div className="p-6 lg:p-8 bg-gradient-to-r from-blue-50 to-green-50 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-16 w-16 border-4 border-white shadow-lg">
+            <div className="p-6 sm:p-8 lg:p-10 bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border-b border-gray-200">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-14 w-14 sm:h-16 sm:w-16 border-3 sm:border-4 border-white shadow-lg">
                     {appointments[0].patientAvatar ? (
                       <AvatarImage src={appointments[0].patientAvatar} alt={appointments[0].patientName} />
                     ) : null}
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-green-500 text-white font-bold text-xl">
-                      {appointments[0].patientName.split(' ').map(n => n[0]).join('')}
+                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold text-lg">
+                      {appointments[0].patientName ? appointments[0].patientName.split(' ').map(n => n[0]).join('') : 'P'}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Welcome, {appointments[0].patientName}</h2>
-                    <p className="text-gray-600 text-lg">Patient ID: {appointments[0].patientId || 'J1234M'}</p>
+                  <div className="min-w-0">
+                    <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Welcome, {appointments[0].patientName}</h2>
+                    <p className="text-sm sm:text-base text-gray-600 mt-1">Patient ID: {appointments[0].patientId || 'J1234M'}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-500">Upcoming Appointments</p>
-                  <p className="text-3xl font-bold text-blue-600">{appointments.length}</p>
+                  <p className="text-xs sm:text-sm text-gray-500 font-medium">Upcoming Appointments</p>
+                  <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-600 mt-1">{appointments.length}</p>
                 </div>
               </div>
             </div>
@@ -451,12 +438,12 @@ function AppointmentsDisplay({ appointments }) {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-gray-50 hover:bg-gray-50 border-b border-gray-200">
-                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-left">Patient Details</TableHead>
-                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 hidden sm:table-cell text-left">Healthcare Provider</TableHead>
-                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-left">Schedule Information</TableHead>
-                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 hidden md:table-cell text-center">Status</TableHead>
-                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-right">Actions</TableHead>
+                <TableRow className="bg-gradient-to-r from-gray-50 to-blue-50 hover:bg-gray-50 border-b-2 border-gray-200">
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-left text-xs sm:text-sm">Patient Details</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 hidden sm:table-cell text-left text-xs sm:text-sm">Healthcare Provider</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-left text-xs sm:text-sm">Schedule Information</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 hidden md:table-cell text-center text-xs sm:text-sm">Status</TableHead>
+                  <TableHead className="font-semibold text-gray-900 py-3 sm:py-4 px-3 sm:px-6 text-right text-xs sm:text-sm">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -469,7 +456,7 @@ function AppointmentsDisplay({ appointments }) {
                             <AvatarImage src={appointment.patientAvatar} alt={appointment.patientName} />
                           ) : null}
                           <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-700 font-medium text-xs sm:text-sm">
-                            {appointment.patientName.split(' ').map(n => n[0]).join('')}
+                            {appointment.patientName ? appointment.patientName.split(' ').map(n => n[0]).join('') : 'P'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
@@ -489,7 +476,7 @@ function AppointmentsDisplay({ appointments }) {
                             <AvatarImage src={appointment.doctorAvatar} alt={appointment.doctorName} />
                           ) : null}
                           <AvatarFallback className="bg-gradient-to-br from-green-100 to-green-200 text-green-700 font-medium text-xs">
-                            {appointment.doctorName.split(' ').map(n => n[0]).join('')}
+                            {appointment.doctorName ? appointment.doctorName.split(' ').map(n => n[0]).join('') : 'D'}
                           </AvatarFallback>
                         </Avatar>
                         <div className="min-w-0 flex-1">
@@ -572,7 +559,6 @@ function AppointmentsDisplay({ appointments }) {
             </Table>
           </div>
         </CardContent>
-      </Card>
       </Card>
     </>
   );

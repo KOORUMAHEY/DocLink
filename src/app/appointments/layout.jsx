@@ -12,15 +12,11 @@ import { Calendar, Clock, Users, Plus } from 'lucide-react';
 
 export default function AppointmentsLayout({ children }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex flex-col">
-        <div className="container mx-auto max-w-7xl flex-grow py-8">
-
-        {/* Content Card */}
-        <Card className="border-0 shadow-xl bg-white/95 backdrop-blur-sm overflow-hidden">
-          <CardContent className="p-0">
-            {children}
-          </CardContent>
-        </Card>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 w-full">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+        <div className="max-w-6xl mx-auto">
+          {children}
+        </div>
       </div>
     </div>
   );

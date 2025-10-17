@@ -19,7 +19,7 @@ import { useI18n } from "@/context/i18n";
 import { useState } from "react";
 
 const searchSchema = z.object({
-  query: z.string().min(1, "Please enter a search term (name, phone, or Hospital ID)."),
+  query: z.string().min(1, "Please enter a search term (phone, or Hospital ID)."),
 });
 
 export function AppointmentSearch() {
@@ -68,16 +68,16 @@ export function AppointmentSearch() {
                       <Search className="h-5 w-5 text-gray-400" />
                     </div>
                     <Input 
-                      placeholder="Search by patient name, phone number (10 digits), or Hospital ID..." 
+                      placeholder="Search by phone number (10 digits), or Hospital ID..." 
                       {...field}
-                      disabled={isLoading}
+                      
                       className="h-14 pl-12 pr-24 text-base border-2 border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
                     {currentQuery && (
                       <button
                         type="button"
                         onClick={handleClear}
-                        disabled={isLoading}
+                        
                         className="absolute right-20 top-1/2 -translate-y-1/2 p-1.5 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50"
                         aria-label="Clear search"
                       >
@@ -86,7 +86,6 @@ export function AppointmentSearch() {
                     )}
                     <Button 
                       type="submit" 
-                      disabled={isLoading || !currentQuery}
                       size="sm"
                       className="absolute right-2 top-1/2 -translate-y-1/2 h-10 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-200 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                     >

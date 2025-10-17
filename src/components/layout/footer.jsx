@@ -1,85 +1,74 @@
 import Link from 'next/link';
-import { Sparkles, Phone, Mail, MapPin, Shield } from 'lucide-react';
+import { Sparkles, Phone, Mail, MapPin, Shield, Heart, Clock } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="bg-gray-100 border-t border-gray-200">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Brand */}
-          <div className="flex flex-col items-center sm:items-start">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600">
-                <Sparkles className="h-6 w-6 text-white" />
+     <footer className="bg-gray-900 text-gray-300">
+        <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+            {/* Brand */}
+            <div className="md:col-span-1">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                  <Heart className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                    DocLink
+                  </span>
+                </div>
               </div>
-              <Link href="/" className="font-bold text-gray-900 text-xl">DocLink Healthcare</Link>
+              <p className="text-sm text-gray-400">Modern healthcare, made simple and accessible to everyone.</p>
             </div>
-            <p className="text-sm text-gray-600 text-center sm:text-left max-w-sm leading-relaxed">
-              Modern healthcare platform connecting patients with quality medical care. 
-              Simple, secure, and professional.
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="font-semibold text-white mb-4">Quick Links</h3>
+              <ul className="space-y-2">
+                <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
+                <li><Link href="/appointments/book" className="hover:text-white transition-colors">Book Appointment</Link></li>
+                <li><Link href="/appointments" className="hover:text-white transition-colors">My Bookings</Link></li>
+                <li><Link href="/login" className="hover:text-white transition-colors">Doctor Portal</Link></li>
+              </ul>
+            </div>
+
+            {/* Support */}
+            <div>
+              <h3 className="font-semibold text-white mb-4">Support</h3>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2">
+                  <Phone className="h-4 w-4" />
+                  <span>+91 8567 890 123</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <span>support@doclink.com</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  <span>24/7 Emergency Support</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h3 className="font-semibold text-white mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">HIPAA Compliance</a></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-gray-800 pt-8">
+            <p className="text-center text-sm text-gray-400">
+              © 2025 DocLink. All rights reserved. | Built with ❤️ for better healthcare
             </p>
           </div>
-
-          {/* Quick Links */}
-          <div className="flex flex-col items-center sm:items-start">
-            <h3 className="font-semibold text-gray-900 mb-4">Quick Links</h3>
-            <div className="space-y-3">
-              <Link href="/appointments/book" className="flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                <span>Book Appointment</span>
-              </Link>
-              <Link href="/appointments" className="flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                <span>Manage Bookings</span>
-              </Link>
-              <Link href="/login" className="flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                <span>Healthcare Providers</span>
-              </Link>
-              <Link href="/privacy" className="flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600 transition-colors">
-                <span>Privacy Policy</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Contact Info */}
-          <div className="flex flex-col items-center sm:items-start">
-            <h3 className="font-semibold text-gray-900 mb-4">Contact & Hours</h3>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <Phone className="h-4 w-4 text-blue-600" />
-                <span>+1 (555) 123-4567</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <Mail className="h-4 w-4 text-blue-600" />
-                <span>contact@doclink.health</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <MapPin className="h-4 w-4 text-blue-600" />
-                <span>Medical District, Chennai</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <Shield className="h-4 w-4 text-blue-600" />
-                <span>HIPAA Compliant</span>
-              </div>
-            </div>
-          </div>
         </div>
-
-        <div className="border-t border-gray-200 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="text-center md:text-left">
-              <p className="text-sm text-gray-600">
-                © {new Date().getFullYear()} DocLink Healthcare. All rights reserved.
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                Professional healthcare platform with enterprise-grade security
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6 text-xs text-gray-500">
-              <span>Office Hours: Friday 9:00 AM - 2:00 PM</span>
-              <span>Emergency: Available 24/7</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
+      </footer>
   );
 }

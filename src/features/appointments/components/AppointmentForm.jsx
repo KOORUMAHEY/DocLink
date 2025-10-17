@@ -749,24 +749,27 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
             </CardHeader>
             <CardContent className="p-4 sm:p-6 lg:p-8">
                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
-                        <div className="space-y-4 sm:space-y-6">
-                            <div className="flex items-center gap-2 sm:gap-3 pb-2 border-b border-gray-200">
-                               <User className="text-blue-600 w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
-                               <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-800">{t('forms.appointment.patient_info_title')}</h3>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 lg:space-y-8">
+                        {/* Patient Information Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 sm:gap-3 pb-3 border-b-2 border-blue-600">
+                               <div className="p-2 sm:p-2.5 bg-blue-600 rounded-lg">
+                                   <User className="text-white w-4 h-4 sm:w-5 sm:h-5" />
+                               </div>
+                               <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('forms.appointment.patient_info_title')}</h3>
                             </div>
 
-                             <FormField
+                            {/* Patient Type Selection */}
+                            <FormField
                                 control={form.control}
                                 name="patientType"
                                 render={({ field }) => (
                                     <FormItem className="space-y-3">
-                                    <FormLabel>{t('forms.appointment.patient_type_label')} *</FormLabel>
+                                    <FormLabel className="text-sm font-semibold">{t('forms.appointment.patient_type_label')} *</FormLabel>
                                     <FormControl>
                                         <RadioGroup
                                         onValueChange={(value) => {
                                             field.onChange(value);
-                                            // Reset form fields if switching to 'new'
                                             if (value === 'new') {
                                                 form.reset({
                                                     ...defaultValues,
@@ -781,13 +784,13 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                             <FormControl>
                                             <RadioGroupItem value="new" />
                                             </FormControl>
-                                            <FormLabel className="font-normal">{t('forms.appointment.patient_type_new')}</FormLabel>
+                                            <FormLabel className="font-normal text-sm">{t('forms.appointment.patient_type_new')}</FormLabel>
                                         </FormItem>
                                         <FormItem className="flex items-center space-x-3 space-y-0">
                                             <FormControl>
                                             <RadioGroupItem value="returning" />
                                             </FormControl>
-                                            <FormLabel className="font-normal">{t('forms.appointment.patient_type_returning')}</FormLabel>
+                                            <FormLabel className="font-normal text-sm">{t('forms.appointment.patient_type_returning')}</FormLabel>
                                         </FormItem>
                                         </RadioGroup>
                                     </FormControl>
@@ -796,25 +799,27 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 )}
                             />
 
+                            {/* Hospital ID with Fetch */}
                             <FormField
                                 control={form.control}
                                 name="hospitalId"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('forms.appointment.hospital_id_label')} *</FormLabel>
-                                        <div className="flex flex-col space-y-2 sm:flex-row sm:gap-2 sm:space-y-0">
+                                        <FormLabel className="text-sm font-semibold">{t('forms.appointment.hospital_id_label')} *</FormLabel>
+                                        <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
                                             <FormControl>
-                                                <Input placeholder={t('forms.appointment.hospital_id_placeholder')} {...field} className="flex-1" />
+                                                <Input placeholder={t('forms.appointment.hospital_id_placeholder')} {...field} className="flex-1 text-sm" />
                                             </FormControl>
                                             {patientType === 'returning' && (
                                                 <Button
                                                     type="button"
                                                     onClick={handleFetchDetails}
                                                     disabled={isFetching}
-                                                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-3 sm:px-4 lg:px-6 py-2 sm:py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold text-sm sm:text-base"
+                                                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm w-full sm:w-auto flex items-center justify-center gap-2"
                                                 >
-                                                    {isFetching ? <Loader2 className="h-4 w-4 lg:h-5 lg:w-5 animate-spin" /> : <Search className="h-4 w-4 lg:h-5 lg:w-5" />}
-                                                    <span className="ml-2 sm:inline text-xs sm:text-sm lg:text-base">{t('forms.buttons.fetch_details')}</span>
+                                                    {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                                                    <span className="hidden sm:inline">{t('forms.buttons.fetch_details')}</span>
+                                                    <span className="sm:hidden">Fetch</span>
                                                 </Button>
                                             )}
                                         </div>
@@ -823,70 +828,62 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 )}
                             />
 
-                            {/* Essential Patient Information Fields - Always Visible */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            {/* Essential Patient Information Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 <FormField control={form.control} name="patientName" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('forms.appointment.name_label')} *</FormLabel>
-                                        <FormControl><Input placeholder={t('forms.appointment.name_placeholder')} {...field} /></FormControl>
-                                        <FormMessage />
+                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.name_label')} *</FormLabel>
+                                        <FormControl><Input placeholder="Full name" {...field} className="text-sm" /></FormControl>
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )} />
 
                                 <FormField control={form.control} name="patientPhone" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('forms.appointment.phone_label')} *</FormLabel>
-                                        <FormControl><Input placeholder={t('forms.appointment.phone_placeholder')} {...field} /></FormControl>
-                                        <FormMessage />
+                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.phone_label')} *</FormLabel>
+                                        <FormControl><Input placeholder="Phone number" {...field} className="text-sm" /></FormControl>
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )} />
 
                                 <FormField control={form.control} name="patientEmail" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('forms.appointment.email_label')} (Optional)</FormLabel>
-                                        <FormControl><Input placeholder={t('forms.appointment.email_placeholder')} {...field} /></FormControl>
-                                        <FormMessage />
+                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.email_label')}</FormLabel>
+                                        <FormControl><Input placeholder="Email" {...field} className="text-sm" /></FormControl>
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )} />
 
                                 <FormField control={form.control} name="age" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('forms.appointment.age_label')} *</FormLabel>
-                                        <FormControl><Input placeholder={t('forms.appointment.age_placeholder')} {...field} type="number" /></FormControl>
-                                        <FormMessage />
+                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.age_label')} *</FormLabel>
+                                        <FormControl><Input placeholder="Age" {...field} type="number" className="text-sm" /></FormControl>
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )} />
 
                                 <FormField control={form.control} name="gender" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>{t('forms.appointment.gender_label')} *</FormLabel>
+                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.gender_label')} *</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value}>
-                                            <FormControl><SelectTrigger><SelectValue placeholder={t('forms.appointment.gender_placeholder')} /></SelectTrigger></FormControl>
+                                            <FormControl><SelectTrigger className="text-sm"><SelectValue placeholder="Select gender" /></SelectTrigger></FormControl>
                                             <SelectContent>
                                                 <SelectItem value="male">{t('forms.appointment.gender_male')}</SelectItem>
                                                 <SelectItem value="female">{t('forms.appointment.gender_female')}</SelectItem>
                                                 <SelectItem value="other">{t('forms.appointment.gender_other')}</SelectItem>
                                             </SelectContent>
                                         </Select>
-                                        <FormMessage />
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )} />
 
                                 <FormField control={form.control} name="doctorId" render={({ field }) => (
                                     <FormItem>
-                                        <div className="flex justify-between items-center">
-                                            <FormLabel>{t('forms.appointment.doctor_label')} *</FormLabel>
-                                            {patientType === 'returning' && field.value && (
-                                                <span className="text-xs text-muted-foreground">
-
-                                                </span>
-                                            )}
-                                        </div>
+                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.doctor_label')} *</FormLabel>
                                         <Select 
                                             onValueChange={(value) => {
                                                 field.onChange(value);
                                                 setSelectedDoctorId(value);
-                                                // Always allow changing doctor for returning patients
                                                 if (patientType === 'returning') {
                                                     setIsDoctorPrefilled(false);
                                                 }
@@ -895,7 +892,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                             value={field.value}
                                         >
                                             <FormControl>
-                                                <SelectTrigger>
+                                                <SelectTrigger className="text-sm">
                                                     <SelectValue placeholder={t('forms.appointment.doctor_placeholder')} />
                                                 </SelectTrigger>
                                             </FormControl>

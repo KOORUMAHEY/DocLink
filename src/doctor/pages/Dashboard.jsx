@@ -1,6 +1,13 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Separator } from '@/components/ui/separator';
+import Link from 'next/link';
 import { 
   Calendar, 
   Users, 
@@ -11,7 +18,6 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   BarChart3,
-  FileText,
   Phone,
   MessageSquare,
   AlertCircle,
@@ -22,17 +28,9 @@ import {
   RefreshCw,
   ChevronRight,
   Clock3,
-  Zap,
 } from 'lucide-react';
-import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/context/theme';
 import { cn } from '@/lib/utils';
@@ -47,7 +45,10 @@ import {
   clearDashboardCache
 } from '../services/dashboardService';
 
-// Helper to get badge styles
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
 const getStatusBadgeStyle = (status) => {
   const styles = {
     confirmed: 'bg-green-50 text-green-700 border-green-200',
@@ -59,53 +60,58 @@ const getStatusBadgeStyle = (status) => {
   return styles[status] || 'bg-gray-50 text-gray-700 border-gray-200';
 };
 
-// Loading skeleton component
+// ============================================================================
+// SKELETON COMPONENT
+// ============================================================================
+
 function DashboardSkeleton() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-      <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
-        <Skeleton className="h-32 sm:h-36 md:h-40 w-full rounded-xl sm:rounded-2xl" />
-        <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-6">
+        <Skeleton className="h-40 w-full rounded-2xl" />
+        <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((key) => (
-            <Skeleton key={key} className="h-32 sm:h-36 w-full rounded-xl sm:rounded-2xl" />
+            <Skeleton key={key} className="h-32 w-full rounded-2xl" />
           ))}
         </div>
-        <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
-          <Skeleton className="h-80 sm:h-96 lg:col-span-2 rounded-xl sm:rounded-2xl" />
-          <Skeleton className="h-80 sm:h-96 rounded-xl sm:rounded-2xl" />
+        <div className="grid gap-6 lg:grid-cols-3">
+          <Skeleton className="h-96 lg:col-span-2 rounded-2xl" />
+          <Skeleton className="h-96 rounded-2xl" />
         </div>
       </div>
     </div>
   );
 }
 
-// Error state component
+// ============================================================================
+// ERROR STATE COMPONENT
+// ============================================================================
+
 function ErrorState({ isDark }) {
-  const doctorId = null;
   return (
     <div className={cn(
-      "min-h-screen flex items-center justify-center",
+      "min-h-screen flex items-center justify-center p-4",
       isDark 
         ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" 
         : "bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20"
     )}>
-      <div className="text-center p-8">
+      <div className="text-center">
         <div className={cn(
-          "inline-flex items-center justify-center w-20 h-20 rounded-full mb-6",
+          "inline-flex items-center justify-center w-24 h-24 rounded-full mb-6",
           isDark ? "bg-red-500/20" : "bg-red-100"
         )}>
-          <AlertCircle className="w-10 h-10 text-red-600" />
+          <AlertCircle className="w-12 h-12 text-red-600" />
         </div>
         <h2 className={cn(
-          "text-2xl font-bold mb-2",
+          "text-3xl font-bold mb-2",
           isDark ? "text-white" : "text-gray-900"
         )}>Doctor ID Required</h2>
         <p className={cn(
-          "mb-6",
+          "mb-8",
           isDark ? "text-slate-400" : "text-gray-600"
         )}>Please log in to access your dashboard.</p>
         <Link href="/login">
-          <Button className="bg-gradient-to-r from-blue-500 to-cyan-500">
+          <Button size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
             Go to Login
           </Button>
         </Link>
@@ -114,7 +120,185 @@ function ErrorState({ isDark }) {
   );
 }
 
-// Main Dashboard Component
+// ============================================================================
+// STAT CARD COMPONENT
+// ============================================================================
+
+function StatCard({ title, value, change, changeType, description, icon: Icon, gradient, isDark, href }) {
+  const isIncrease = changeType === 'increase';
+  
+  return (
+    <Link href={href} className="group">
+      <Card className={cn(
+        "relative overflow-hidden border-0 h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-2 cursor-pointer",
+        isDark ? "bg-slate-800 hover:bg-slate-800/90" : "bg-white hover:bg-slate-50"
+      )}>
+        <div className={cn(
+          "absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity",
+          `bg-gradient-to-br ${gradient}`
+        )} />
+        
+        <CardContent className="relative p-6 md:p-8">
+          <div className="flex items-start justify-between mb-6">
+            <div className={cn(
+              "p-3 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300",
+              `bg-gradient-to-br ${gradient}`
+            )}>
+              <Icon className="h-6 w-6 text-white" />
+            </div>
+            {change !== undefined && (
+              <div className={cn(
+                "flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-semibold",
+                isIncrease ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+              )}>
+                {isIncrease ? (
+                  <ArrowUpRight className="w-4 h-4" />
+                ) : (
+                  <ArrowDownRight className="w-4 h-4" />
+                )}
+                {Math.abs(change)}%
+              </div>
+            )}
+          </div>
+          
+          <div>
+            <p className={cn(
+              "text-sm font-medium mb-1",
+              isDark ? "text-slate-400" : "text-gray-600"
+            )}>
+              {title}
+            </p>
+            <h3 className={cn(
+              "text-3xl md:text-4xl font-bold mb-2",
+              isDark ? "text-white" : "text-gray-900"
+            )}>
+              {value}
+            </h3>
+            <p className={cn(
+              "text-sm",
+              isDark ? "text-slate-500" : "text-gray-500"
+            )}>
+              {description}
+            </p>
+          </div>
+
+          <div className={cn(
+            "mt-6 flex items-center gap-2 font-semibold group-hover:translate-x-2 transition-transform",
+            `text-gradient-to-r ${gradient.replace('from', 'from').replace('to', 'to')}`
+          )}>
+            <span>View Details</span>
+            <ChevronRight className="w-4 h-4" />
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
+// ============================================================================
+// QUICK NAV ITEM COMPONENT
+// ============================================================================
+
+function QuickNavItem({ href, icon: Icon, label, description, color, isDark }) {
+  return (
+    <Link href={href}>
+      <div className={cn(
+        "group p-4 rounded-xl cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1",
+        isDark 
+          ? "bg-slate-800 hover:bg-slate-700 border border-slate-700" 
+          : "bg-white hover:bg-slate-50 border border-gray-200 hover:border-gray-300"
+      )}>
+        <div className={cn(
+          "p-2.5 rounded-lg mb-3 w-fit",
+          `bg-gradient-to-br ${color}`
+        )}>
+          <Icon className="w-5 h-5 text-white" />
+        </div>
+        <h4 className={cn(
+          "font-semibold mb-1",
+          isDark ? "text-white" : "text-gray-900"
+        )}>
+          {label}
+        </h4>
+        <p className={cn(
+          "text-xs",
+          isDark ? "text-slate-400" : "text-gray-600"
+        )}>
+          {description}
+        </p>
+      </div>
+    </Link>
+  );
+}
+
+// ============================================================================
+// APPOINTMENT ITEM COMPONENT
+// ============================================================================
+
+function AppointmentItem({ appointment, isDark }) {
+  return (
+    <div className={cn(
+      "group flex items-center gap-4 p-4 rounded-lg border-l-4 transition-all duration-300 hover:shadow-md hover:bg-opacity-80",
+      isDark
+        ? "bg-slate-800/50 border-l-blue-500 hover:bg-slate-800/80 border border-slate-700/50"
+        : "bg-white border-l-blue-500 border border-gray-200 hover:bg-slate-50"
+    )}>
+      <Avatar className="w-12 h-12 flex-shrink-0 ring-2 ring-blue-100">
+        <AvatarImage src={appointment.patientAvatar} />
+        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-cyan-600 text-white font-bold">
+          {appointment.patientName?.charAt(0) || 'P'}
+        </AvatarFallback>
+      </Avatar>
+      
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
+          <p className="font-semibold truncate text-gray-900 dark:text-white">
+            {appointment.patientName || 'Patient'}
+          </p>
+          {appointment.status && (
+            <Badge className={cn("text-xs flex-shrink-0", getStatusBadgeStyle(appointment.status))}>
+              {appointment.status}
+            </Badge>
+          )}
+        </div>
+        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-slate-400">
+          <div className="flex items-center gap-1.5">
+            <Clock3 className="w-3.5 h-3.5 text-blue-500" />
+            <span className="font-medium">{appointment.timeSlot || 'TBD'}</span>
+          </div>
+          {appointment.reason && (
+            <>
+              <span className="hidden sm:inline">•</span>
+              <span className="truncate hidden sm:inline max-w-[150px]">{appointment.reason}</span>
+            </>
+          )}
+        </div>
+      </div>
+      
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <Button 
+          size="sm" 
+          variant="ghost" 
+          className="h-8 w-8 p-0 hover:bg-green-50 hover:text-green-700 dark:hover:bg-green-900/30"
+        >
+          <Phone className="w-4 h-4" />
+        </Button>
+        <Button 
+          size="sm" 
+          variant="ghost" 
+          className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-700 dark:hover:bg-blue-900/30"
+        >
+          <MessageSquare className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// MAIN DASHBOARD COMPONENT
+// ============================================================================
+
 export default function DoctorDashboard() {
   const searchParams = useSearchParams();
   const doctorId = searchParams.get('id');
@@ -126,6 +310,7 @@ export default function DoctorDashboard() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
+  const [appointmentFilter, setAppointmentFilter] = useState('today'); // 'today' or '24h'
   const unsubscribeRef = useRef(null);
 
   // Memoized stats calculation
@@ -133,6 +318,23 @@ export default function DoctorDashboard() {
     if (!dashboardData?.appointments) return null;
     return calculateDashboardStats(dashboardData.appointments);
   }, [dashboardData?.appointments]);
+
+  // Filter appointments by today
+  const filteredAppointments = useMemo(() => {
+    if (appointmentFilter !== 'today') return upcomingAppointments;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    return upcomingAppointments.filter(apt => {
+      if (!apt.date) return false;
+      const aptDate = new Date(apt.date);
+      aptDate.setHours(0, 0, 0, 0);
+      return aptDate.getTime() === today.getTime();
+    });
+  }, [upcomingAppointments, appointmentFilter]);
 
   // Load dashboard data
   const loadDashboardData = useCallback(async (showLoading = true) => {
@@ -227,9 +429,6 @@ export default function DoctorDashboard() {
       description: `${stats.today.confirmed} confirmed`,
       href: `/doctor/appointments?id=${doctorId}`,
       gradient: "from-blue-500 to-cyan-500",
-      bgGradient: "from-blue-50 to-cyan-50/50",
-      iconBg: "bg-blue-500",
-      textColor: "text-blue-700"
     },
     {
       title: "Total Patients",
@@ -240,9 +439,6 @@ export default function DoctorDashboard() {
       description: `${stats.rates.patientReturn}% returning`,
       href: `/doctor/patients?id=${doctorId}`,
       gradient: "from-purple-500 to-pink-500",
-      bgGradient: "from-purple-50 to-pink-50/50",
-      iconBg: "bg-purple-500",
-      textColor: "text-purple-700"
     },
     {
       title: "Completion Rate",
@@ -253,24 +449,25 @@ export default function DoctorDashboard() {
       description: `${stats.totals.completed} completed`,
       href: `/doctor/appointments?id=${doctorId}`,
       gradient: "from-green-500 to-emerald-500",
-      bgGradient: "from-green-50 to-emerald-50/50",
-      iconBg: "bg-green-500",
-      textColor: "text-green-700"
     },
     {
       title: "Pending Reviews",
       value: stats.totals.pending,
-      change: stats.totals.pending,
+      change: stats.totals.pending > 0 ? stats.totals.pending : 0,
       changeType: stats.totals.pending > 0 ? 'increase' : 'decrease',
       icon: Clock,
       description: "Awaiting action",
       href: `/doctor/appointments?id=${doctorId}`,
       gradient: "from-orange-500 to-amber-500",
-      bgGradient: "from-orange-50 to-amber-50/50",
-      iconBg: "bg-orange-500",
-      textColor: "text-orange-700"
     }
   ] : [];
+
+  const quickNavItems = [
+    { href: `/doctor/appointments?id=${doctorId}`, icon: Calendar, label: 'View Appointments', description: 'Manage all appointments', color: 'from-blue-500 to-cyan-500' },
+    { href: `/doctor/appointments/form?id=${doctorId}`, icon: Plus, label: 'New Appointment', description: 'Schedule a new appointment', color: 'from-green-500 to-emerald-500' },
+    { href: `/doctor/patients?id=${doctorId}`, icon: Users, label: 'Patients', description: 'View patient records', color: 'from-purple-500 to-pink-500' },
+    { href: `/doctor/profile?id=${doctorId}`, icon: Stethoscope, label: 'Profile', description: 'Update your profile', color: 'from-orange-500 to-amber-500' },
+  ];
 
   return (
     <div className={cn(
@@ -279,288 +476,260 @@ export default function DoctorDashboard() {
         ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" 
         : "bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20"
     )}>
-      {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl sm:shadow-2xl">
+      {/* HEADER / HERO SECTION */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl">
         <div className="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,transparent,rgba(255,255,255,0.1))]" />
         <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent" />
         
-        <div className="relative p-4 sm:p-6 md:p-8 lg:p-12">
+        <div className="relative p-6 sm:p-8 md:p-12">
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col gap-4 sm:gap-6">
-              {/* Welcome Section */}
-              <div className="flex items-start gap-3 sm:gap-4">
-                <Avatar className="h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 ring-4 ring-white/30 shadow-2xl flex-shrink-0">
+            <div className="flex items-start justify-between gap-4 mb-8">
+              <div className="flex items-start gap-4 flex-1">
+                <Avatar className="h-16 w-16 sm:h-20 sm:w-20 ring-4 ring-white/30 shadow-2xl flex-shrink-0">
                   <AvatarImage src={doctor?.avatar || doctor?.photoURL} />
-                  <AvatarFallback className="bg-gradient-to-br from-white to-blue-100 text-blue-600 text-xl sm:text-2xl font-bold">
+                  <AvatarFallback className="bg-gradient-to-br from-white to-blue-100 text-blue-600 text-2xl font-bold">
                     {doctor?.name?.charAt(0) || 'D'}
                   </AvatarFallback>
                 </Avatar>
+                
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
-                      Welcome back, Dr. {doctor?.name || 'Doctor'}!
-                    </h1>
-                    <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm hidden sm:inline-flex flex-shrink-0">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
+                    Welcome back, Dr. {doctor?.name || 'Doctor'}!
+                  </h1>
+                  <div className="flex flex-wrap items-center gap-3 mt-3 text-blue-100">
+                    <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
                       <Heart className="w-3 h-3 mr-1" />
                       Active
                     </Badge>
-                  </div>
-                  <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-2 sm:gap-3 text-blue-100">
-                    <div className="flex items-center gap-2">
-                      <Stethoscope className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-                      <span className="text-xs sm:text-sm md:text-base font-medium truncate">
-                        {doctor?.specialty || doctor?.specialization || 'General Practice'}
-                      </span>
+                    <div className="flex items-center gap-1.5">
+                      <Stethoscope className="w-4 h-4" />
+                      <span className="text-sm font-medium">{doctor?.specialty || 'General Practice'}</span>
                     </div>
-                    <span className="hidden sm:inline">•</span>
-                    <div className="flex items-center gap-2">
-                      <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-yellow-300 text-yellow-300 flex-shrink-0" />
-                      <span className="text-xs sm:text-sm md:text-base font-medium">4.9 Rating</span>
-                    </div>
-                    <span className="hidden sm:inline">•</span>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-                      <span className="text-xs sm:text-sm md:text-base truncate">
-                        {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-                      </span>
+                    <div className="flex items-center gap-1.5">
+                      <Star className="w-4 h-4 fill-yellow-300" />
+                      <span className="text-sm font-medium">4.9 Rating</span>
                     </div>
                   </div>
                 </div>
               </div>
-
-              {/* Quick Actions */}
-              <div className="flex flex-wrap gap-2 sm:gap-3">
-                <Link href={`/doctor/appointments/form?id=${doctorId}`} className="flex-1 sm:flex-none">
-                  <Button className="w-full sm:w-auto bg-white text-blue-600 hover:bg-blue-50 shadow-lg sm:shadow-xl hover:shadow-2xl transition-all duration-200 hover:-translate-y-0.5 sm:hover:-translate-y-1 text-sm sm:text-base">
-                    <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                    <span className="hidden sm:inline">New Appointment</span>
-                    <span className="sm:hidden">New Appt</span>
-                  </Button>
-                </Link>
-                <Button 
-                  onClick={handleRefresh}
-                  disabled={refreshing}
-                  className="flex-1 sm:flex-none bg-white/10 text-white border-white/30 hover:bg-white/20 backdrop-blur-sm text-sm sm:text-base"
-                >
-                  <RefreshCw className={`w-4 h-4 sm:w-5 sm:h-5 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-                  <span className="hidden sm:inline">Refresh</span>
-                  {stats?.totals.pending > 0 && (
-                    <Badge className="ml-2 bg-red-500 text-white text-xs">{stats.totals.pending}</Badge>
-                  )}
-                </Button>
-              </div>
+              
+              <Button 
+                onClick={handleRefresh}
+                disabled={refreshing}
+                size="lg"
+                className="bg-white/20 text-white border-white/30 hover:bg-white/30 backdrop-blur-sm flex-shrink-0"
+              >
+                <RefreshCw className={`w-5 h-5 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">Refresh</span>
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="p-3 sm:p-4 md:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+      {/* MAIN CONTENT */}
+      <div className="p-4 sm:p-6 md:p-8 lg:p-12">
+        <div className="max-w-7xl mx-auto space-y-8">
           
-          {/* Stats Grid */}
-          <div className="grid gap-3 sm:gap-4 md:gap-6 grid-cols-2 lg:grid-cols-4">
-            {statCards.map((stat) => {
-              const Icon = stat.icon;
-              const isIncrease = stat.changeType === 'increase';
-              
-              return (
-                <Link key={stat.title} href={stat.href}>
-                  <Card className="group relative overflow-hidden border-0 shadow-md hover:shadow-xl sm:hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 sm:hover:-translate-y-2 cursor-pointer bg-gradient-to-br from-white to-gray-50/50 backdrop-blur-sm h-full">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} opacity-50 group-hover:opacity-70 transition-opacity`} />
-                    
-                    <CardContent className="relative p-4 sm:p-5 md:p-6">
-                      <div className="flex items-start justify-between mb-3 sm:mb-4">
-                        <div className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${stat.iconBg} shadow-md sm:shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                          <Icon className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
-                        </div>
-                        {stat.change && (
-                          <div className={`flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-semibold ${
-                            isIncrease ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                          }`}>
-                            {isIncrease ? (
-                              <ArrowUpRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                            ) : (
-                              <ArrowDownRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                            )}
-                            {Math.abs(stat.change)}%
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div>
-                        <p className="text-xs sm:text-sm font-medium text-gray-600 mb-1 line-clamp-1">{stat.title}</p>
-                        <p className={`text-2xl sm:text-3xl font-bold ${stat.textColor} mb-1 sm:mb-2`}>
-                          {stat.value}
-                        </p>
-                        <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-1">{stat.description}</p>
-                      </div>
-
-                      <div className="mt-3 sm:mt-4 flex items-center text-[10px] sm:text-xs font-medium text-blue-600 group-hover:translate-x-1 sm:group-hover:translate-x-2 transition-transform">
-                        View details
-                        <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 ml-0.5 sm:ml-1" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              );
-            })}
+          {/* STATS GRID */}
+          <div>
+            <h2 className={cn("text-lg sm:text-xl font-semibold mb-4", isDark ? "text-white" : "text-gray-900")}>
+              Performance Metrics
+            </h2>
+            <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              {statCards.map((stat) => (
+                <StatCard
+                  key={stat.title}
+                  {...stat}
+                  isDark={isDark}
+                />
+              ))}
+            </div>
           </div>
 
-          {/* Main Content Grid */}
-          <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
+          {/* QUICK NAVIGATION */}
+          <div>
+            <h2 className={cn("text-lg sm:text-xl font-semibold mb-4", isDark ? "text-white" : "text-gray-900")}>
+              Quick Navigation
+            </h2>
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              {quickNavItems.map((item) => (
+                <QuickNavItem
+                  key={item.label}
+                  {...item}
+                  isDark={isDark}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* MAIN GRID: APPOINTMENTS + SIDEBAR */}
+          <div className="grid gap-6 lg:grid-cols-3">
             
-            {/* Appointments List */}
-            <Card className="lg:col-span-2 border-0 shadow-lg sm:shadow-xl overflow-hidden">
-              <CardHeader className="border-b bg-gradient-to-r from-white to-gray-50/50 p-4 sm:p-5 md:pb-6">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg sm:text-xl md:text-2xl flex items-center gap-2 sm:gap-3">
-                      <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex-shrink-0">
-                        <Calendar className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-white" />
+            {/* UPCOMING APPOINTMENTS */}
+            <Card className={cn(
+              "lg:col-span-2 border-0 shadow-lg overflow-hidden",
+              isDark ? "bg-slate-800" : "bg-white"
+            )}>
+              <CardHeader className={cn(
+                "border-b p-6 md:p-8",
+                isDark ? "bg-slate-800/50 border-slate-700" : "bg-gradient-to-r from-white to-gray-50/50 border-gray-200"
+              )}>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1">
+                    <CardTitle className="text-xl md:text-2xl flex items-center gap-3 mb-2">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500">
+                        <Calendar className="h-6 w-6 text-white" />
                       </div>
-                      <span className="truncate">Next 24 Hours</span>
+                      <span>{appointmentFilter === 'today' ? 'Today' : 'Next 24 Hours'}</span>
                     </CardTitle>
-                    <CardDescription className="mt-1.5 sm:mt-2 text-xs sm:text-sm md:text-base">
-                      Upcoming appointments
+                    <CardDescription>
+                      {appointmentFilter === 'today' ? "Today's appointments" : 'Upcoming appointments'}
                     </CardDescription>
                   </div>
-                  <Badge variant="secondary" className="bg-blue-100 text-blue-700 px-2.5 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-sm sm:text-base md:text-lg font-semibold flex-shrink-0">
-                    {upcomingAppointments.length}
-                  </Badge>
+                  <div className="flex gap-2 items-center flex-shrink-0">
+                    <div className="flex gap-2 bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
+                      <Button
+                        size="sm"
+                        variant={appointmentFilter === 'today' ? 'default' : 'ghost'}
+                        className="h-7 text-xs"
+                        onClick={() => setAppointmentFilter('today')}
+                      >
+                        Today
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={appointmentFilter === '24h' ? 'default' : 'ghost'}
+                        className="h-7 text-xs"
+                        onClick={() => setAppointmentFilter('24h')}
+                      >
+                        All
+                      </Button>
+                    </div>
+                    <Badge className="bg-blue-100 text-blue-700 px-4 py-2 text-base font-semibold flex-shrink-0">
+                      {filteredAppointments.length}
+                    </Badge>
+                  </div>
                 </div>
               </CardHeader>
-              <CardContent className="p-4 sm:p-5 md:p-6">
-                {upcomingAppointments.length === 0 ? (
-                  <div className="text-center py-12 sm:py-16">
-                    <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 mb-4 sm:mb-6">
-                      <Calendar className="w-8 h-8 sm:w-10 sm:h-10 text-gray-400" />
+              
+              <CardContent className="p-6 md:p-8">
+                {filteredAppointments.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className={cn(
+                      "inline-flex items-center justify-center w-20 h-20 rounded-full mb-6",
+                      isDark ? "bg-slate-700" : "bg-gray-100"
+                    )}>
+                      <Calendar className={cn("w-10 h-10", isDark ? "text-slate-500" : "text-gray-400")} />
                     </div>
-                    <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">No upcoming appointments</h3>
-                    <p className="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6">You're all caught up!</p>
+                    <h3 className={cn("text-lg font-semibold mb-2", isDark ? "text-white" : "text-gray-900")}>
+                      No {appointmentFilter === 'today' ? "today's" : "upcoming"} appointments
+                    </h3>
+                    <p className={cn("mb-6", isDark ? "text-slate-400" : "text-gray-600")}>
+                      {appointmentFilter === 'today' ? "You're all set for today!" : "You're all caught up!"}
+                    </p>
                     <Link href={`/doctor/appointments?id=${doctorId}`}>
-                      <Button className="bg-gradient-to-r from-blue-500 to-cyan-500 text-sm sm:text-base">
+                      <Button className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
                         <Plus className="w-4 h-4 mr-2" />
                         Schedule New
                       </Button>
                     </Link>
                   </div>
                 ) : (
-                  <div className="space-y-3 sm:space-y-4">
-                    {upcomingAppointments.slice(0, 5).map((appointment, idx) => (
-                      <div
+                  <div className="space-y-3">
+                    {filteredAppointments.slice(0, 6).map((appointment, idx) => (
+                      <AppointmentItem
                         key={appointment.id || idx}
-                        className="group flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-white to-gray-50/50 border border-gray-100 sm:border-2 hover:border-blue-200 hover:shadow-md sm:hover:shadow-lg transition-all duration-300 cursor-pointer"
-                      >
-                        <Avatar className="h-12 w-12 sm:h-14 sm:w-14 ring-2 sm:ring-4 ring-white shadow-md sm:shadow-lg group-hover:ring-blue-200 transition-all flex-shrink-0">
-                          <AvatarImage src={appointment.patientAvatar} />
-                          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-base sm:text-lg">
-                            {appointment.patientName?.charAt(0) || 'P'}
-                          </AvatarFallback>
-                        </Avatar>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1 flex-wrap">
-                            <p className="font-bold text-gray-900 text-base sm:text-lg group-hover:text-blue-600 transition-colors truncate">
-                              {appointment.patientName || 'Patient'}
-                            </p>
-                            <Badge 
-                              variant="outline" 
-                              className={`text-[10px] sm:text-xs flex-shrink-0 ${getStatusBadgeStyle(appointment.status)}`}
-                            >
-                              {appointment.status || 'scheduled'}
-                            </Badge>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
-                            <div className="flex items-center gap-1 sm:gap-1.5">
-                              <Clock3 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500 flex-shrink-0" />
-                              <span className="font-medium">{appointment.timeSlot || '10:00 AM'}</span>
-                            </div>
-                            {appointment.reason && (
-                              <>
-                                <span className="text-gray-300 hidden sm:inline">•</span>
-                                <span className="truncate max-w-[200px] hidden md:inline">{appointment.reason}</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2 self-end sm:self-center">
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-green-50 hover:text-green-700">
-                            <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-blue-50 hover:text-blue-700">
-                            <MessageSquare className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 hover:bg-purple-50 hover:text-purple-700 hidden sm:flex">
-                            <ChevronRight className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
+                        appointment={appointment}
+                        isDark={isDark}
+                      />
                     ))}
-                  </div>
-                )}
-                
-                {upcomingAppointments.length > 5 && (
-                  <div className="mt-4 sm:mt-6">
-                    <Separator className="mb-3 sm:mb-4" />
-                    <Link href={`/doctor/appointments?id=${doctorId}`}>
-                      <Button variant="outline" className="w-full border sm:border-2 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-700 transition-all text-sm sm:text-base">
-                        View All {upcomingAppointments.length} Appointments
-                        <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />
-                      </Button>
-                    </Link>
+                    
+                    {filteredAppointments.length > 6 && (
+                      <>
+                        <Separator className={isDark ? "bg-slate-700" : ""} />
+                        <Link href={`/doctor/appointments?id=${doctorId}`}>
+                          <Button variant="outline" className="w-full">
+                            View All {filteredAppointments.length} Appointments
+                            <ChevronRight className="w-4 h-4 ml-2" />
+                          </Button>
+                        </Link>
+                      </>
+                    )}
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            {/* Sidebar */}
-            <div className="space-y-4 sm:space-y-6">
+            {/* SIDEBAR */}
+            <div className="space-y-6">
               
-              {/* Performance Overview */}
-              <Card className="border-0 shadow-lg sm:shadow-xl overflow-hidden">
-                <CardHeader className="border-b bg-gradient-to-r from-white to-gray-50/50 p-4 sm:p-5 md:p-6">
-                  <CardTitle className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg md:text-xl">
-                    <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex-shrink-0">
-                      <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+              {/* PERFORMANCE OVERVIEW */}
+              <Card className={cn(
+                "border-0 shadow-lg overflow-hidden",
+                isDark ? "bg-slate-800" : "bg-white"
+              )}>
+                <CardHeader className={cn(
+                  "border-b p-6",
+                  isDark ? "bg-slate-800/50 border-slate-700" : "bg-gradient-to-r from-white to-gray-50/50 border-gray-200"
+                )}>
+                  <CardTitle className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500">
+                      <BarChart3 className="h-5 w-5 text-white" />
                     </div>
-                    <span className="truncate">Performance</span>
+                    <span>Performance</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-6">
+                
+                <CardContent className="p-6 space-y-6">
                   {/* Completion Rate */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2 sm:mb-3">
-                      <span className="text-xs sm:text-sm font-medium text-gray-700">Completion Rate</span>
-                      <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                  <div className={cn(
+                    "p-4 rounded-lg",
+                    isDark ? "bg-slate-700/30" : "bg-gray-50"
+                  )}>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className={cn("text-sm font-semibold", isDark ? "text-slate-300" : "text-gray-700")}>
+                        Completion Rate
+                      </span>
+                      <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                         {stats?.rates.completion || 0}%
                       </span>
                     </div>
-                    <Progress value={stats?.rates.completion || 0} className="h-2 sm:h-3" />
-                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1.5 sm:mt-2">
+                    <Progress value={stats?.rates.completion || 0} className="h-2" />
+                    <p className={cn("text-xs mt-2", isDark ? "text-slate-400" : "text-gray-600")}>
                       {stats?.totals.completed || 0} of {stats?.totals.appointments || 0} completed
                     </p>
                   </div>
 
-                  <Separator />
+                  <Separator className={isDark ? "bg-slate-700" : ""} />
 
                   {/* Stats List */}
-                  <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-3">
                     {[
-                      { id: 'total-appts', label: 'Total Appointments', value: stats?.totals.appointments || 0, icon: CalendarCheck, color: 'bg-blue-500/10 text-blue-600' },
-                      { id: 'active-patients', label: 'Active Patients', value: stats?.totals.patients || 0, icon: UserCheck, color: 'bg-purple-500/10 text-purple-600' },
-                      { id: 'pending', label: 'Pending', value: stats?.totals.pending || 0, icon: Clock, color: 'bg-orange-500/10 text-orange-600' },
+                      { label: 'Total Appointments', value: stats?.totals.appointments || 0, icon: CalendarCheck, color: 'from-blue-500 to-cyan-500' },
+                      { label: 'Active Patients', value: stats?.totals.patients || 0, icon: UserCheck, color: 'from-purple-500 to-pink-500' },
+                      { label: 'Pending', value: stats?.totals.pending || 0, icon: Clock, color: 'from-orange-500 to-amber-500' },
                     ].map((item) => {
                       const ItemIcon = item.icon;
                       return (
-                        <div key={item.id} className="flex items-center justify-between p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-gray-50 to-white border border-gray-100 hover:border-gray-200 transition-all">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <div className={`p-1.5 sm:p-2 rounded-lg ${item.color} flex-shrink-0`}>
-                              <ItemIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                        <div key={item.label} className={cn(
+                          "p-3 rounded-lg flex items-center justify-between",
+                          isDark ? "bg-slate-700/30" : "bg-gray-50"
+                        )}>
+                          <div className="flex items-center gap-2.5">
+                            <div className={cn(
+                              "p-2 rounded-lg",
+                              `bg-gradient-to-br ${item.color}`
+                            )}>
+                              <ItemIcon className="h-4 w-4 text-white" />
                             </div>
                             <div>
-                              <p className="text-[10px] sm:text-xs text-gray-600">{item.label}</p>
-                              <p className="text-lg sm:text-xl font-bold text-gray-900">{item.value}</p>
+                              <p className={cn("text-xs font-medium", isDark ? "text-slate-400" : "text-gray-600")}>
+                                {item.label}
+                              </p>
+                              <p className={cn("text-lg font-bold", isDark ? "text-white" : "text-gray-900")}>
+                                {item.value}
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -570,53 +739,29 @@ export default function DoctorDashboard() {
                 </CardContent>
               </Card>
 
-              {/* Quick Actions */}
-              <Card className="border-0 shadow-lg sm:shadow-xl overflow-hidden">
-                <CardHeader className="border-b bg-gradient-to-r from-white to-gray-50/50 p-4 sm:p-5 md:p-6">
-                  <CardTitle className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg md:text-xl">
-                    <div className="p-1.5 sm:p-2 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex-shrink-0">
-                      <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                    </div>
-                    <span className="truncate">Quick Actions</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-5 md:p-6">
-                  <div className="grid grid-cols-2 gap-2 sm:gap-3">
-                    {[
-                      { href: `/doctor/appointments?id=${doctorId}`, label: 'Schedule', icon: Calendar, color: 'from-blue-500 to-cyan-500' },
-                      { href: `/doctor/patients?id=${doctorId}`, label: 'Patients', icon: Users, color: 'from-purple-500 to-pink-500' },
-                      { href: `/doctor/profile?id=${doctorId}`, label: 'Profile', icon: Stethoscope, color: 'from-orange-500 to-amber-500' },
-                      { href: `/doctor/appointments/form?id=${doctorId}`, label: 'New Appt', icon: FileText, color: 'from-green-500 to-emerald-500' },
-                    ].map((action) => {
-                      const ActionIcon = action.icon;
-                      return (
-                        <Link key={action.label} href={action.href}>
-                          <Button className={`w-full h-auto flex-col gap-1.5 sm:gap-2 py-3 sm:py-4 bg-gradient-to-br ${action.color} hover:opacity-90 shadow-md sm:shadow-lg hover:shadow-lg sm:hover:shadow-xl transition-all hover:-translate-y-0.5 sm:hover:-translate-y-1`}>
-                            <ActionIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-                            <span className="text-[10px] sm:text-xs font-medium">{action.label}</span>
-                          </Button>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Alert */}
+              {/* ALERT - Pending Appointments */}
               {stats?.totals.pending > 0 && (
-                <Card className="border-0 shadow-lg sm:shadow-xl overflow-hidden border-l-4 border-l-orange-500">
-                  <CardContent className="p-4 sm:p-5 md:p-6">
-                    <div className="flex items-start gap-2 sm:gap-3">
-                      <div className="p-1.5 sm:p-2 rounded-lg bg-orange-100 flex-shrink-0">
-                        <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
+                <Card className={cn(
+                  "border-0 shadow-lg overflow-hidden border-l-4 border-l-orange-500",
+                  isDark ? "bg-slate-800" : "bg-white"
+                )}>
+                  <CardContent className="p-6">
+                    <div className="flex items-start gap-3">
+                      <div className={cn(
+                        "p-2.5 rounded-lg flex-shrink-0",
+                        isDark ? "bg-orange-900/30" : "bg-orange-100"
+                      )}>
+                        <AlertCircle className={cn("h-5 w-5", isDark ? "text-orange-400" : "text-orange-600")} />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">Action Required</h4>
-                        <p className="text-xs sm:text-sm text-gray-600">
+                      <div className="flex-1">
+                        <h4 className={cn("font-semibold mb-1", isDark ? "text-white" : "text-gray-900")}>
+                          Action Required
+                        </h4>
+                        <p className={cn("text-sm mb-3", isDark ? "text-slate-400" : "text-gray-600")}>
                           {stats.totals.pending} pending appointment{stats.totals.pending > 1 ? 's' : ''} need your attention
                         </p>
                         <Link href={`/doctor/appointments?id=${doctorId}`}>
-                          <Button size="sm" variant="link" className="px-0 mt-1.5 sm:mt-2 text-orange-600 hover:text-orange-700 h-auto text-xs sm:text-sm">
+                          <Button size="sm" variant="link" className="px-0 h-auto text-orange-600 hover:text-orange-700">
                             Review now →
                           </Button>
                         </Link>

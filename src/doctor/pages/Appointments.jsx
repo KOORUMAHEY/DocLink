@@ -123,7 +123,6 @@ const AppointmentInfoSection = memo(({ appointment, isDark }) => {
           </p>
         </div>
         <StatusBadgeField status={appointment.status} isDark={isDark} />
-        <DetailField label="Duration" value={appointment.appointmentDuration || '30 min'} isDark={isDark} />
         {appointment.departmentOrSpecialization && <DetailField label="Department" value={appointment.departmentOrSpecialization} isDark={isDark} />}
         {appointment.visitNumber && <DetailField label="Visit Number" value={appointment.visitNumber} isDark={isDark} />}
       </div>
@@ -571,22 +570,8 @@ const AppointmentDetailsModal = memo(({
   isOpen, 
   onClose,
   isDark,
-  onApprove,
-  onReject,
   isLoading
 }) => {
-  const handleApprove = useCallback(() => {
-    if (onApprove && appointment) {
-      onApprove(appointment);
-    }
-  }, [appointment, onApprove]);
-
-  const handleReject = useCallback(() => {
-    if (onReject && appointment) {
-      onReject(appointment);
-    }
-  }, [appointment, onReject]);
-
   if (!isOpen || !appointment) return null;
 
   return (
@@ -649,14 +634,8 @@ const AppointmentDetailsModal = memo(({
           {/* Divider */}
           <div className={cn("h-px", isDark ? "bg-slate-700" : "bg-gray-200")} />
 
-          {/* Approval Actions Section */}
-          <ApprovalActionsSection 
-            appointment={appointment} 
-            isDark={isDark}
-            onApprove={handleApprove}
-            onReject={handleReject}
-            isLoading={isLoading}
-          />
+          {/* Medical Information Section */}
+          <MedicalInfoSection appointment={appointment} isDark={isDark} />
 
           {/* Divider */}
           <div className={cn("h-px", isDark ? "bg-slate-700" : "bg-gray-200")} />
@@ -677,8 +656,6 @@ AppointmentDetailsModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   isDark: PropTypes.bool.isRequired,
-  onApprove: PropTypes.func,
-  onReject: PropTypes.func,
   isLoading: PropTypes.bool,
 };
 
@@ -689,7 +666,7 @@ export default function Appointments({ doctorId }) {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateFilter, setDateFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('today');
   const [actionLoading, setActionLoading] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
@@ -966,8 +943,6 @@ export default function Appointments({ doctorId }) {
           setSelectedAppointment(null);
         }}
         isDark={isDark}
-        onApprove={handleApproveAppointment}
-        onReject={handleRejectAppointment}
         isLoading={actionLoading}
       />
     </div>

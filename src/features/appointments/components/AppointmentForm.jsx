@@ -733,7 +733,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 <Calendar className="w-5 h-5 text-white" />
                             </div>
                             <div>
-                                <CardTitle className="text-xl sm:text-2xl font-bold">{t('forms.appointment.title')}</CardTitle>
+                                <CardTitle className="text-xl sm:text-2xl font-bold text-white">{t('forms.appointment.title')}</CardTitle>
                                 <CardDescription className="text-blue-100 text-xs sm:text-sm mt-0.5">
                                     {t('forms.appointment.description')}
                                 </CardDescription>

@@ -43,7 +43,7 @@ export function Navbar() {
 	return (
 		<header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 border-b border-gray-100">
 			{/* Top notification bar */}
-			<div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-center py-2 px-4">
+			{/* <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-center py-2 px-4">
 				<div className="flex items-center justify-center space-x-2 text-sm">
 					<Clock className="h-4 w-4" />
 					<span className="font-medium">Available: Friday 9:00 AM - 2:00 PM</span>
@@ -52,7 +52,7 @@ export function Navbar() {
 						Emergency 24/7
 					</Badge>
 				</div>
-			</div>
+			</div> */}
 			
 			<div className="container mx-auto px-4">
 				<div className="flex h-16 items-center justify-between">
@@ -77,7 +77,7 @@ export function Navbar() {
 									</Badge>
 								</div>
 								<span className="text-xs text-gray-500 hidden sm:block font-medium">
-									{t('navbar.tagline')} • Trusted by 10,000+ patients
+									{t('navbar.tagline')} 
 								</span>
 							</div>
 						</Link>

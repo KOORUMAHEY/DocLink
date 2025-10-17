@@ -16,7 +16,7 @@
             "subtitle": "Book your appointment quickly and easily",
             "appointments": {
                 "title": "Appointments",
-                "description": "Only Fridays"
+                "description": "Book appointments online with ease"
             },
             "timing": {
                 "title": "Timing",
@@ -30,7 +30,7 @@
         "actions": {
             "book": {
                 "title": "Book New Appointment",
-                "description": "Schedule your consultation with our medical team. Available only on Fridays from 9:00 AM to 2:00 PM.",
+                "description": "Schedule your consultation with our medical team.",
                 "button": "Book Appointment"
             },
             "manage": {
@@ -46,9 +46,9 @@
         },
         "info": {
             "title": "Important Information",
-            "fridays": {
-                "title": "Only Fridays",
-                "description": "Appointments available every Friday"
+            "service": {
+                "title": "Service available",
+                "description": "Appointments available"
             },
             "timing": {
                 "title": "9:00 AM - 2:00 PM",
@@ -122,8 +122,8 @@
             "description_placeholder": "Please provide any relevant information, such as reason for visit, symptoms, or known allergies.",
             "note_title": "Please Note",
             "note_desc": "The selected appointment time is an estimate. Delays can occur, and we appreciate your patience. Please plan to arrive a few minutes early.",
-            "date_label": "Available Fridays",
-            "date_placeholder": "Select a Friday",
+            "date_label": "Available",
+            "date_placeholder": "Select a day",
             "time_label": "Time Slot",
             "time_placeholder": "Select time",
             "booked_title": "Appointment Booked!",

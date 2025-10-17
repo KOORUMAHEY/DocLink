@@ -921,6 +921,90 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 )} />
                             </div>
 
+                            {/* Patient Details Section */}
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 sm:gap-3 pb-2 border-b border-gray-200">
+                                    <User className="text-blue-600 w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
+                                    <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-800">Patient Details</h3>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="patientName"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Name *</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="Enter patient name" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="patientPhone"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Mobile Number *</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="+1 (555) 123-4567" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="patientEmail"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Email</FormLabel>
+                                                <FormControl>
+                                                    <Input placeholder="patient@email.com" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="age"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Age *</FormLabel>
+                                                <FormControl>
+                                                    <Input type="number" placeholder="25" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="gender"
+                                        render={({ field }) => (
+                                            <FormItem className="sm:col-span-2">
+                                                <FormLabel>Gender *</FormLabel>
+                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select gender" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="male">Male</SelectItem>
+                                                        <SelectItem value="female">Female</SelectItem>
+                                                        <SelectItem value="other">Other</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                            </div>
+
                             {/* Template-based Form Sections */}
                             {formConfig?.customSections?.map(section => (
                                 <div key={section.id} className="space-y-4">

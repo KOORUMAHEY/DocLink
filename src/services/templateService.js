@@ -18,17 +18,6 @@ export const formTemplates = {
     icon: '🩺',
     sections: [
       {
-        id: 'patient_info',
-        title: 'Patient Information',
-        fields: [
-          { id: 'patientName', type: 'text', label: 'Full Name', required: true, placeholder: 'Enter patient name' },
-          { id: 'patientPhone', type: 'tel', label: 'Phone Number', required: true, placeholder: '+1 (555) 123-4567' },
-          { id: 'patientEmail', type: 'email', label: 'Email Address', required: false, placeholder: 'patient@email.com' },
-          { id: 'age', type: 'number', label: 'Age', required: true, placeholder: '25' },
-          { id: 'gender', type: 'select', label: 'Gender', required: true, options: ['Male', 'Female', 'Other'] }
-        ]
-      },
-      {
         id: 'medical_info',
         title: 'Medical Information',
         fields: [
@@ -46,17 +35,6 @@ export const formTemplates = {
     description: 'Specialized form for heart specialists',
     icon: '❤️',
     sections: [
-      {
-        id: 'patient_info',
-        title: 'Patient Information',
-        fields: [
-          { id: 'patientName', type: 'text', label: 'Full Name', required: true, placeholder: 'Enter patient name' },
-          { id: 'patientPhone', type: 'tel', label: 'Phone Number', required: true, placeholder: '+1 (555) 123-4567' },
-          { id: 'age', type: 'number', label: 'Age', required: true, placeholder: '25' },
-          { id: 'weight', type: 'number', label: 'Weight (kg)', required: true, placeholder: '70' },
-          { id: 'height', type: 'number', label: 'Height (cm)', required: true, placeholder: '170' }
-        ]
-      },
       {
         id: 'cardiac_history',
         title: 'Cardiac History',
@@ -108,16 +86,6 @@ export const formTemplates = {
     icon: '🔬',
     sections: [
       {
-        id: 'patient_info',
-        title: 'Patient Information',
-        fields: [
-          { id: 'patientName', type: 'text', label: 'Full Name', required: true, placeholder: 'Enter patient name' },
-          { id: 'patientPhone', type: 'tel', label: 'Phone Number', required: true, placeholder: '+1 (555) 123-4567' },
-          { id: 'age', type: 'number', label: 'Age', required: true, placeholder: '25' },
-          { id: 'skin_type', type: 'select', label: 'Skin Type', required: true, options: ['Type I (Very Fair)', 'Type II (Fair)', 'Type III (Medium)', 'Type IV (Olive)', 'Type V (Brown)', 'Type VI (Dark Brown/Black)'] }
-        ]
-      },
-      {
         id: 'skin_concerns',
         title: 'Skin Concerns',
         fields: [
@@ -136,17 +104,6 @@ export const formTemplates = {
     description: 'Bone and joint specialist form',
     icon: '🦴',
     sections: [
-      {
-        id: 'patient_info',
-        title: 'Patient Information',
-        fields: [
-          { id: 'patientName', type: 'text', label: 'Full Name', required: true, placeholder: 'Enter patient name' },
-          { id: 'patientPhone', type: 'tel', label: 'Phone Number', required: true, placeholder: '+1 (555) 123-4567' },
-          { id: 'age', type: 'number', label: 'Age', required: true, placeholder: '25' },
-          { id: 'occupation', type: 'text', label: 'Occupation', required: false, placeholder: 'Your job/profession' },
-          { id: 'activity_level', type: 'select', label: 'Activity Level', required: true, options: ['Sedentary', 'Lightly Active', 'Moderately Active', 'Very Active', 'Extremely Active'] }
-        ]
-      },
       {
         id: 'orthopedic_concerns',
         title: 'Orthopedic Assessment',

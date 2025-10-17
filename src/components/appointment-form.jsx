@@ -40,6 +40,12 @@ const generateFormSchema = (formConfig) => {
     doctorId: z.string({ required_error: "Please select a doctor." }),
     appointmentDate: z.string({ required_error: "Please select a date." }),
     timeSlot: z.string({ required_error: "Please select a time slot." }),
+    // Essential patient fields - always required
+    patientName: z.string().min(2, "Name must be at least 2 characters."),
+    patientPhone: z.string().min(10, "Please enter a valid phone number."),
+    patientEmail: z.string().email("Please enter a valid email address.").optional().or(z.literal('')),
+    age: z.coerce.number().min(1, "Age must be at least 1").max(120, "Age must be less than 120"),
+    gender: z.enum(["male", "female", "other"], { required_error: "Please select a gender." }),
   };
 
   // Process template-based sections

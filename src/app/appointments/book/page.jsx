@@ -113,7 +113,7 @@ export default async function BookAppointmentPage() {
             </div>
 
             {/* Efficient Form Section */}
-            <div className="max-w-4xl mx-auto">
+            <div className="w-full">
                 <Suspense fallback={
                     <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 sm:p-12 border border-blue-100/50 text-center">
                         <div className="flex flex-col items-center gap-4">
@@ -124,7 +124,7 @@ export default async function BookAppointmentPage() {
                                     <Calendar className="w-6 h-6 text-blue-600 animate-pulse" />
                                 </div>
                             </div>
-                            <div className="space-y-1">
+                            <div className="text-center">
                                 <p className="text-gray-900 font-bold">Loading Appointment Form</p>
                                 <p className="text-gray-600 text-sm">Preparing your booking experience...</p>
                             </div>
@@ -138,7 +138,7 @@ export default async function BookAppointmentPage() {
             </div>
 
             {/* Trust Indicators */}
-            <div className="max-w-4xl mx-auto bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 sm:p-8 border-2 border-blue-200/50">
+            <div className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 sm:p-8 border-2 border-blue-200/50">
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
                     <div className="flex flex-col items-center sm:items-start gap-2">
                         <div className="p-2 sm:p-3 bg-green-100 rounded-lg">

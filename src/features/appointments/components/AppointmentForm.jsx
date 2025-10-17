@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
-import { AlertTriangle, Calendar, Heart, Loader2, Recycle, User, Waves, Search, Info } from "lucide-react"
+import { AlertTriangle, Calendar, Heart, Loader2, Recycle, User, Waves, Search, Info, FileText } from "lucide-react"
 import { createAppointment } from "../actions/appointmentActions"
 import { getPatientDetails } from "@/features/patients"
 import { useToast } from "@/hooks/use-toast"
@@ -724,37 +724,38 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                 );
         }
     };    return (
-        <div className="w-full p-2 sm:p-4 lg:p-6">
-            <Card className="w-full border-0 shadow-xl bg-gradient-to-br from-white to-blue-50/30 mx-auto max-w-4xl">
-            <CardHeader className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-black/10"></div>
-                <div className="relative z-10">
-                    <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:gap-3 sm:space-y-0 mb-2">
-                        <Calendar className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" />
-                        <CardTitle className="text-xl sm:text-2xl lg:text-3xl font-bold">{t('forms.appointment.title')}</CardTitle>
-                    </div>
-                    {doctor && (
-                        <div className="mb-2">
-                            <p className="text-blue-100 text-xs sm:text-sm lg:text-base">
-                                Booking with: <span className="font-semibold">{doctor.name}</span> - {doctor.specialization}
-                            </p>
+        <div className="w-full">
+            <Card className="w-full border-0 shadow-xl bg-white rounded-2xl overflow-hidden">
+                <CardHeader className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white p-5 sm:p-6 lg:p-8">
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-white/25 rounded-lg backdrop-blur-sm flex-shrink-0 shadow-md">
+                                <Calendar className="w-5 h-5 text-white" />
+                            </div>
+                            <div>
+                                <CardTitle className="text-xl sm:text-2xl font-bold">{t('forms.appointment.title')}</CardTitle>
+                                <CardDescription className="text-blue-100 text-xs sm:text-sm mt-0.5">
+                                    {t('forms.appointment.description')}
+                                </CardDescription>
+                            </div>
                         </div>
-                    )}
-                    <CardDescription className="text-blue-100 text-xs sm:text-sm lg:text-base">
-                        {t('forms.appointment.description')}
-                    </CardDescription>
-                </div>
-                <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-xl"></div>
-                <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white/10 rounded-full blur-lg"></div>
-            </CardHeader>
-            <CardContent className="p-4 sm:p-6 lg:p-8">
+                        {doctor && (
+                            <div className="mt-3 p-3 sm:p-4 bg-white/15 rounded-lg backdrop-blur-sm border border-white/30 text-xs sm:text-sm shadow-md">
+                                <p className="text-blue-50">
+                                    <span className="font-semibold text-white">Booking with:</span> {doctor.name} - {doctor.specialization}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </CardHeader>
+            <CardContent className="p-8 sm:p-10 lg:p-12 bg-gradient-to-b from-white to-blue-50/20">
                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 lg:space-y-8">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-7 sm:space-y-8">
                         {/* Patient Information Section */}
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2 sm:gap-3 pb-3 border-b-2 border-blue-600">
-                               <div className="p-2 sm:p-2.5 bg-blue-600 rounded-lg">
-                                   <User className="text-white w-4 h-4 sm:w-5 sm:h-5" />
+                        <div className="space-y-4 p-6 sm:p-8 bg-gradient-to-br from-blue-50 to-indigo-50/30 rounded-2xl border-2 border-blue-100/50 shadow-sm">
+                            <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b-2 border-blue-500">
+                               <div className="p-3 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex-shrink-0 shadow-md">
+                                   <User className="text-white w-5 h-5" />
                                </div>
                                <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('forms.appointment.patient_info_title')}</h3>
                             </div>
@@ -765,7 +766,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 name="patientType"
                                 render={({ field }) => (
                                     <FormItem className="space-y-3">
-                                    <FormLabel className="text-sm font-semibold">{t('forms.appointment.patient_type_label')} *</FormLabel>
+                                    <FormLabel className="text-sm font-semibold text-gray-700">{t('forms.appointment.patient_type_label')} *</FormLabel>
                                     <FormControl>
                                         <RadioGroup
                                         onValueChange={(value) => {
@@ -778,23 +779,23 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                             }
                                         }}
                                         defaultValue={field.value}
-                                        className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+                                        className="flex flex-col sm:flex-row gap-4 sm:gap-6"
                                         >
-                                        <FormItem className="flex items-center space-x-2 sm:space-x-3 space-y-0">
+                                        <FormItem className="flex items-center space-x-3 space-y-0">
                                             <FormControl>
                                             <RadioGroupItem value="new" />
                                             </FormControl>
-                                            <FormLabel className="font-normal text-sm">{t('forms.appointment.patient_type_new')}</FormLabel>
+                                            <FormLabel className="font-normal text-sm text-gray-700">{t('forms.appointment.patient_type_new')}</FormLabel>
                                         </FormItem>
                                         <FormItem className="flex items-center space-x-3 space-y-0">
                                             <FormControl>
                                             <RadioGroupItem value="returning" />
                                             </FormControl>
-                                            <FormLabel className="font-normal text-sm">{t('forms.appointment.patient_type_returning')}</FormLabel>
+                                            <FormLabel className="font-normal text-sm text-gray-700">{t('forms.appointment.patient_type_returning')}</FormLabel>
                                         </FormItem>
                                         </RadioGroup>
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage className="text-xs" />
                                     </FormItem>
                                 )}
                             />
@@ -805,68 +806,68 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 name="hospitalId"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-sm font-semibold">{t('forms.appointment.hospital_id_label')} *</FormLabel>
+                                        <FormLabel className="text-sm font-semibold text-gray-800">{t('forms.appointment.hospital_id_label')} *</FormLabel>
                                         <div className="flex flex-col gap-2 sm:flex-row sm:gap-2">
                                             <FormControl>
-                                                <Input placeholder={t('forms.appointment.hospital_id_placeholder')} {...field} className="flex-1 text-sm" />
+                                                <Input placeholder={t('forms.appointment.hospital_id_placeholder')} {...field} className="flex-1 h-11 text-sm border-1.5 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 rounded-lg transition-all duration-200 bg-white" />
                                             </FormControl>
                                             {patientType === 'returning' && (
                                                 <Button
                                                     type="button"
                                                     onClick={handleFetchDetails}
                                                     disabled={isFetching}
-                                                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm w-full sm:w-auto flex items-center justify-center gap-2"
+                                                    className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200 px-4 sm:px-5 py-2 rounded-lg font-semibold text-sm h-11 flex items-center justify-center gap-2"
                                                 >
                                                     {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
                                                     <span className="hidden sm:inline">{t('forms.buttons.fetch_details')}</span>
-                                                    <span className="sm:hidden">Fetch</span>
+                                                    <span className="sm:hidden text-xs">Fetch</span>
                                                 </Button>
                                             )}
                                         </div>
-                                        <FormMessage />
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )}
                             />
 
                             {/* Essential Patient Information Grid */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                                 <FormField control={form.control} name="patientName" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.name_label')} *</FormLabel>
-                                        <FormControl><Input placeholder="Full name" {...field} className="text-sm" /></FormControl>
+                                        <FormLabel className="text-sm font-semibold text-gray-800">{t('forms.appointment.name_label')} *</FormLabel>
+                                        <FormControl><Input placeholder={t('forms.appointment.name_placeholder')} {...field} className="h-11 text-sm border-1.5 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 rounded-lg transition-all duration-200 bg-white" /></FormControl>
                                         <FormMessage className="text-xs" />
                                     </FormItem>
                                 )} />
 
                                 <FormField control={form.control} name="patientPhone" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.phone_label')} *</FormLabel>
-                                        <FormControl><Input placeholder="Phone number" {...field} className="text-sm" /></FormControl>
+                                        <FormLabel className="text-sm font-semibold text-gray-800">{t('forms.appointment.phone_label')} *</FormLabel>
+                                        <FormControl><Input placeholder={t('forms.appointment.phone_placeholder')} {...field} className="h-11 text-sm border-1.5 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 rounded-lg transition-all duration-200 bg-white" /></FormControl>
                                         <FormMessage className="text-xs" />
                                     </FormItem>
                                 )} />
 
                                 <FormField control={form.control} name="patientEmail" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.email_label')}</FormLabel>
-                                        <FormControl><Input placeholder="Email" {...field} className="text-sm" /></FormControl>
+                                        <FormLabel className="text-sm font-semibold text-gray-800">{t('forms.appointment.email_label')}</FormLabel>
+                                        <FormControl><Input placeholder={t('forms.appointment.email_placeholder')} {...field} className="h-11 text-sm border-1.5 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 rounded-lg transition-all duration-200 bg-white" /></FormControl>
                                         <FormMessage className="text-xs" />
                                     </FormItem>
                                 )} />
 
                                 <FormField control={form.control} name="age" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.age_label')} *</FormLabel>
-                                        <FormControl><Input placeholder="Age" {...field} type="number" className="text-sm" /></FormControl>
+                                        <FormLabel className="text-sm font-semibold text-gray-800">{t('forms.appointment.age_label')} *</FormLabel>
+                                        <FormControl><Input placeholder={t('forms.appointment.age_placeholder')} {...field} type="number" className="h-11 text-sm border-1.5 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 rounded-lg transition-all duration-200 bg-white" /></FormControl>
                                         <FormMessage className="text-xs" />
                                     </FormItem>
                                 )} />
 
                                 <FormField control={form.control} name="gender" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.gender_label')} *</FormLabel>
+                                        <FormLabel className="text-sm font-semibold text-gray-800">{t('forms.appointment.gender_label')} *</FormLabel>
                                         <Select onValueChange={field.onChange} value={field.value}>
-                                            <FormControl><SelectTrigger className="text-sm"><SelectValue placeholder="Select gender" /></SelectTrigger></FormControl>
+                                            <FormControl><SelectTrigger className="h-11 text-sm border-1.5 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 rounded-lg transition-all duration-200 bg-white"><SelectValue placeholder={t('forms.appointment.gender_placeholder')} /></SelectTrigger></FormControl>
                                             <SelectContent>
                                                 <SelectItem value="male">{t('forms.appointment.gender_male')}</SelectItem>
                                                 <SelectItem value="female">{t('forms.appointment.gender_female')}</SelectItem>
@@ -879,7 +880,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
 
                                 <FormField control={form.control} name="doctorId" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-xs sm:text-sm font-semibold">{t('forms.appointment.doctor_label')} *</FormLabel>
+                                        <FormLabel className="text-sm font-semibold text-gray-800">{t('forms.appointment.doctor_label')} *</FormLabel>
                                         <Select 
                                             onValueChange={(value) => {
                                                 field.onChange(value);
@@ -892,7 +893,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                             value={field.value}
                                         >
                                             <FormControl>
-                                                <SelectTrigger className="text-sm">
+                                                <SelectTrigger className="h-11 text-sm border-1.5 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 rounded-lg transition-all duration-200 bg-white">
                                                     <SelectValue placeholder={t('forms.appointment.doctor_placeholder')} />
                                                 </SelectTrigger>
                                             </FormControl>
@@ -913,20 +914,23 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                                 )}
                                             </SelectContent>
                                         </Select>
-                                        <FormMessage />
+                                        <FormMessage className="text-xs" />
                                     </FormItem>
                                 )} />
                             </div>
+                        </div>
 
                     
                             {/* Template-based Form Sections */}
                             {formConfig?.customSections?.map(section => (
-                                <div key={section.id} className="space-y-4">
-                                    <div className="space-y-3">
-                                        <h3 className="text-base sm:text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                                            {section.title}
-                                        </h3>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                <div key={section.id} className="space-y-4 p-6 sm:p-8 bg-gradient-to-br from-purple-50 to-pink-50/30 rounded-2xl border-2 border-purple-100/50 shadow-sm">
+                                    <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b-2 border-blue-500">
+                                        <div className="p-3 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex-shrink-0 shadow-md">
+                                            <FileText className="text-white w-5 h-5" />
+                                        </div>
+                                        <h3 className="text-base sm:text-lg font-bold text-gray-900">{section.title}</h3>
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                                             {section.fields.map(field => (
                                                 <FormField 
                                                     key={field.id} 
@@ -944,7 +948,6 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                                 />
                                             ))}
                                         </div>
-                                    </div>
                                 </div>
                             ))}
 
@@ -1047,19 +1050,28 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 </AlertDescription>
                             </Alert>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                            {/* Appointment Details Section */}
+                            <div className="space-y-4 p-6 sm:p-8 bg-gradient-to-br from-emerald-50 to-cyan-50/30 rounded-2xl border-2 border-emerald-100/50 shadow-sm">
+                                <div className="flex items-center gap-3 pb-3 sm:pb-4 border-b-2 border-blue-500">
+                                    <div className="p-3 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex-shrink-0 shadow-md">
+                                        <Calendar className="text-white w-5 h-5" />
+                                    </div>
+                                    <h3 className="text-base sm:text-lg font-bold text-gray-900">{t('') || 'Appointment Details'}</h3>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                                  <FormField
                                     control={form.control}
                                     name="appointmentDate"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t('forms.appointment.date_label')} *</FormLabel>
+                                            <FormLabel className="text-sm font-semibold text-gray-800">{t('forms.appointment.date_label')} *</FormLabel>
                                             <Select onValueChange={(value) => {
                                                 field.onChange(value);
                                                 setSelectedDate(value);
                                             }} defaultValue={field.value}>
                                                 <FormControl>
-                                                <SelectTrigger>
+                                                <SelectTrigger className="h-11 text-sm border-1.5 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 rounded-lg transition-all duration-200 bg-white">
                                                     <SelectValue placeholder={t('forms.appointment.date_placeholder')} />
                                                 </SelectTrigger>
                                                 </FormControl>
@@ -1071,7 +1083,7 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                                 ))}
                                                 </SelectContent>
                                             </Select>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
@@ -1080,10 +1092,10 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                     name="timeSlot"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{t('forms.appointment.time_label')} *</FormLabel>
+                                            <FormLabel className="text-sm font-semibold text-gray-800">{t('forms.appointment.time_label')} *</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl>
-                                                <SelectTrigger>
+                                                <SelectTrigger className="h-11 text-sm border-1.5 border-gray-300 hover:border-gray-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 rounded-lg transition-all duration-200 bg-white">
                                                     <SelectValue placeholder={t('forms.appointment.time_placeholder')} />
                                                 </SelectTrigger>
                                                 </FormControl>
@@ -1095,31 +1107,31 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                                 ))}
                                                 </SelectContent>
                                             </Select>
-                                            <FormMessage />
+                                            <FormMessage className="text-xs" />
                                         </FormItem>
                                     )}
                                 />
+                                </div>
                             </div>
-                        </div>
 
                         {!previewMode && (
-                            <div className="flex flex-col space-y-3 sm:flex-row-reverse sm:justify-start sm:gap-4 sm:space-y-0 pt-4 border-t border-gray-200">
+                            <div className="flex flex-col space-y-2 sm:flex-row-reverse sm:justify-start sm:gap-3 sm:space-y-0 pt-3 border-t border-gray-200">
                                 <Button
                                     type="button"
                                     variant="outline"
                                     onClick={() => router.back()}
                                     disabled={form.formState.isSubmitting}
-                                    className="w-full sm:w-auto border-gray-300 hover:bg-gray-50 transition-all duration-200 px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold text-sm sm:text-base"
+                                    className="w-full sm:w-auto border-gray-300 hover:bg-gray-50 transition-all duration-200 px-3 sm:px-4 py-2 rounded-lg font-semibold text-sm"
                                 >
                                     {t('forms.buttons.cancel')}
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={form.formState.isSubmitting}
-                                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-4 sm:px-6 lg:px-8 py-2 sm:py-3 lg:py-4 rounded-lg lg:rounded-xl font-semibold"
+                                    className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-3 sm:px-4 py-2 rounded-lg font-semibold"
                                 >
-                                    {form.formState.isSubmitting && <Loader2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5 animate-spin" />}
-                                    <span className="text-sm sm:text-base">{t('forms.buttons.book_appointment')}</span>
+                                    {form.formState.isSubmitting && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
+                                    <span className="text-sm">{t('forms.buttons.book_appointment')}</span>
                                 </Button>
                             </div>
                         )}

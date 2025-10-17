@@ -948,6 +948,15 @@ export function AppointmentForm({ doctors, preselectedDoctorId, formConfig: init
                                 </div>
                             ))}
 
+                            {/* No additional details message */}
+                            {(!formConfig?.customSections || formConfig.customSections.length === 0) && (
+                                <div className="text-center py-4">
+                                    <p className="text-sm text-muted-foreground">
+                                        No additional details are required for this appointment.
+                                    </p>
+                                </div>
+                            )}
+
                             {/* Legacy Custom Fields (for backward compatibility) */}
                             {formConfig?.customFields?.map(field => (
                                 <FormField key={field.id} control={form.control} name={field.id} render={({ field: formField }) => (

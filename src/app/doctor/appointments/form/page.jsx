@@ -20,14 +20,11 @@ import {
   Sparkles,
   Grid3x3,
   FileText,
-  Zap,
   CheckCircle2,
-  Clock,
   Monitor,
   Palette,
   Download,
-  Share2,
-  Calendar
+  Share2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -147,122 +144,97 @@ export default function AppointmentFormPage() {
   const currentTemplate = getCurrentTemplate();
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Professional Header */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 py-4 max-w-7xl">
-          <div className="flex items-center justify-between gap-4">
-            {/* Left: Logo & Branding */}
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-blue-50/30">
+      {/* Clean Header */}
+      <div className="border-b border-gray-100 bg-white sticky top-0 z-40">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 md:py-4 max-w-7xl">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <div className="h-8 sm:h-10 w-8 sm:w-10 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center flex-shrink-0">
-                <FileText className="h-4 sm:h-5 w-4 sm:w-5 text-white" />
+              <div className="h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
+                <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4 md:h-5 md:w-5 text-blue-600" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-base sm:text-lg font-semibold text-gray-900 truncate">Form Designer</h1>
-                <p className="text-xs text-gray-500 hidden sm:block">Appointment Management</p>
+                <h1 className="text-sm sm:text-base md:text-lg font-semibold text-gray-900 truncate">Form Designer</h1>
               </div>
             </div>
-
-            {/* Center: Doctor Info - Hidden on mobile */}
-            <div className="hidden lg:flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                  <User className="h-4 w-4 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{doctor.name}</p>
-                  <p className="text-xs text-gray-500">{doctor.specialization}</p>
-                </div>
-              </div>
-              <div className="w-px h-6 bg-gray-200" />
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
-                Active
-              </Badge>
-            </div>
-
-            {/* Right: Navigation */}
             <Link 
               href={`/doctor/appointments/schedule?id=${doctorId}`}
-              className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition whitespace-nowrap"
+              className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition whitespace-nowrap flex-shrink-0"
             >
-              <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">Schedule</span>
               <span className="sm:hidden">Schedule</span>
-              <ArrowRight className="h-3 w-3 hidden sm:inline" />
+              <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
             </Link>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-7xl">
-        {/* Breadcrumb & Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
+      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-10 max-w-7xl">
+        {/* Page Header with Actions */}
+        <div className="flex flex-col gap-2 sm:gap-4 mb-4 sm:mb-6 md:mb-8">
           <div className="min-w-0">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">Appointment Form</h2>
-            <p className="text-xs sm:text-sm text-gray-600">Manage and customize your appointment form</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="inline-flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-              <Download className="h-4 w-4" />
-              <span className="hidden sm:inline">Export</span>
-            </button>
-            <button className="inline-flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 text-xs sm:text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-              <Share2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Share</span>
-            </button>
+            <div className="flex items-center gap-2 mb-1 sm:mb-2">
+              <div className="h-1 w-6 sm:w-8 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full" />
+              <h2 className="text-lg sm:text-2xl md:text-3xl font-bold text-slate-900">Appointment Form</h2>
+            </div>
+            <p className="text-xs sm:text-sm md:text-base text-slate-600">Design and customize your patient appointment collection form</p>
           </div>
         </div>
 
-        {/* Template Info Card */}
+        {/* Enhanced Template Info Card */}
         {formConfig && (
-          <div className="mb-6 sm:mb-8 p-4 sm:p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-lg sm:rounded-xl">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-              <div className="flex items-start gap-3 sm:gap-4 min-w-0">
-                <div className="text-2xl sm:text-3xl flex-shrink-0">{currentTemplate.icon}</div>
+          <div className="mb-4 sm:mb-6 md:mb-8 bg-gradient-to-r from-blue-600 via-purple-500 to-blue-600 rounded-2xl p-4 sm:p-6 md:p-8 text-white relative overflow-hidden shadow-lg">
+            {/* Background Decorations */}
+            <div className="absolute top-0 right-0 w-20 sm:w-40 h-20 sm:h-40 bg-white/10 rounded-full -mr-10 sm:-mr-20 -mt-10 sm:-mt-20 blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-20 sm:w-40 h-20 sm:h-40 bg-white/10 rounded-full -ml-10 sm:-ml-20 -mb-10 sm:-mb-20 blur-3xl" />
+            
+            <div className="relative z-10 flex flex-col gap-3 sm:gap-4">
+              <div className="flex items-start gap-2 sm:gap-4 min-w-0">
+                <div className="text-3xl sm:text-4xl md:text-5xl flex-shrink-0">{currentTemplate?.icon}</div>
                 <div className="min-w-0">
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">
-                    {currentTemplate.name}
+                  <h3 className="text-base sm:text-lg md:text-2xl font-bold mb-0.5 sm:mb-1 leading-tight">
+                    {currentTemplate?.name}
                   </h3>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3">{currentTemplate.description}</p>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
-                    <span className="inline-flex items-center gap-1">
-                      <Grid3x3 className="h-4 w-4 text-blue-600" />
-                      <strong className="text-gray-900">{formConfig.customSections?.length || currentTemplate.sections.length}</strong> Sections
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <FileText className="h-4 w-4 text-blue-600" />
-                      <strong className="text-gray-900">{formConfig.customSections?.reduce((acc, sec) => acc + sec.fields.length, 0) || 0}</strong> Fields
-                    </span>
+                  <p className="text-xs sm:text-sm md:text-base text-blue-100 mb-2 sm:mb-3 md:mb-4">{currentTemplate?.description}</p>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 md:gap-6 text-xs sm:text-sm">
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/20 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 w-fit">
+                      <Grid3x3 className="h-3 sm:h-4 w-3 sm:w-4 text-blue-200" />
+                      <span className="font-semibold">{formConfig?.customSections?.length || currentTemplate?.sections?.length || 0} Sections</span>
+                    </div>
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/20 rounded-lg px-2 sm:px-3 py-1 sm:py-1.5 w-fit">
+                      <FileText className="h-3 sm:h-4 w-3 sm:w-4 text-blue-200" />
+                      <span className="font-semibold">{formConfig?.customSections?.reduce((acc, sec) => acc + (sec?.fields?.length || 0), 0) || 0} Fields</span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="text-right flex-shrink-0">
-                <Badge className="bg-green-100 text-green-700 border border-green-200 mb-2 text-xs">Published</Badge>
-                <p className="text-xs text-gray-500">Last updated today</p>
+              <div className="sm:text-right">
+                <Badge className="bg-green-400 text-green-900 border-0 font-semibold mb-1 sm:mb-2 text-xs sm:text-sm">✓ Published</Badge>
+                <p className="text-xs text-blue-100">Last updated today</p>
               </div>
             </div>
           </div>
         )}
 
-        {/* Main Grid: Designer */}
-        <div className="mb-12">
-          {/* Designer Card Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 sm:p-6 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-200 mb-6">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="h-8 sm:h-10 w-8 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                <Wand2 className="h-4 sm:h-5 w-4 sm:w-5 text-blue-600" />
+        {/* Designer Section */}
+        <div className="mb-8 sm:mb-10 md:mb-12">
+          {/* Section Header */}
+          <div className="flex flex-col gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 md:mb-6">
+            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 min-w-0">
+              <div className="flex items-center justify-center h-9 sm:h-10 md:h-12 w-9 sm:w-10 md:w-12 rounded-xl bg-gradient-to-br from-blue-100 to-blue-50 border border-blue-200 flex-shrink-0">
+                <Wand2 className="h-4 sm:h-5 md:h-6 w-4 sm:w-5 md:w-6 text-blue-600" />
               </div>
               <div className="min-w-0">
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900">Form Customization</h3>
-                <p className="text-xs text-gray-500">Drag & drop to customize fields</p>
+                <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-900">Form Designer</h3>
+                <p className="text-xs sm:text-sm text-slate-500">Customize and arrange your form fields</p>
               </div>
             </div>
-            <Badge variant="outline" className="text-xs w-fit">v2.0</Badge>
+            <Badge variant="outline" className="text-xs font-semibold border-blue-200 bg-blue-50 text-blue-700 w-fit sm:text-sm">v2.0 Pro</Badge>
           </div>
 
-          {/* Designer Component */}
-          <div className="bg-white border border-gray-200 rounded-lg sm:rounded-xl p-4 sm:p-6 overflow-x-auto">
+          {/* Designer Component Card */}
+          <div className="bg-white border border-slate-200 rounded-2xl p-3 sm:p-4 md:p-8 shadow-sm hover:shadow-md transition w-full">
             <AdvancedTemplateDesigner 
               doctorId={doctorId} 
               onFormConfigChange={handleFormConfigChange}
@@ -270,129 +242,105 @@ export default function AppointmentFormPage() {
           </div>
         </div>
 
-        {/* Features Section */}
-        <div className="mb-8 sm:mb-12">
-          <div className="mb-4 sm:mb-6">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2">Key Features</h3>
-            <p className="text-xs sm:text-sm text-gray-600">Powerful tools to create the perfect appointment form</p>
+        {/* Features Grid Section */}
+        <div className="mb-8 sm:mb-10 md:mb-12">
+          <div className="mb-3 sm:mb-4 md:mb-6">
+            <div className="flex items-center gap-1.5 sm:gap-2 mb-1 sm:mb-2">
+              <Sparkles className="h-4 sm:h-5 w-4 sm:w-5 text-yellow-500" />
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-900">Powerful Features</h3>
+            </div>
+            <p className="text-xs sm:text-sm md:text-base text-slate-600">Everything you need to create professional appointment forms</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            <div className="p-3 sm:p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition">
-              <div className="flex items-start gap-3">
-                <div className="h-8 sm:h-10 w-8 sm:w-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <Wand2 className="h-4 sm:h-5 w-4 sm:w-5 text-blue-600" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-5">
+            {[
+              { icon: Wand2, color: 'blue', title: 'Drag & Drop Editor', desc: 'Intuitive form builder without coding' },
+              { icon: Monitor, color: 'emerald', title: 'Real-time Preview', desc: 'See your form instantly as you design' },
+              { icon: Palette, color: 'purple', title: 'Custom Templates', desc: 'Professional templates for all specialties' },
+              { icon: CheckCircle2, color: 'pink', title: 'Validation Rules', desc: 'Set required fields and constraints' },
+              { icon: Share2, color: 'orange', title: 'Multi-channel Sync', desc: 'Synchronize across all platforms' },
+              { icon: Download, color: 'cyan', title: 'Data Export', desc: 'Export responses in multiple formats' },
+            ].map((feature, idx) => {
+              const Icon = feature.icon;
+              const colorClasses = {
+                blue: 'from-blue-100 to-blue-50 text-blue-600 border-blue-200',
+                emerald: 'from-emerald-100 to-emerald-50 text-emerald-600 border-emerald-200',
+                purple: 'from-purple-100 to-purple-50 text-purple-600 border-purple-200',
+                pink: 'from-pink-100 to-pink-50 text-pink-600 border-pink-200',
+                orange: 'from-orange-100 to-orange-50 text-orange-600 border-orange-200',
+                cyan: 'from-cyan-100 to-cyan-50 text-cyan-600 border-cyan-200',
+              };
+              const classes = colorClasses[feature.color];
+              return (
+                <div key={feature.title} className="group p-3 sm:p-4 md:p-6 bg-white border border-slate-200 rounded-xl hover:border-slate-300 hover:shadow-md transition">
+                  <div className="flex items-start gap-2 sm:gap-3 md:gap-4">
+                    <div className={`h-9 sm:h-10 md:h-12 w-9 sm:w-10 md:w-12 rounded-lg bg-gradient-to-br ${classes} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition`}>
+                      <Icon className="h-4 sm:h-5 md:h-6 w-4 sm:w-5 md:w-6" />
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="font-semibold text-slate-900 text-xs sm:text-sm md:text-base mb-0.5 sm:mb-1">{feature.title}</h4>
+                      <p className="text-xs md:text-sm text-slate-600">{feature.desc}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <h4 className="font-semibold text-gray-900 text-xs sm:text-sm mb-1">Drag & Drop Editor</h4>
-                  <p className="text-xs text-gray-600">Intuitively design forms without coding</p>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Getting Started Guide */}
+        <div className="bg-gradient-to-r from-slate-50 to-blue-50 border border-slate-200 rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm">
+          <div className="flex flex-col gap-3 sm:gap-4 md:gap-6">
+            <div className="flex items-start gap-2 sm:gap-4 md:gap-6">
+              <div className="flex-shrink-0">
+                <div className="h-10 sm:h-12 md:h-14 w-10 sm:w-12 md:w-14 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center shadow-md">
+                  <Sparkles className="h-5 sm:h-6 md:h-7 w-5 sm:w-6 md:w-7 text-white" />
                 </div>
               </div>
-            </div>
-
-            <div className="p-3 sm:p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition">
-              <div className="flex items-start gap-3">
-                <div className="h-8 sm:h-10 w-8 sm:w-10 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                  <Monitor className="h-4 sm:h-5 w-4 sm:w-5 text-emerald-600" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-semibold text-gray-900 text-xs sm:text-sm mb-1">Real-time Preview</h4>
-                  <p className="text-xs text-gray-600">See changes instantly as patients see them</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 sm:p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition">
-              <div className="flex items-start gap-3">
-                <div className="h-8 sm:h-10 w-8 sm:w-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                  <Palette className="h-4 sm:h-5 w-4 sm:w-5 text-purple-600" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-semibold text-gray-900 text-xs sm:text-sm mb-1">Pre-built Templates</h4>
-                  <p className="text-xs text-gray-600">Professional templates for every specialty</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 sm:p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition">
-              <div className="flex items-start gap-3">
-                <div className="h-8 sm:h-10 w-8 sm:w-10 rounded-lg bg-pink-100 flex items-center justify-center flex-shrink-0">
-                  <CheckCircle2 className="h-4 sm:h-5 w-4 sm:w-5 text-pink-600" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-semibold text-gray-900 text-xs sm:text-sm mb-1">Validation Rules</h4>
-                  <p className="text-xs text-gray-600">Set required fields and data validation</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 sm:p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition">
-              <div className="flex items-start gap-3">
-                <div className="h-8 sm:h-10 w-8 sm:w-10 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0">
-                  <Share2 className="h-4 sm:h-5 w-4 sm:w-5 text-orange-600" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-semibold text-gray-900 text-xs sm:text-sm mb-1">Multi-channel Sync</h4>
-                  <p className="text-xs text-gray-600">Synchronize across all booking channels</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 sm:p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition">
-              <div className="flex items-start gap-3">
-                <div className="h-8 sm:h-10 w-8 sm:w-10 rounded-lg bg-cyan-100 flex items-center justify-center flex-shrink-0">
-                  <Download className="h-4 sm:h-5 w-4 sm:w-5 text-cyan-600" />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-semibold text-gray-900 text-xs sm:text-sm mb-1">Data Export</h4>
-                  <p className="text-xs text-gray-600">Export form responses in multiple formats</p>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base sm:text-lg md:text-xl font-bold text-slate-900 mb-3 sm:mb-4 md:mb-6">Quick Start Guide</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                  {[
+                    { num: '1', title: 'Choose Template', desc: 'Select a pre-built template for your specialty' },
+                    { num: '2', title: 'Customize Fields', desc: 'Add, remove, or modify fields to your needs' },
+                    { num: '3', title: 'Deploy Form', desc: 'Review and publish your form instantly' },
+                  ].map((step) => (
+                    <div key={step.num} className="flex gap-2 sm:gap-3">
+                      <div className="h-7 sm:h-8 w-7 sm:w-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center flex-shrink-0 text-white font-bold text-xs sm:text-sm shadow-md">
+                        {step.num}
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-slate-900 text-xs sm:text-sm md:text-base mb-0.5">{step.title}</h4>
+                        <p className="text-xs md:text-sm text-slate-600">{step.desc}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Help Section */}
-        <div className="bg-blue-50 border border-blue-100 rounded-lg sm:rounded-xl p-4 sm:p-8">
-          <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
-            <div className="h-10 sm:h-12 w-10 sm:w-12 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="h-5 sm:h-6 w-5 sm:w-6 text-blue-600" />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-bold text-gray-900 mb-3 sm:mb-4 text-base sm:text-lg">Getting Started with Your Form</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div>
-                  <p className="text-xs font-semibold text-blue-600 uppercase mb-2">Step 1</p>
-                  <p className="text-xs sm:text-sm text-gray-700">Select a template that matches your specialty and appointment type</p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-blue-600 uppercase mb-2">Step 2</p>
-                  <p className="text-xs sm:text-sm text-gray-700">Customize fields, add sections, and configure validation rules as needed</p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-blue-600 uppercase mb-2">Step 3</p>
-                  <p className="text-xs sm:text-sm text-gray-700">Review the live preview, then save to deploy your form immediately</p>
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Footer Info */}
+        <div className="mt-8 sm:mt-10 md:mt-12 text-center">
+          <p className="text-xs sm:text-sm text-slate-600 inline-flex items-center justify-center gap-2">
+            <span className="inline-block w-1 h-1 rounded-full bg-blue-600" />
+            <span>Powered by DocLink • Professional Appointment Management</span>
+            <span className="inline-block w-1 h-1 rounded-full bg-blue-600" />
+          </p>
         </div>
       </div>
 
-      {/* Custom Scrollbar */}
+      {/* Custom Scrollbar Styles */}
       <style dangerouslySetInnerHTML={{__html: `
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { 
+          background: #cbd5e1; 
+          border-radius: 4px; 
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #e5e7eb;
-          border-radius: 3px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #d1d5db;
+        ::-webkit-scrollbar-thumb:hover { 
+          background: #94a3b8; 
         }
       `}} />
     </div>

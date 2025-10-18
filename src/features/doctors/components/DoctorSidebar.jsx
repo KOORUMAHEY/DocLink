@@ -8,7 +8,6 @@ import {
   Calendar,
   Users,
   User,
-  Settings,
   Stethoscope,
   FileText,
   Shield,
@@ -81,13 +80,6 @@ export function DoctorSidebar({ doctor, isOpen, onClose }) {
       icon: User,
       description: 'My Profile',
       gradient: 'from-orange-500 to-red-500'
-    },
-    {
-      href: `/doctor/settings?id=${doctorId}`,
-      label: 'Settings',
-      icon: Settings,
-      description: 'Preferences',
-      gradient: 'from-gray-500 to-slate-600'
     },
   ];
 

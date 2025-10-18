@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Dialog, 
   DialogContent, 
@@ -27,6 +28,8 @@ import {
 } from 'lucide-react';
 import { getDoctorSchedule, saveDoctorSchedule, generateTimeSlots, getAvailableDates } from '@/services/scheduleService';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from '@/context/theme';
+import { cn } from '@/lib/utils';
 
 const daysOfWeek = [
   { key: 'monday', label: 'Monday' },
@@ -48,6 +51,7 @@ const commonDurations = [
 ];
 
 export default function ScheduleManager({ doctorId }) {
+  const { isDark } = useTheme();
   const [scheduleConfig, setScheduleConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -213,10 +217,16 @@ export default function ScheduleManager({ doctorId }) {
 
   if (loading || !scheduleConfig) {
     return (
-      <div className="flex items-center justify-center p-8">
+      <div className={cn(
+        "flex items-center justify-center p-8 rounded-lg",
+        isDark ? "bg-gray-800" : "bg-white"
+      )}>
         <div className="text-center">
-          <Clock className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading schedule configuration...</p>
+          <Clock className={cn(
+            "h-8 w-8 animate-spin mx-auto mb-4",
+            isDark ? "text-blue-400" : "text-blue-600"
+          )} />
+          <p className={isDark ? "text-gray-400" : "text-gray-600"}>Loading schedule configuration...</p>
         </div>
       </div>
     );
@@ -225,414 +235,736 @@ export default function ScheduleManager({ doctorId }) {
   const availableDates = getAvailableDates(scheduleConfig, 7);
 
   return (
-    <div className="space-y-4 sm:space-y-6 p-2 sm:p-4 lg:p-6">
-      {/* Header */}
-      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
-            <Calendar className="h-5 w-5 sm:h-6 sm:w-6" />
-            Schedule Configuration
-          </h2>
-          <p className="text-sm sm:text-base text-gray-600">Configure your available days and time slots</p>
-        </div>
-        <Button onClick={saveScheduleConfig} disabled={saving} className="w-full sm:w-auto">
+    <div className={cn("space-y-4", isDark ? "bg-gray-900" : "")}>
+      {/* Save Button - Top */}
+      <div className="flex justify-end mb-3 sm:mb-4">
+        <Button onClick={saveScheduleConfig} disabled={saving} size="sm" className={cn(
+          "text-xs sm:text-sm h-8 sm:h-10",
+          isDark 
+            ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+            : "bg-emerald-600 hover:bg-emerald-700 text-white"
+        )}>
           {saving ? (
             <>
-              <Clock className="h-4 w-4 mr-2 animate-spin" />
+              <Clock className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2 animate-spin" />
               Saving...
             </>
           ) : (
             <>
-              <Save className="h-4 w-4 mr-2" />
-              Save Configuration
+              <Save className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Save Configuration</span>
+              <span className="sm:hidden">Save</span>
             </>
           )}
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-        {/* Working Hours Configuration */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Working Days & Hours
-            </CardTitle>
-            <CardDescription>
-              Set your available days and working hours for each day
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {daysOfWeek.map(day => {
-              const dayConfig = scheduleConfig.workingHours?.[day.key] || { enabled: false, start: '09:00', end: '17:00' };
-              return (
-                <div key={day.key} className={`p-3 border rounded-lg transition-colors ${
-                  dayConfig.enabled ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 border-gray-200'
-                }`}>
-                  <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-                    <div className="flex items-center gap-3">
-                      <Switch
-                        checked={dayConfig.enabled}
-                        onCheckedChange={(enabled) => updateWorkingHours(day.key, 'enabled', enabled)}
-                      />
-                      <Label className={`font-medium text-sm sm:text-base ${dayConfig.enabled ? 'text-blue-900' : 'text-gray-600'}`}>
-                        {day.label}
-                      </Label>
-                    </div>
-                  
-                    {dayConfig.enabled && (
-                      <div className="flex items-center gap-2 ml-8 sm:ml-0">
-                        <Input
-                          type="time"
-                          value={dayConfig.start || '09:00'}
-                          onChange={(e) => updateWorkingHours(day.key, 'start', e.target.value)}
-                          className="w-20 sm:w-24 text-sm"
-                        />
-                        <span className="text-gray-400 text-sm">to</span>
-                        <Input
-                          type="time"
-                          value={dayConfig.end || '17:00'}
-                          onChange={(e) => updateWorkingHours(day.key, 'end', e.target.value)}
-                          className="w-20 sm:w-24 text-sm"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
+      {/* Tabbed Interface */}
+      <Tabs defaultValue="hours" className="w-full">
+        <TabsList className={cn(
+          "grid w-full grid-cols-3 p-0.5 sm:p-1 rounded-lg h-8 sm:h-10 text-xs sm:text-sm",
+          isDark ? "bg-gray-800" : "bg-gray-100"
+        )}>
+          <TabsTrigger value="hours" className="text-xs sm:text-sm px-1 sm:px-4 py-1 sm:py-2 rounded data-[state=active]:text-xs sm:data-[state=active]:text-sm">Working Hours</TabsTrigger>
+          <TabsTrigger value="slots" className="text-xs sm:text-sm px-1 sm:px-4 py-1 sm:py-2 rounded data-[state=active]:text-xs sm:data-[state=active]:text-sm">Time Slots</TabsTrigger>
+          <TabsTrigger value="preview" className="text-xs sm:text-sm px-1 sm:px-4 py-1 sm:py-2 rounded data-[state=active]:text-xs sm:data-[state=active]:text-sm">Preview</TabsTrigger>
+        </TabsList>
 
-        {/* Time Slot Configuration */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Time Slot Settings
-            </CardTitle>
-            <CardDescription>
-              Configure appointment duration and break times
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label className="mb-3 block">Appointment Duration</Label>
-              <div className="space-y-3">
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {commonDurations.map(duration => (
-                    <Button
-                      key={duration.value}
-                      variant={scheduleConfig.timeSlots.slotDuration === duration.value ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => updateTimeSlots('slotDuration', duration.value)}
-                      className="text-xs sm:text-sm"
+        {/* Tab 1: Working Hours */}
+        <TabsContent value="hours" className="mt-2 sm:mt-4">
+          <Card className={cn(
+            "shadow-sm border",
+            isDark
+              ? "bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700/50"
+              : "bg-gradient-to-br from-blue-50 to-white border-blue-100"
+          )}>
+            <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className={cn(
+                "text-base sm:text-lg font-semibold flex items-center gap-2",
+                isDark ? "text-gray-100" : "text-blue-900"
+              )}>
+                <Clock className={cn(
+                  "w-4 sm:w-5 h-4 sm:h-5",
+                  isDark ? "text-blue-400" : "text-blue-600"
+                )} />
+                Working Hours
+              </CardTitle>
+              <CardDescription className={isDark ? "text-gray-400" : "text-blue-700"}>Set your availability for each day</CardDescription>
+            </CardHeader>
+            <CardContent className="px-2 sm:px-6 pb-3 sm:pb-6">
+              <div className="space-y-2 sm:space-y-3">
+                {daysOfWeek.map(day => {
+                  const dayConfig = scheduleConfig.workingHours?.[day.key] || { enabled: false, start: '09:00', end: '17:00' };
+                  return (
+                    <div 
+                      key={day.key} 
+                      className={cn(
+                        "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 p-2 sm:p-4 rounded-xl border-2 transition-all duration-200",
+                        isDark
+                          ? dayConfig.enabled
+                            ? "bg-gray-700/30 border-gray-600/50 shadow-md"
+                            : "bg-gray-800/20 border-gray-700/30"
+                          : dayConfig.enabled
+                          ? "bg-white border-blue-300 shadow-md"
+                          : "bg-slate-50 border-slate-200"
+                      )}
                     >
-                      {duration.label}
-                    </Button>
-                  ))}
+                      {/* Left: Day name with toggle */}
+                      <div className="flex items-center gap-2 sm:gap-3 flex-1">
+                        <Switch
+                          checked={dayConfig.enabled}
+                          onCheckedChange={(enabled) => updateWorkingHours(day.key, 'enabled', enabled)}
+                          className="scale-100 sm:scale-110"
+                        />
+                        <span className={cn(
+                          "text-xs sm:text-sm font-semibold w-16 sm:w-24",
+                          isDark
+                            ? dayConfig.enabled
+                              ? "text-gray-100"
+                              : "text-gray-500"
+                            : dayConfig.enabled
+                            ? "text-blue-900"
+                            : "text-slate-400"
+                        )}>
+                          {day.label}
+                        </span>
+                      </div>
+
+                      {/* Right: Time picker with clock icons */}
+                      {dayConfig.enabled && (
+                        <div className="flex items-center gap-1.5 sm:gap-3 flex-1 sm:flex-none justify-end">
+                          <div className={cn(
+                            "flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-2 rounded-lg border",
+                            isDark
+                              ? "bg-blue-900/30 border-blue-700/50"
+                              : "bg-blue-50 border-blue-200"
+                          )}>
+                            <Clock className={cn(
+                              "w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0",
+                              isDark ? "text-blue-400" : "text-blue-600"
+                            )} />
+                            <Input
+                              type="time"
+                              value={dayConfig.start || '09:00'}
+                              onChange={(e) => updateWorkingHours(day.key, 'start', e.target.value)}
+                              className={cn(
+                                "w-14 sm:w-24 h-6 sm:h-8 text-xs px-1 py-0.5 text-center border-0 bg-transparent focus:ring-0 font-semibold",
+                                isDark ? "text-blue-400" : "text-blue-900"
+                              )}
+                            />
+                          </div>
+                          <span className={cn(
+                            "font-bold text-sm",
+                            isDark ? "text-gray-600" : "text-slate-400"
+                          )}>→</span>
+                          <div className={cn(
+                            "flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-2 rounded-lg border",
+                            isDark
+                              ? "bg-orange-900/30 border-orange-700/50"
+                              : "bg-orange-50 border-orange-200"
+                          )}>
+                            <Clock className={cn(
+                              "w-3 sm:w-4 h-3 sm:h-4 flex-shrink-0",
+                              isDark ? "text-orange-400" : "text-orange-600"
+                            )} />
+                            <Input
+                              type="time"
+                              value={dayConfig.end || '17:00'}
+                              onChange={(e) => updateWorkingHours(day.key, 'end', e.target.value)}
+                              className={cn(
+                                "w-14 sm:w-24 h-6 sm:h-8 text-xs px-1 py-0.5 text-center border-0 bg-transparent focus:ring-0 font-semibold",
+                                isDark ? "text-orange-400" : "text-orange-900"
+                              )}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      {!dayConfig.enabled && (
+                        <span className={cn(
+                          "text-xs italic",
+                          isDark ? "text-gray-500" : "text-slate-400"
+                        )}>Day off</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 2: Time Slots & Breaks */}
+        <TabsContent value="slots" className="mt-2 sm:mt-4 space-y-3 sm:space-y-4">
+          {/* Appointment Duration */}
+          <Card className={cn(
+            "shadow-sm border",
+            isDark
+              ? "bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700/50"
+              : "bg-gradient-to-br from-blue-50 to-white border-blue-100"
+          )}>
+            <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className={cn(
+                "flex items-center gap-2 text-base sm:text-lg",
+                isDark ? "text-gray-100" : "text-blue-900"
+              )}>
+                <Clock className={cn(
+                  "h-4 sm:h-5 w-4 sm:w-5",
+                  isDark ? "text-blue-400" : "text-blue-600"
+                )} />
+                Appointment Duration
+              </CardTitle>
+              <CardDescription className={isDark ? "text-gray-400" : "text-blue-700"}>How long should each appointment be?</CardDescription>
+            </CardHeader>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+              <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-3">
+                {commonDurations.map(duration => (
                   <Button
-                    variant={showCustomDuration ? "default" : "outline"}
+                    key={duration.value}
+                    variant={scheduleConfig.timeSlots.slotDuration === duration.value ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setShowCustomDuration(!showCustomDuration)}
-                    className="min-w-[70px]"
+                    onClick={() => updateTimeSlots('slotDuration', duration.value)}
+                    className={cn(
+                      "text-xs sm:text-sm transition-all",
+                      scheduleConfig.timeSlots.slotDuration === duration.value
+                        ? isDark
+                          ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+                          : "bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+                        : isDark
+                        ? "border-gray-600 hover:border-gray-500 text-gray-300"
+                        : "border-blue-200 hover:border-blue-400"
+                    )}
                   >
-                    Custom
+                    {duration.label}
+                  </Button>
+                ))}
+                <Button
+                  variant={showCustomDuration ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setShowCustomDuration(!showCustomDuration)}
+                  className={cn(
+                    "text-xs sm:text-sm",
+                    showCustomDuration
+                      ? isDark
+                        ? "bg-blue-600 hover:bg-blue-700 text-white"
+                        : "bg-blue-600 hover:bg-blue-700 text-white"
+                      : isDark
+                      ? "border-gray-600 hover:border-gray-500 text-gray-300"
+                      : "border-blue-200"
+                  )}
+                >
+                  Custom
+                </Button>
+              </div>
+              
+              {showCustomDuration && (
+                <div className={cn(
+                  "flex flex-col sm:flex-row sm:items-center sm:gap-2 gap-1.5 p-2 sm:p-4 mt-3 sm:mt-4 rounded-xl border",
+                  isDark
+                    ? "bg-blue-900/20 border-blue-700/50"
+                    : "bg-blue-50 border-blue-200"
+                )}>
+                  <Input
+                    type="number"
+                    placeholder="Minutes"
+                    value={customDuration}
+                    onChange={(e) => setCustomDuration(e.target.value)}
+                    className={cn(
+                      "w-full sm:w-24 text-xs sm:text-sm h-8 sm:h-10",
+                      isDark
+                        ? "bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400"
+                        : "bg-white border-blue-300"
+                    )}
+                    min="1"
+                    max="480"
+                  />
+                  <span className={cn(
+                    "text-xs sm:text-sm font-medium",
+                    isDark ? "text-gray-400" : "text-blue-700"
+                  )}>minutes</span>
+                  <Button
+                    size="sm"
+                    onClick={handleCustomDuration}
+                    disabled={!customDuration}
+                    className={cn(
+                      "w-full sm:w-auto text-xs sm:text-sm",
+                      isDark
+                        ? "bg-blue-600 hover:bg-blue-700 text-white"
+                        : "bg-blue-600 hover:bg-blue-700"
+                    )}
+                  >
+                    Apply
                   </Button>
                 </div>
-                
-                {showCustomDuration && (
-                  <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:gap-2 sm:space-y-0 p-3 bg-gray-50 rounded-lg">
-                    <Input
-                      type="number"
-                      placeholder="Enter minutes"
-                      value={customDuration}
-                      onChange={(e) => setCustomDuration(e.target.value)}
-                      className="w-full sm:w-32"
-                      min="1"
-                      max="480"
-                    />
-                    <span className="text-sm text-gray-600 self-center">minutes</span>
-                    <Button
-                      size="sm"
-                      onClick={handleCustomDuration}
-                      disabled={!customDuration || parseInt(customDuration) <= 0}
-                      className="w-full sm:w-auto"
-                    >
-                      Apply
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {
-                        setShowCustomDuration(false);
-                        setCustomDuration('');
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                )}
-                
-                {scheduleConfig.timeSlots.slotDuration && 
-                 !commonDurations.find(d => d.value === scheduleConfig.timeSlots.slotDuration) && (
-                  <div className="text-sm text-blue-600 bg-blue-50 p-2 rounded">
-                    Current: {scheduleConfig.timeSlots.slotDuration} minutes (custom)
-                  </div>
-                )}
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Break Duration */}
+          <Card className={cn(
+            "shadow-sm border",
+            isDark
+              ? "bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700/50"
+              : "bg-gradient-to-br from-orange-50 to-white border-orange-100"
+          )}>
+            <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className={cn(
+                "flex items-center gap-2 text-base sm:text-lg",
+                isDark ? "text-gray-100" : "text-orange-900"
+              )}>
+                <Clock className={cn(
+                  "h-4 sm:h-5 w-4 sm:w-5",
+                  isDark ? "text-orange-400" : "text-orange-600"
+                )} />
+                Break Between Appointments
+              </CardTitle>
+              <CardDescription className={isDark ? "text-gray-400" : "text-orange-700"}>How much time between each appointment?</CardDescription>
+            </CardHeader>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+              <div className={cn(
+                "flex items-center gap-2 sm:gap-3 p-2 sm:p-4 rounded-xl border",
+                isDark
+                  ? "bg-orange-900/20 border-orange-700/50"
+                  : "bg-orange-50 border-orange-200"
+              )}>
+                <Input
+                  type="number"
+                  min="0"
+                  max="60"
+                  value={scheduleConfig.timeSlots.breakDuration || 0}
+                  onChange={(e) => updateTimeSlots('breakDuration', parseInt(e.target.value) || 0)}
+                  className={cn(
+                    "w-16 sm:w-32 text-xs sm:text-sm h-8 sm:h-10",
+                    isDark
+                      ? "bg-gray-700/50 border-gray-600 text-white"
+                      : "bg-white border-orange-300"
+                  )}
+                />
+                <span className={cn(
+                  "text-xs sm:text-sm font-medium",
+                  isDark ? "text-gray-400" : "text-orange-700"
+                )}>minutes</span>
               </div>
-            </div>
+            </CardContent>
+          </Card>
 
-            <div>
-              <Label>Break Between Appointments (minutes)</Label>
-              <Input
-                type="number"
-                min="0"
-                max="60"
-                value={scheduleConfig.timeSlots.breakDuration || 0}
-                onChange={(e) => updateTimeSlots('breakDuration', parseInt(e.target.value) || 0)}
-              />
-            </div>
-
-            <Separator />
-
-            <div>
-              <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-3">
-                <Label className="font-medium text-sm sm:text-base">Custom Breaks</Label>
-                <Dialog open={showBreakDialog} onOpenChange={setShowBreakDialog}>
-                  <DialogTrigger asChild>
-                    <Button size="sm" variant="outline" className="w-full sm:w-auto">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Break
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-md mx-4 sm:mx-auto">
-                    <DialogHeader>
-                      <DialogTitle>Add Custom Break</DialogTitle>
-                      <DialogDescription>
-                        Add a break time that will be unavailable for appointments
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4">
+          {/* Custom Breaks */}
+          <Card className={cn(
+            "shadow-sm border",
+            isDark
+              ? "bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700/50"
+              : "bg-gradient-to-br from-purple-50 to-white border-purple-100"
+          )}>
+            <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className={cn(
+                "flex items-center gap-2 text-base sm:text-lg",
+                isDark ? "text-gray-100" : "text-purple-900"
+              )}>
+                <Settings className={cn(
+                  "h-4 sm:h-5 w-4 sm:w-5",
+                  isDark ? "text-purple-400" : "text-purple-600"
+                )} />
+                Custom Breaks
+              </CardTitle>
+              <CardDescription className={isDark ? "text-gray-400" : "text-purple-700"}>Add breaks like lunch or specific unavailable times</CardDescription>
+            </CardHeader>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 space-y-2 sm:space-y-3">
+              <Dialog open={showBreakDialog} onOpenChange={setShowBreakDialog}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className={cn(
+                    "w-full sm:w-auto text-xs sm:text-sm",
+                    isDark
+                      ? "border-gray-600 hover:bg-gray-700/50 text-gray-300"
+                      : "border-purple-300 hover:bg-purple-50"
+                  )}>
+                    <Plus className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+                    Add Break
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className={cn(
+                  "max-w-md mx-2 sm:mx-auto p-3 sm:p-6",
+                  isDark ? "bg-gray-900 border-gray-700" : ""
+                )}>
+                  <DialogHeader>
+                    <DialogTitle className={cn("text-base sm:text-lg", isDark ? "text-gray-100" : "")}>Add Break Time</DialogTitle>
+                    <DialogDescription className={cn("text-xs sm:text-sm", isDark ? "text-gray-400" : "")}>Add a break or unavailable time period</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-3 sm:space-y-4">
+                    <div>
+                      <Label htmlFor="breakLabel" className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "")}>Break Label (e.g., Lunch)</Label>
+                      <Input
+                        id="breakLabel"
+                        value={newBreak.label}
+                        onChange={(e) => setNewBreak(prev => ({ ...prev, label: e.target.value }))}
+                        placeholder="e.g., Lunch, Meeting"
+                        className={cn(
+                          "mt-1 text-xs sm:text-sm h-8 sm:h-10",
+                          isDark ? "bg-gray-800 border-gray-700 text-white placeholder:text-gray-500" : ""
+                        )}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 sm:gap-3">
                       <div>
-                        <Label>Break Label</Label>
+                        <Label htmlFor="breakStart" className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "")}>Start Time</Label>
                         <Input
-                          value={newBreak.label}
-                          onChange={(e) => setNewBreak(prev => ({ ...prev, label: e.target.value }))}
-                          placeholder="e.g., Lunch Break, Tea Break"
+                          id="breakStart"
+                          type="time"
+                          value={newBreak.start}
+                          onChange={(e) => setNewBreak(prev => ({ ...prev, start: e.target.value }))}
+                          className={cn(
+                            "mt-1 text-xs sm:text-sm h-8 sm:h-10",
+                            isDark ? "bg-gray-800 border-gray-700 text-white" : ""
+                          )}
                         />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>Start Time</Label>
-                          <Input
-                            type="time"
-                            value={newBreak.start}
-                            onChange={(e) => setNewBreak(prev => ({ ...prev, start: e.target.value }))}
-                          />
-                        </div>
-                        <div>
-                          <Label>End Time</Label>
-                          <Input
-                            type="time"
-                            value={newBreak.end}
-                            onChange={(e) => setNewBreak(prev => ({ ...prev, end: e.target.value }))}
-                          />
-                        </div>
-                      </div>
-                      <div className="flex flex-col space-y-2 sm:flex-row sm:justify-end sm:gap-2 sm:space-y-0">
-                        <Button variant="outline" onClick={() => setShowBreakDialog(false)} className="w-full sm:w-auto">
-                          Cancel
-                        </Button>
-                        <Button onClick={addCustomBreak} className="w-full sm:w-auto">
-                          Add Break
-                        </Button>
+                      <div>
+                        <Label htmlFor="breakEnd" className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "")}>End Time</Label>
+                        <Input
+                          id="breakEnd"
+                          type="time"
+                          value={newBreak.end}
+                          onChange={(e) => setNewBreak(prev => ({ ...prev, end: e.target.value }))}
+                          className={cn(
+                            "mt-1 text-xs sm:text-sm h-8 sm:h-10",
+                            isDark ? "bg-gray-800 border-gray-700 text-white" : ""
+                          )}
+                        />
                       </div>
                     </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
-
-              <div className="space-y-2">
-                {scheduleConfig.timeSlots.customBreaks?.map((breakTime, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                    <div>
-                      <span className="font-medium">{breakTime.label}</span>
-                      <span className="text-sm text-gray-500 ml-2">
-                        {breakTime.start} - {breakTime.end}
-                      </span>
+                    <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
+                      <Button variant="outline" onClick={() => setShowBreakDialog(false)} className={cn(
+                        "w-full sm:w-auto text-xs sm:text-sm h-8 sm:h-10",
+                        isDark ? "border-gray-600 text-gray-300 hover:bg-gray-700/50" : ""
+                      )}>
+                        Cancel
+                      </Button>
+                      <Button onClick={addCustomBreak} className={cn(
+                        "w-full sm:w-auto text-xs sm:text-sm h-8 sm:h-10",
+                        isDark
+                          ? "bg-purple-600 hover:bg-purple-700 text-white"
+                          : "bg-purple-600 hover:bg-purple-700"
+                      )}>
+                        Add Break
+                      </Button>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => removeCustomBreak(index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
-                ))}
-                {(!scheduleConfig.timeSlots.customBreaks || scheduleConfig.timeSlots.customBreaks.length === 0) && (
-                  <p className="text-sm text-gray-500 text-center py-4">
-                    No custom breaks configured
-                  </p>
+                </DialogContent>
+              </Dialog>
+
+              {/* Display breaks */}
+              <div className="space-y-1.5 sm:space-y-2">
+                {scheduleConfig.timeSlots?.customBreaks && scheduleConfig.timeSlots.customBreaks.length > 0 ? (
+                  scheduleConfig.timeSlots.customBreaks.map((brk, index) => (
+                    <div key={index} className={cn(
+                      "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 p-2 sm:p-3 border-2 rounded-lg text-xs sm:text-sm",
+                      isDark
+                        ? "bg-gray-700/30 border-gray-600/50"
+                        : "bg-white border-purple-300"
+                    )}>
+                      <div className="flex items-center gap-2">
+                        <Clock className={cn(
+                          "h-3 sm:h-4 w-3 sm:w-4 flex-shrink-0",
+                          isDark ? "text-purple-400" : "text-purple-600"
+                        )} />
+                        <div className="min-w-0">
+                          <div className={cn(
+                            "font-medium truncate",
+                            isDark ? "text-gray-100" : "text-purple-900"
+                          )}>{brk.label}</div>
+                          <div className={cn(
+                            "text-xs truncate",
+                            isDark ? "text-gray-400" : "text-purple-600"
+                          )}>{brk.start} → {brk.end}</div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeCustomBreak(index)}
+                        className={cn(
+                          "w-full sm:w-auto text-xs sm:text-sm h-7 sm:h-8",
+                          isDark
+                            ? "text-purple-400 hover:text-purple-300 hover:bg-purple-900/30"
+                            : "text-purple-600 hover:text-purple-800 hover:bg-purple-100"
+                        )}
+                      >
+                        <Trash2 className="h-3 sm:h-4 w-3 sm:w-4" />
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <div className={cn(
+                    "text-center py-3 sm:py-4 text-xs italic",
+                    isDark ? "text-gray-500" : "text-purple-400"
+                  )}>No breaks added</div>
                 )}
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Holiday Management */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5" />
-              Holiday Management
-            </CardTitle>
-            <CardDescription>
-              Add dates when you&apos;re not available for appointments
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-3">
-              <Label className="font-medium text-sm sm:text-base">Unavailable Dates</Label>
+          {/* Holidays */}
+          <Card className={cn(
+            "shadow-sm border",
+            isDark
+              ? "bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700/50"
+              : "bg-gradient-to-br from-red-50 to-white border-red-100"
+          )}>
+            <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className={cn(
+                "flex items-center gap-2 text-base sm:text-lg",
+                isDark ? "text-gray-100" : "text-red-900"
+              )}>
+                <Calendar className={cn(
+                  "h-4 sm:h-5 w-4 sm:w-5",
+                  isDark ? "text-red-400" : "text-red-600"
+                )} />
+                Holidays & Unavailable Dates
+              </CardTitle>
+              <CardDescription className={isDark ? "text-gray-400" : "text-red-700"}>Mark dates when you're unavailable for appointments</CardDescription>
+            </CardHeader>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 space-y-2 sm:space-y-3">
               <Dialog open={showHolidayDialog} onOpenChange={setShowHolidayDialog}>
                 <DialogTrigger asChild>
-                  <Button size="sm" variant="outline" className="w-full sm:w-auto">
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button variant="outline" className={cn(
+                    "w-full sm:w-auto text-xs sm:text-sm",
+                    isDark
+                      ? "border-gray-600 hover:bg-gray-700/50 text-gray-300"
+                      : "border-red-300 hover:bg-red-50"
+                  )}>
+                    <Plus className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
                     Add Holiday
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md mx-4 sm:mx-auto">
+                <DialogContent className={cn(
+                  "max-w-md mx-2 sm:mx-auto p-3 sm:p-6",
+                  isDark ? "bg-gray-900 border-gray-700" : ""
+                )}>
                   <DialogHeader>
-                    <DialogTitle>Add Holiday / Unavailable Date</DialogTitle>
-                    <DialogDescription>
-                      Select a date when you&apos;ll be unavailable for appointments
-                    </DialogDescription>
+                    <DialogTitle className={cn("text-base sm:text-lg", isDark ? "text-gray-100" : "")}>Add Holiday</DialogTitle>
+                    <DialogDescription className={cn("text-xs sm:text-sm", isDark ? "text-gray-400" : "")}>Mark a date when you're unavailable</DialogDescription>
                   </DialogHeader>
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     <div>
-                      <Label>Date</Label>
+                      <Label htmlFor="holidayDate" className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "")}>Date</Label>
                       <Input
+                        id="holidayDate"
                         type="date"
                         value={newHoliday.date}
                         onChange={(e) => setNewHoliday(prev => ({ ...prev, date: e.target.value }))}
                         min={new Date().toISOString().split('T')[0]}
+                        className={cn(
+                          "mt-1 text-xs sm:text-sm h-8 sm:h-10",
+                          isDark ? "bg-gray-800 border-gray-700 text-white" : ""
+                        )}
                       />
                     </div>
                     <div>
-                      <Label>Reason (Optional)</Label>
+                      <Label htmlFor="holidayReason" className={cn("text-xs sm:text-sm", isDark ? "text-gray-300" : "")}>Reason (Optional)</Label>
                       <Input
+                        id="holidayReason"
                         value={newHoliday.reason}
                         onChange={(e) => setNewHoliday(prev => ({ ...prev, reason: e.target.value }))}
-                        placeholder="e.g., Holiday, Personal leave, Conference"
+                        placeholder="e.g., Holiday, Personal leave"
+                        className={cn(
+                          "mt-1 text-xs sm:text-sm h-8 sm:h-10",
+                          isDark ? "bg-gray-800 border-gray-700 text-white placeholder:text-gray-500" : ""
+                        )}
                       />
                     </div>
-                    <div className="flex flex-col space-y-2 sm:flex-row sm:justify-end sm:gap-2 sm:space-y-0">
-                      <Button variant="outline" onClick={() => setShowHolidayDialog(false)} className="w-full sm:w-auto">
+                    <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
+                      <Button variant="outline" onClick={() => setShowHolidayDialog(false)} className={cn(
+                        "w-full sm:w-auto text-xs sm:text-sm h-8 sm:h-10",
+                        isDark ? "border-gray-600 text-gray-300 hover:bg-gray-700/50" : ""
+                      )}>
                         Cancel
                       </Button>
-                      <Button onClick={addHoliday} disabled={!newHoliday.date} className="w-full sm:w-auto">
+                      <Button onClick={addHoliday} className={cn(
+                        "w-full sm:w-auto text-xs sm:text-sm h-8 sm:h-10",
+                        isDark
+                          ? "bg-red-600 hover:bg-red-700 text-white"
+                          : "bg-red-600 hover:bg-red-700"
+                      )}>
                         Add Holiday
                       </Button>
                     </div>
                   </div>
                 </DialogContent>
               </Dialog>
-            </div>
 
-            {/* Display existing holidays */}
-            <div className="space-y-2">
-              {scheduleConfig.unavailableDates && scheduleConfig.unavailableDates.length > 0 ? (
-                scheduleConfig.unavailableDates.map((holiday, index) => (
-                  <div key={index} className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-red-900 text-sm sm:text-base truncate">
-                        {new Date(holiday.date || holiday).toLocaleDateString('en-US', {
-                          weekday: 'short',
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        })}
+              <div className="space-y-1.5 sm:space-y-2">
+                {scheduleConfig.unavailableDates && scheduleConfig.unavailableDates.length > 0 ? (
+                  scheduleConfig.unavailableDates.map((holiday, index) => (
+                    <div key={index} className={cn(
+                      "flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 sm:gap-3 p-2 sm:p-3 border-2 rounded-lg text-xs sm:text-sm",
+                      isDark
+                        ? "bg-gray-700/30 border-gray-600/50"
+                        : "bg-white border-red-300"
+                    )}>
+                      <div className="flex items-center gap-2">
+                        <Calendar className={cn(
+                          "h-3 sm:h-4 w-3 sm:w-4 flex-shrink-0",
+                          isDark ? "text-red-400" : "text-red-600"
+                        )} />
+                        <div className="min-w-0">
+                          <div className={cn(
+                            "font-medium truncate",
+                            isDark ? "text-gray-100" : "text-red-900"
+                          )}>
+                            {new Date(holiday.date || holiday).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                          </div>
+                          {holiday.reason && <div className={cn(
+                            "text-xs truncate",
+                            isDark ? "text-gray-400" : "text-red-600"
+                          )}>{holiday.reason}</div>}
+                        </div>
                       </div>
-                      {holiday.reason && (
-                        <div className="text-xs sm:text-sm text-red-600 truncate">{holiday.reason}</div>
-                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeHoliday(index)}
+                        className={cn(
+                          "w-full sm:w-auto text-xs sm:text-sm h-7 sm:h-8",
+                          isDark
+                            ? "text-red-400 hover:text-red-300 hover:bg-red-900/30"
+                            : "text-red-600 hover:text-red-800 hover:bg-red-100"
+                        )}
+                      >
+                        <Trash2 className="h-3 sm:h-4 w-3 sm:w-4" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeHoliday(index)}
-                      className="text-red-600 hover:text-red-800 hover:bg-red-100"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-4 text-gray-500">
-                  <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">No holidays added yet</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Preview Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5" />
-            Preview Time Slots
-          </CardTitle>
-          <CardDescription>
-            See how your time slots will appear to patients
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:gap-4 sm:space-y-0">
-              <Label className="text-sm sm:text-base">Preview Date:</Label>
-              <Select value={previewDate} onValueChange={setPreviewDate}>
-                <SelectTrigger className="w-full sm:w-64">
-                  <SelectValue placeholder="Select a date" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableDates.map(date => (
-                    <SelectItem key={date.value} value={date.value}>
-                      {date.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {previewDate && (
-              <div>
-                <Label className="text-sm text-gray-600 mb-3 block">
-                  Available time slots for {previewDate}:
-                </Label>
-                {previewSlots.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                    {previewSlots.map((slot, index) => (
-                      <Badge key={index} variant="outline" className="px-2 py-1 text-xs sm:text-sm text-center">
-                        {slot.label}
-                      </Badge>
-                    ))}
-                  </div>
+                  ))
                 ) : (
-                  <div className="flex items-center gap-2 text-amber-600 bg-amber-50 p-3 rounded-lg">
-                    <AlertCircle className="h-5 w-5" />
-                    <span>No time slots available for this date</span>
-                  </div>
+                  <div className={cn(
+                    "text-center py-3 sm:py-4 text-xs italic",
+                    isDark ? "text-gray-500" : "text-red-400"
+                  )}>No holidays added</div>
                 )}
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Tab 3: Preview */}
+        <TabsContent value="preview" className="mt-2 sm:mt-4">
+          <Card className={cn(
+            "shadow-sm border",
+            isDark
+              ? "bg-gradient-to-br from-gray-800 to-gray-900 border-gray-700/50"
+              : "bg-gradient-to-br from-green-50 to-white border-green-100"
+          )}>
+            <CardHeader className="pb-2 sm:pb-4 px-3 sm:px-6 pt-3 sm:pt-6">
+              <CardTitle className={cn(
+                "flex items-center gap-2 text-base sm:text-lg",
+                isDark ? "text-gray-100" : "text-green-900"
+              )}>
+                <CheckCircle2 className={cn(
+                  "h-4 sm:h-5 w-4 sm:w-5",
+                  isDark ? "text-green-400" : "text-green-600"
+                )} />
+                Preview Time Slots
+              </CardTitle>
+              <CardDescription className={isDark ? "text-gray-400" : "text-green-700"}>See how your time slots appear to patients</CardDescription>
+            </CardHeader>
+            <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 space-y-3 sm:space-y-6">
+              <div>
+                <Label htmlFor="previewDateSelect" className={cn(
+                  "text-xs sm:text-sm font-semibold",
+                  isDark ? "text-gray-300" : "text-gray-900"
+                )}>Select Date to Preview</Label>
+                <Select value={previewDate} onValueChange={setPreviewDate}>
+                  <SelectTrigger id="previewDateSelect" className={cn(
+                    "w-full mt-1.5 sm:mt-3 h-8 sm:h-10 text-xs sm:text-sm",
+                    isDark
+                      ? "bg-gray-700/50 border-gray-600 text-white"
+                      : "bg-white border-green-300"
+                  )}>
+                    <SelectValue placeholder="Choose a date" />
+                  </SelectTrigger>
+                  <SelectContent className="text-xs sm:text-sm">
+                    {availableDates.map(date => (
+                      <SelectItem key={date.value} value={date.value} className="text-xs sm:text-sm">
+                        {date.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {previewDate && (
+                <div className={cn(
+                  "space-y-2 sm:space-y-3 p-3 sm:p-6 border-2 rounded-xl",
+                  isDark
+                    ? "bg-gray-700/20 border-gray-600/50"
+                    : "bg-white border-green-300"
+                )}>
+                  <p className={cn(
+                    "text-xs sm:text-sm font-semibold",
+                    isDark ? "text-gray-300" : "text-green-900"
+                  )}>
+                    Available Slots:
+                  </p>
+                  {previewSlots.length > 0 ? (
+                    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-1.5 sm:gap-2">
+                      {previewSlots.map((slot, index) => (
+                        <div key={index} className={cn(
+                          "flex items-center justify-center p-1.5 sm:p-3 border rounded-lg hover:shadow-md transition-all",
+                          isDark
+                            ? "bg-green-900/30 border-green-700/50"
+                            : "bg-gradient-to-br from-green-100 to-green-50 border-green-300"
+                        )}>
+                          <div className="text-center">
+                            <Clock className={cn(
+                              "h-2.5 sm:h-3 w-2.5 sm:w-3 mx-auto mb-0.5 sm:mb-1",
+                              isDark ? "text-green-400" : "text-green-600"
+                            )} />
+                            <span className={cn(
+                              "text-xs font-bold",
+                              isDark ? "text-green-300" : "text-green-900"
+                            )}>{slot.label}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={cn(
+                      "flex items-center gap-2 sm:gap-3 border-l-4 p-2 sm:p-4 rounded-lg",
+                      isDark
+                        ? "bg-orange-900/20 border-l-orange-600 text-orange-400"
+                        : "bg-orange-50 border-l-orange-400"
+                    )}>
+                      <AlertCircle className={cn(
+                        "h-4 sm:h-5 w-4 sm:w-5 flex-shrink-0",
+                        isDark ? "text-orange-400" : "text-orange-600"
+                      )} />
+                      <span className={cn(
+                        "text-xs sm:text-sm font-medium",
+                        isDark ? "text-orange-300" : "text-orange-800"
+                      )}>No slots available for this date</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {!previewDate && (
+                <div className={cn(
+                  "flex items-center gap-2 sm:gap-3 border-l-4 p-2 sm:p-4 rounded-lg",
+                  isDark
+                    ? "bg-blue-900/20 border-l-blue-600 text-blue-400"
+                    : "bg-blue-50 border-l-blue-400"
+                )}>
+                  <Calendar className={cn(
+                    "h-4 sm:h-5 w-4 sm:w-5 flex-shrink-0",
+                    isDark ? "text-blue-400" : "text-blue-600"
+                  )} />
+                  <span className={cn(
+                    "text-xs sm:text-sm",
+                    isDark ? "text-blue-300" : "text-blue-800"
+                  )}>Select a date to see available time slots</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -167,72 +167,133 @@ export const getAppointments = async (filters = {}) => {
   }
 };
 
+// Helper to format appointment data from Firestore
+const formatFirestoreAppointment = (doc) => {
+  const data = doc.data();
+  return {
+    id: doc.id,
+    ...data,
+    appointmentDate: data.appointmentDate?.toDate?.() || (data.appointmentDate instanceof Date ? data.appointmentDate : new Date(data.appointmentDate)),
+    createdAt: data.createdAt?.toDate?.() || (data.createdAt instanceof Date ? data.createdAt : new Date(data.createdAt || Date.now())),
+    updatedAt: data.updatedAt?.toDate?.() || (data.updatedAt instanceof Date ? data.updatedAt : new Date(data.updatedAt || Date.now())),
+    lastUpdated: data.lastUpdated?.toDate?.() || (data.lastUpdated instanceof Date ? data.lastUpdated : new Date(data.lastUpdated || Date.now())),
+    timeSlot: data.timeSlot || data.time,
+    reason: data.reason || data.description
+  };
+};
+
+// Helper to batch-load related data
+const enrichAppointmentsWithData = async (appointments) => {
+  const patientIds = [...new Set(appointments.filter(a => a.patientId).map(a => a.patientId))];
+  const doctorIds = [...new Set(appointments.filter(a => a.doctorId).map(a => a.doctorId))];
+  
+  // Fetch all related data in parallel
+  const [patientDataMap, doctorDataMap] = await Promise.all([
+    loadPatientDataMap(patientIds),
+    loadDoctorDataMap(doctorIds)
+  ]);
+  
+  // Merge data into appointments
+  for (const appointment of appointments) {
+    if (appointment.patientId && patientDataMap.has(appointment.patientId)) {
+      const patientData = patientDataMap.get(appointment.patientId);
+      Object.assign(appointment, {
+        patientName: patientData.name || patientData.patientName,
+        patientPhone: patientData.phone || appointment.patientPhone,
+        patientEmail: patientData.email || appointment.patientEmail,
+        age: patientData.age,
+        gender: patientData.gender,
+        hospitalId: patientData.hospitalId || appointment.patientId
+      });
+    }
+    
+    if (appointment.doctorId && doctorDataMap.has(appointment.doctorId)) {
+      const doctorData = doctorDataMap.get(appointment.doctorId);
+      Object.assign(appointment, {
+        doctorName: doctorData.name || appointment.doctorName,
+        specialization: doctorData.specialty || doctorData.specialization,
+        doctorEmail: doctorData.email,
+        doctorPhone: doctorData.phone
+      });
+    }
+  }
+};
+
+// Helper to load patient data in batches
+const loadPatientDataMap = async (patientIds) => {
+  const map = new Map();
+  
+  const promises = patientIds.map(pid => 
+    getPatientByHospitalId(pid)
+      .then(data => data && map.set(pid, data))
+      .catch(() => {})
+  );
+  
+  if (promises.length > 0) {
+    await Promise.all(promises);
+  }
+  
+  return map;
+};
+
+// Helper to load doctor data in batches
+const loadDoctorDataMap = async (doctorIds) => {
+  const map = new Map();
+  
+  const promises = doctorIds.map(did => 
+    getDoctorById(did)
+      .then(data => data && map.set(did, data))
+      .catch(() => {})
+  );
+  
+  if (promises.length > 0) {
+    await Promise.all(promises);
+  }
+  
+  return map;
+};
+
+// Helper to format mock appointments
+const formatMockAppointments = (mockApts) => {
+  return mockApts.map(appointment => ({
+    ...appointment,
+    appointmentDate: new Date(appointment.appointmentDate),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    timeSlot: appointment.time,
+    reason: appointment.description,
+    healthPriority: appointment.healthPriority || 'normal',
+    allergies: appointment.allergies || 'None known',
+    medications: appointment.medications || 'None',
+    bloodType: appointment.bloodType || 'Unknown'
+  }));
+};
+
 export const getAppointmentsByDoctor = async (doctorId) => {
   try {
     console.log(`Fetching appointments for doctor: ${doctorId}`);
     
-    // Try to fetch from Firebase first
     const appointmentsCol = collection(db, 'appointments');
-    const q = query(
-      appointmentsCol, 
-      where('doctorId', '==', doctorId)
-    );
+    const q = query(appointmentsCol, where('doctorId', '==', doctorId));
     const appointmentSnapshot = await getDocs(q);
     
-    let appointments = [];
-    
     if (!appointmentSnapshot.empty) {
-      appointments = appointmentSnapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          ...data,
-          // Ensure consistent date formatting - convert to Date objects, not ISO strings
-          appointmentDate: data.appointmentDate?.toDate?.() || (data.appointmentDate instanceof Date ? data.appointmentDate : new Date(data.appointmentDate)),
-          createdAt: data.createdAt?.toDate?.() || (data.createdAt instanceof Date ? data.createdAt : new Date(data.createdAt || Date.now())),
-          updatedAt: data.updatedAt?.toDate?.() || (data.updatedAt instanceof Date ? data.updatedAt : new Date(data.updatedAt || Date.now())),
-          lastUpdated: data.lastUpdated?.toDate?.() || (data.lastUpdated instanceof Date ? data.lastUpdated : new Date(data.lastUpdated || Date.now())),
-          // Map timeSlot from time if needed
-          timeSlot: data.timeSlot || data.time,
-          // Ensure reason field
-          reason: data.reason || data.description
-        };
-      });
-      
-      // Sort by date (newest first)
-      appointments.sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
+      // Format and sort appointments
+      const appointments = appointmentSnapshot.docs
+        .map(formatFirestoreAppointment)
+        .sort((a, b) => new Date(b.appointmentDate) - new Date(a.appointmentDate));
       
       // Enrich with patient and doctor data
-      for (const appointment of appointments) {
-        await mergePatientData(appointment);
-        await mergeDoctorData(appointment);
-      }
+      await enrichAppointmentsWithData(appointments);
       
       console.log(`Fetched ${appointments.length} appointments from Firebase`);
       return appointments;
     }
     
-    // Fallback to mock data if no appointments found in Firebase
+    // Fallback to mock data
     console.log('No appointments found in Firebase, using mock data');
     const mockAppointmentsForDoctor = mockAppointments.filter(apt => apt.doctorId === doctorId);
-    
-    // Format mock data to match expected structure
-    const formattedMockAppointments = mockAppointmentsForDoctor.map(appointment => ({
-      ...appointment,
-      appointmentDate: new Date(appointment.appointmentDate),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      timeSlot: appointment.time,
-      reason: appointment.description,
-      // Add additional fields that might be expected
-      healthPriority: appointment.healthPriority || 'normal',
-      allergies: appointment.allergies || 'None known',
-      medications: appointment.medications || 'None',
-      bloodType: appointment.bloodType || 'Unknown'
-    }));
-    
-    console.log(`Using ${formattedMockAppointments.length} mock appointments`);
-    return formattedMockAppointments;
+    return formatMockAppointments(mockAppointmentsForDoctor);
 
   } catch (error) {
     console.error(`Failed to get appointments for doctor ${doctorId}:`, error);

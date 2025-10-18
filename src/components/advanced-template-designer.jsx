@@ -302,11 +302,18 @@ export default function AdvancedTemplateDesigner({ doctorId, onFormConfigChange 
   if (previewMode) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold">Form Preview</h2>
-          <Button onClick={() => setPreviewMode(false)}>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Form Preview</h2>
+            <p className="text-sm text-slate-600 mt-1">Review your form as patients will see it</p>
+          </div>
+          <Button 
+            onClick={() => setPreviewMode(false)}
+            className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold transition-all shadow-md hover:shadow-lg w-full sm:w-auto"
+          >
             <Edit3 className="h-4 w-4 mr-2" />
-            Edit Mode
+            <span className="hidden sm:inline">Edit Mode</span>
+            <span className="sm:hidden">Edit</span>
           </Button>
         </div>
         
@@ -382,14 +389,23 @@ export default function AdvancedTemplateDesigner({ doctorId, onFormConfigChange 
           </h2>
           <p className="text-gray-600">Create and customize appointment forms with professional templates</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setPreviewMode(true)}>
+        <div className="flex gap-2 sm:gap-3">
+          <Button 
+            variant="outline" 
+            onClick={() => setPreviewMode(true)}
+            className="border-2 border-emerald-300 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-400 font-semibold transition-all hover:shadow-md w-full sm:w-auto"
+          >
             <Eye className="h-4 w-4 mr-2" />
-            Preview
+            <span className="hidden sm:inline">Preview Form</span>
+            <span className="sm:hidden">Preview</span>
           </Button>
-          <Button onClick={saveConfiguration}>
+          <Button 
+            onClick={saveConfiguration}
+            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold transition-all shadow-md hover:shadow-lg w-full sm:w-auto"
+          >
             <Save className="h-4 w-4 mr-2" />
-            Save Configuration
+            <span className="hidden sm:inline">Save Configuration</span>
+            <span className="sm:hidden">Save</span>
           </Button>
         </div>
       </div>

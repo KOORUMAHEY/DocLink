@@ -385,6 +385,26 @@ export default function AdminPatientsPage() {
     inactive: patients.filter(p => p.isActive === false).length,
   }), [patients]);
 
+  // Filtered patients based on search query and status filter
+  const filteredPatients = useMemo(() => {
+    return patients.filter(patient => {
+      // Filter by search query
+      const searchLower = searchQuery.toLowerCase();
+      const matchesSearch = !searchQuery || 
+        patient.name?.toLowerCase().includes(searchLower) ||
+        patient.email?.toLowerCase().includes(searchLower) ||
+        patient.phone?.includes(searchQuery) ||
+        patient.hospitalId?.includes(searchQuery);
+
+      // Filter by status
+      const matchesStatus = filterStatus === 'all' || 
+        (filterStatus === 'active' && patient.isActive !== false) ||
+        (filterStatus === 'inactive' && patient.isActive === false);
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [patients, searchQuery, filterStatus]);
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header */}

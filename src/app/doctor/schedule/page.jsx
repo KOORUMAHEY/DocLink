@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import Schedule from '@/doctor/pages/Schedule';
+import ScheduleManager from '@/components/schedule-manager';
 
 function DoctorScheduleContent() {
   const searchParams = useSearchParams();
@@ -17,7 +17,7 @@ function DoctorScheduleContent() {
     );
   }
 
-  return <Schedule doctorId={doctorId} />;
+  return <ScheduleManager doctorId={doctorId} />;
 }
 
 export default function DoctorSchedulePage() {

@@ -99,7 +99,6 @@ export default function DoctorDashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [recentInteractions, setRecentInteractions] = useState([]);
   const [upcomingAppointments, setUpcomingAppointments] = useState([]);
-  const [realTimeUpdates, setRealTimeUpdates] = useState(0);
   
   const { toast } = useToast();
   const { isDark } = useTheme();
@@ -109,7 +108,7 @@ export default function DoctorDashboard() {
   const stats = useMemo(() => {
     if (!dashboardData?.appointments) return null;
     return calculateDashboardStats(dashboardData.appointments);
-  }, [dashboardData?.appointments, realTimeUpdates]);
+  }, [dashboardData?.appointments]);
 
   const loadDashboardData = useCallback(async (showLoading = true) => {
     try {
